@@ -55,7 +55,6 @@ angular.module('neoviewApp')
     };
 
     socket.on('newFile', function(fileInfo) {
-        debugger;
         var filePath = fileInfo.path,
             camInfo = filePath.split("videos/")[1],
             cam = camInfo.split("/")[0],

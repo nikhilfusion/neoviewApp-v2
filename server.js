@@ -51,7 +51,6 @@ function connected(cameraInfo, socket){
     if(after_dlt.length >=3) {
       sliced = after_dlt.slice(after_dlt.length-3, after_dlt.length);
     }
-    console.log("sliced", sliced);
     socket.emit('videoSend', {'videos' : sliced});
   } else {
     socket.emit('videoSend', {'videos' : sliced});
@@ -60,12 +59,21 @@ function connected(cameraInfo, socket){
 
 
 watcher.on('ready', function() {
-    watcher.on('add', function(path) {
-      io.sockets.emit("newFile", { 'path' : path});
-
-      console.log("added", path);
-    });
-  });
+  watcher.on('add', function(path) {
+    io.sockets.emit("newFile", { 'path' : path});
+    var fileName = path.split("/").pop();
+      filePath = path.split(fileName)[0],
+      files = fs.readdirSync(filePath);
+    if(files.length > 0) {
+      _.each(files, function(file) {
+        if(fs.statSync(filePath + file).ctime.getTime() < filterTime) {
+          fs.unlink(filePath + file);
+        }  
+      });
+    }  
+    console.log("added", path);
+  });  
+});
 // db.serialize(function() {
 //   db.run("CREATE TABLE user (id INT, name TEXT)");
 // })
