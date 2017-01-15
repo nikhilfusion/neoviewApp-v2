@@ -11,7 +11,8 @@ var express = require('express'),
     fs = require('fs'),
     dir = 'videos/',
     config = require('./server/config'),
-    watcher = chokidar.watch('videos/cam1/', {ignored: /^\./, persistent: true});
+    watcher = chokidar.watch('videos/cam1/', {ignored: /^\./, persistent: true}),
+    filterTime = new Date(new Date().getTime() - (config.stream.filterTime * 1000)).getTime();
     //path = config.path;
 app.use('/', express.static(__dirname));
 app.get('/*', function(req, res){
@@ -37,7 +38,6 @@ http.listen(port, function() {
 
 function connected(cameraInfo, socket){
   var dir_path = dir + cameraInfo.camera + '/',
-    filterTime = new Date(new Date().getTime() - (config.stream.filterTime * 1000)).getTime(),
     files = fs.readdirSync(dir_path), 
     sliced = [];
   if(files.length > 0) {
@@ -61,9 +61,9 @@ function connected(cameraInfo, socket){
 
 watcher.on('ready', function() {
     watcher.on('add', function(path) {
-      console.log("added", path);
-      io.sockets.emit("watch", { 'name' : 'nikhil'});
+      io.sockets.emit("newFile", { 'path' : path});
 
+      console.log("added", path);
     });
   });
 // db.serialize(function() {
