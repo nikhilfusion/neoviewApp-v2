@@ -1,0 +1,21 @@
+{
+  "name": "neoview",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nikhil T Nair",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "chokidar": "^1.6.1",
+    "express": "^4.14.0",
+    "method-override": "^2.3.7",
+    "pg": "^6.1.2",
+    "socket.io": "^1.7.2",
+    "sqlite3": "^3.1.8",
+    "underscore": "^1.8.3"
+  }
+}
