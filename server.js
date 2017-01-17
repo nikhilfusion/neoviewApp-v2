@@ -11,8 +11,7 @@ var express = require('express'),
     fs = require('fs'),
     dir = 'videos/',
     config = require('./server/config'),
-    watcher = chokidar.watch('videos/cam1/', {ignored: /^\./, persistent: true}),
-    filterTime = new Date(new Date().getTime() - (config.stream.filterTime * 1000)).getTime();
+    watcher = chokidar.watch(dir, {ignored: /^\./, persistent: true});
     //path = config.path;
 app.use('/', express.static(__dirname));
 app.get('/*', function(req, res){
@@ -39,14 +38,14 @@ http.listen(port, function() {
 function connected(cameraInfo, socket){
   var dir_path = dir + cameraInfo.camera + '/',
     files = fs.readdirSync(dir_path), 
-    sliced = [];
+    sliced = [],
+    filterTime = new Date(new Date().getTime() - (config.stream.filterTime * 1000)).getTime();
+
   if(files.length > 0) {
     var after_dlt = _.each(files, function(file) {
       if(fs.statSync(dir_path + file).ctime.getTime() < filterTime) {
         fs.unlink(dir_path + file);
-      } else {
-        return file;
-      }
+      } 
     });
     if(after_dlt.length >=3) {
       sliced = after_dlt.slice(after_dlt.length-3, after_dlt.length);
@@ -60,16 +59,22 @@ function connected(cameraInfo, socket){
 
 watcher.on('ready', function() {
   watcher.on('add', function(path) {
-    io.sockets.emit("newFile", { 'path' : path});
     var fileName = path.split("/").pop();
       filePath = path.split(fileName)[0],
-      files = fs.readdirSync(filePath);
+      files = fs.readdirSync(filePath),
+      filterTime = new Date(new Date().getTime() - (config.stream.filterTime * 1000)).getTime();
+      console.log("filterTime", filterTime);
     if(files.length > 0) {
-      _.each(files, function(file) {
+      var after_dlt = _.each(files, function(file) {
+        console.log("time is - ", fs.statSync(filePath + file).ctime.getTime());
         if(fs.statSync(filePath + file).ctime.getTime() < filterTime) {
           fs.unlink(filePath + file);
         }  
       });
+      
+      if(after_dlt.length >=3) {
+        io.sockets.emit("newFile", { 'path' : path});
+      }
     }  
     console.log("added", path);
   });  

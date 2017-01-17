@@ -70,4 +70,18 @@ angular.module('neoviewApp')
             pushIndex = (pushIndex+1)%3;
         }
     });
-}]);    
+}]);
+
+/*
+if(videoPlayer.attr('src') === "videos/default.mp4") {
+
+            } else {
+                if(videoQueue[pushIndex].status === "playing") {
+                    videoPlayer.src = 'videos/cam1/' + fileName;
+                    videoPlayer.play();
+                } else {
+                    videoQueue[pushIndex].status = "Not Played "
+                }
+            }
+
+*/            
