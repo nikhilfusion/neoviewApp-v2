@@ -58,14 +58,22 @@ angular.module('neoviewApp')
         var filePath = fileInfo.path,
             camInfo = filePath.split("videos/")[1],
             cam = camInfo.split("/")[0],
-            fileName = camInfo.split("/")[1];    
-        if(cam  === 'cam1' && videoQueue.length === 3 && fileName) {
-            videoQueue[pushIndex].src = fileName;
-            if(videoQueue[pushIndex].status === "playing") {
-                videoPlayer.src = 'videos/cam1/' + fileName;
-                videoPlayer.play();
-            } else {
+            fileName = camInfo.split("/")[1];  
+        if(cam === 'cam1' && fileName) {
+            if(videoQueue[pushIndex] && videoQueue[pushIndex].status) {
+                videoQueue[pushIndex].src = fileName;
+                if(videoQueue[pushIndex].status === "playing" || playSrc === "videos/default.mp4") {
+                    videoPlayer.src = 'videos/cam1/' + fileName;
+                    videoPlayer.play();
+                } else {
                 videoQueue[pushIndex].status = "Not Played "
+                }
+            } else {
+                videoQueue[pushIndex] = {};
+                videoQueue[pushIndex].src = fileName;
+                videoQueue[pushIndex].status = "Not Played";
+                videoPlayer.src = 'videos/cam1/' + videoQueue[playIndex].src;
+                videoPlayer.play();
             }
             pushIndex = (pushIndex+1)%3;
         }
