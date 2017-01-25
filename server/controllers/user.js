@@ -7,7 +7,11 @@ exports.login = function(req, res) {
   var reqInfo = req.body;
   db.serialize(function () {
     db.all("SELECT * from users  WHERE username=? and password=?", [reqInfo.username,reqInfo.password], function(err,rows){
-      res.send(rows[0]);
+      if(rows.length > 0) {
+        res.send(rows[0]);
+      } else {
+        res.status(404).send("Invid username or password");
+      }
     });
   });  
 };
@@ -16,7 +20,7 @@ exports.signup = function(req, res) {
   var reqDt = req.body;
   db.serialize(function() {
     db.all("SELECT * from users  WHERE username=?", [reqDt.username], function(err,rows){
-      if(!err && rows.length < 1) {
+      if(!err && rows.length === 0) {
         db.all("SELECT * FROM users ORDER BY id DESC LIMIT 1", function(err, data) {
           if(!err) {
             if(data.length < 1){ 

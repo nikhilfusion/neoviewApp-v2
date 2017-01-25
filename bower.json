@@ -18,6 +18,8 @@
     "components-font-awesome": "^4.7.0",
     "angular-local-storage": "^0.5.2",
     "angular-socket-io": "^0.7.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "restangular": "^1.6.1",
+    "font-awesome": "^4.7.0"
   }
 }

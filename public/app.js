@@ -3,9 +3,13 @@ angular.module('neoviewApp', [
     'ui.bootstrap',
     'ngAnimate',
     'LocalStorageModule',
-    'btford.socket-io'
+    'btford.socket-io',
+    'restangular'
 ])
-.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'localStorageServiceProvider', function($stateProvider, $urlRouterProvider, $locationProvider, localStorageServiceProvider) {
+.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'localStorageServiceProvider', 'RestangularProvider', function($stateProvider, $urlRouterProvider, $locationProvider, localStorageServiceProvider, RestangularProvider) {
+    
+    //RestangularProvider.setBaseUrl('http:127.0.0.1:3000/');
+
     $stateProvider
         .state('home', {
             url: '/',
@@ -17,7 +21,30 @@ angular.module('neoviewApp', [
             templateUrl: 'public/views/stream.html',
             controller: 'streamController'
         })
-
+        .state('login', {
+            url: '/login',
+            templateUrl : 'public/views/login.html',
+            controller: 'loginController'
+        })
+        .state('admin', {
+            templateUrl: 'public/views/admin/admin.html',
+            controller: 'adminController'
+        })
+        .state('admin.dashboard',{
+            url: '/dashboard',
+            templateUrl: 'public/views/admin/adminDashboard.html',
+            controller: 'adminController'
+        })
+        .state('admin.newUser', {
+            url : '/newUser',
+            templateUrl : 'public/views/admin/newUser.html',
+            controller : 'userController'
+        })
+        .state('admin.nurseList', {
+            url: '/nurses',
+            templateUrl: 'public/views/admin/nurseList.html',
+            controller: 'userController'
+        })
         // .state('admin', {
         //     templateUrl: 'client/views/admin/dashboard.html',
         //     controller: 'homeController',
