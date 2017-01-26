@@ -8,4 +8,5 @@ module.exports = function(app){
   app.get('/users', userCtrl.getAllUsers);
   app.get('/user/:id', userCtrl.getUser);
   app.put('/user/:id', userCtrl.editUser);
+  app.delete('/user/:id', userCtrl.deleteUser);
 };

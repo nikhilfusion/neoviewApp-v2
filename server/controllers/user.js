@@ -19,7 +19,7 @@ exports.login = function(req, res) {
 exports.signup = function(req, res) {
   var reqDt = req.body;
   db.serialize(function() {
-    db.all("SELECT * from users  WHERE username=?", [reqDt.username], function(err,rows){
+    db.all("SELECT * from users  WHERE username=? AND active = ?", [reqDt.username, 1], function(err,rows){
       if(!err && rows.length === 0) {
         db.all("SELECT * FROM users ORDER BY id DESC LIMIT 1", function(err, data) {
           if(!err) {
@@ -45,9 +45,9 @@ exports.signup = function(req, res) {
   //db.close();
 };
 exports.getAllUsers = function(req, res) {
-  db.all("SELECT * from users  WHERE role=?", [parseInt(req.query.userType)], function(err, users){
+  db.all("SELECT * from users WHERE active=?", [1], function(err, users){
     if(!err && users.length > 0) {
-      res.send(users[0]);
+      res.send(users);
     } else {
       res.status(404).send("User not found")
     }
@@ -77,11 +77,21 @@ exports.editUser = function(req, res){
         if(!err && user.length > 0) {
           res.send(user[0]);
         } else {
-          res.status(404).send("User not found")
+          res.status(404).send("User not found");
         }
       });
     } else {
-      res.status(404).send("User not found")
+      res.status(404).send("User not found");
     }
   });
+};
+
+exports.deleteUser = function(req, res) {
+  db.all("DELETE FROM users where id=?", [parseInt(req.params.id)], function(err, userRes) {
+    if(!err) {
+      res.send("User deleted successfully");
+    } else {
+      res.status(404).send("User not found");
+    }
+  })
 };

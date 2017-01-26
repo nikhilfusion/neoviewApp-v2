@@ -2,11 +2,11 @@ angular.module('neoviewApp', [
     'ui.router',
     'ui.bootstrap',
     'ngAnimate',
-    'LocalStorageModule',
     'btford.socket-io',
-    'restangular'
+    'restangular',
+    'ngCookies'
 ])
-.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'localStorageServiceProvider', 'RestangularProvider', function($stateProvider, $urlRouterProvider, $locationProvider, localStorageServiceProvider, RestangularProvider) {
+.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'RestangularProvider', function($stateProvider, $urlRouterProvider, $locationProvider, RestangularProvider) {
     
     //RestangularProvider.setBaseUrl('http:127.0.0.1:3000/');
 
@@ -26,24 +26,42 @@ angular.module('neoviewApp', [
             templateUrl : 'public/views/login.html',
             controller: 'loginController'
         })
-        .state('admin', {
+        .state('app', {
             templateUrl: 'public/views/admin/admin.html',
-            controller: 'adminController'
+            controller: 'adminController',
+            resolve: {
+                'task' : function($cookieStore, $location) {
+                    var cookieData = $cookieStore.get('users');
+                    if(!cookieData) {
+                        $location.url('/login');
+                    }
+                }
+            }
         })
-        .state('admin.dashboard',{
+        .state('app.dashboard',{
             url: '/dashboard',
-            templateUrl: 'public/views/admin/adminDashboard.html',
-            controller: 'adminController'
+            templateUrl: 'public/views/admin/dashboard.html'
+            //controller: 'adminController'
         })
-        .state('admin.newUser', {
+        .state('app.newUser', {
             url : '/newUser',
-            templateUrl : 'public/views/admin/newUser.html',
+            templateUrl : 'public/views/admin/user.html',
             controller : 'userController'
         })
-        .state('admin.nurseList', {
+        .state('app.nurseList', {
             url: '/nurses',
             templateUrl: 'public/views/admin/nurseList.html',
             controller: 'userController'
+        })
+        .state('app.nurse', {
+            url : '/nurse/:id',
+            templateUrl : 'public/views/admin/user.html',
+            controller: 'userController'
+        })
+        .state('app.nurseDashboard', {
+            url: '/nurseDashboard',
+            templateUrl : 'public/views/nurse/dashboard.html'
+            //controller: 'adminController'
         })
         // .state('admin', {
         //     templateUrl: 'client/views/admin/dashboard.html',
@@ -83,7 +101,6 @@ angular.module('neoviewApp', [
         enabled: true,
         requireBase: true
     });
-    localStorageServiceProvider.setPrefix('neoview');
 }])
 .factory('socket', ['socketFactory', function (socketFactory) {
     return socketFactory();
