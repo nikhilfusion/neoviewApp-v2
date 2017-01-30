@@ -1,35 +1,16 @@
 angular.module('neoviewApp')
-.controller('adminController', ['$scope', '$cookieStore', '$state', 'Restangular', '$stateParams', '$uibModal', '$rootScope', function ($scope, $cookieStore, $state, Restangular, $stateParams, $uibModal, $rootScope) {
-
-	$scope.users = [
-		{
-			id : 0,
-			name : "Nurse"
-		}, {
-			id : 1,
-			name : "Patient"
-		}
-	];
-
+.controller('staffController', ['$scope', '$cookieStore', '$state', 'Restangular', '$stateParams', '$uibModal', '$rootScope', function ($scope, $cookieStore, $state, Restangular, $stateParams, $uibModal, $rootScope) {
 	switch($state.current.name) {
-		case 'app.adminDashboard' : $scope.noUser = false;
-									$scope.title = "Nurse List";
-									Restangular.one('users').get({'userType' : 0}, {}).then(function(users) {
+		case 'app.staffDashboard' : $scope.patient = true;
+									$scope.noUser = false;
+									$scope.title = "Patient List";
+									Restangular.one('users/').get({'userType' : 1}, {}).then(function(users) {
 										$scope.users = users.plain();
 								  	}, function(err) {
 								  		$scope.noUser = true;
-							 	  	});
-								  	break;
-		case 'app.adminPatientList' : $scope.patient = true;
-									  $scope.noUser = false;
-									  $scope.title = "Patient List";
-									  Restangular.one('users/').get({'userType' : 1}, {}).then(function(users) {
-										$scope.users = users.plain();
-								  	  }, function(err) {
-								  		$scope.noUser = true;
-								  	  });
-								  	  break;
-		case 'app.adminUser' :  $scope.newFlg = false;
+								  	})
+								  break;
+		case 'app.staffUser' :  $scope.newFlg = false;
 								Restangular.one('user', $stateParams.id).get({}, {}).then(function(userInfo) {
 								  	$scope.user = userInfo;
 								  	Restangular.one('getCamera').get({}, {}).then(function(cameras) {
@@ -40,7 +21,7 @@ angular.module('neoviewApp')
 								  },function (err) {
 								});
 								break;
-		case "app.adminCreateUser": $scope.newFlg = true;
+		case "app.staffCreateUser": $scope.newFlg = true;
 									Restangular.one('getCamera').get({}, {}).then(function(cameras) {
 										if(cameras.plain().length > 0) {
 											$scope.cameras = cameras.plain();
@@ -54,14 +35,11 @@ angular.module('neoviewApp')
 		$scope.sucMsg = "";
 		$scope.errorMsg = "";
 		if(newFlg) {
+			user.role = 1;
 			Restangular.all('user').post(user, {}).then(function(res) {
 				$scope.sucMsg="User created successfully";
 				$scope.user = {};
-				if(res.role === 0) {
-					$state.go("app.adminDashboard");
-				} else {
-					$state.go("app.adminPatientList");
-				}
+				$state.go("app.staffDashboard");
 			}, function(err) {
 				$scope.errorMsg = err.data;
 			});
@@ -72,11 +50,7 @@ angular.module('neoviewApp')
 				userInfo.camera = user.camera;
 			}
 			Restangular.all('user').all($stateParams.id).customPUT(userInfo).then(function(userInfo) {
-				if(user.userType === 0) {
-					$state.go("app.adminDashboard");
-				} else {
-					$state.go("app.adminPatientList");
-				}
+				$state.go("app.staffDashboard");
 			});
 		}
 	};

@@ -1,18 +1,22 @@
 <div id="page-wrapper">
   <h2 ng-if="newFlg">New User</h2>
   <h2 ng-if="!newFlg">Update User</h2>
-
   <form name="loginForm" style="width: 500px;">
     <div class="container" style="width: 400px;">
       <label><b>Username</b></label>
       <input type="text" placeholder="Enter Username" name="uname" ng-model="user.username" ng-disabled="!newFlg" required>
       <label><b>Password</b></label>
       <input type="password" placeholder="Enter Password" name="psw" ng-model="user.password" required>
-      <label><b>User Type</b></label>
-      <select ng-model="user.role" ng-init="user.role=0" ng-options="user.id as user.name for user in users" ng-disabled="!newFlg">
+      <label ng-if="userType === 2"><b>User Type</b></label>
+      <select ng-if="userType === 2" ng-model="user.role" ng-options="user.id as user.name for user in users" ng-disabled="!newFlg" required>
+        <option value="">Choose a user</option>
+      </select></br>
+      <label ng-if="userType === 0 || user.role === 1"><b>Camera</b></label>
+      <select ng-if="userType === 0 || user.role === 1" ng-model="user.camera" ng-options="camera as camera for camera in cameras" required>
+        <option value="">Choose a camera</option>
       </select></br>
       <button type="submit" class="btn btn-primary" style="width:75px;" ng-click="register(user, newFlg)" ng-disabled="loginForm.$invalid">Save</button>
-      <button class="btn btn-warning" ui-sref="admin.dashboard" style="width:75px;">Back</button>
+      <button class="btn btn-warning" ng-click="cancel()" style="width:75px;">Cancel</button>
       <span ng-if="errorMsg" class="error-msg">{{errorMsg}}</span></br>
       <span ng-if="sucMsg" class="suc-msg">{{sucMsg}}</span></br>
     </div>

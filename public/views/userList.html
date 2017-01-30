@@ -1,0 +1,24 @@
+<div id="page-wrapper" style="width:60%;">
+	<h3 style="margin-left: 30%;">{{title}}</h3>
+	<table class="table" ng-if="!noUser">
+	  <thead>
+	    <tr>
+	      <th>#</th>
+	      <th>Username</th>
+	      <th ng-if="patient">Camera</th>
+	      <th></th>
+	      <th></th>
+	    </tr>
+	  </thead>
+	  <tbody ng-repeat="user in users">
+	    <tr>
+	      <th scope="row">{{$index+1}}</th>
+	      <td>{{user.username}}</td>
+	      <td ng-if="patient">{{user.camera}}</td>
+	      <td><button class="btn btn-success" style="width:100px;" ng-click="editUser(user)">Edit</button></td>
+	      <td><button class="btn btn-danger" style="width:100px;" ng-click="dltUser(user)">Delete</button></td>
+	    </tr>
+	  </tbody>
+	</table>
+	<h5 ng-if="noUser">No User Found.Please Add.</h5>
+</div>

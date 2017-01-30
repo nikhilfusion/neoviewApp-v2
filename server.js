@@ -4,13 +4,15 @@ var express = require('express'),
     _ = require("underscore"),
     io = require('socket.io')(http),
     bodyParser = require('body-parser'),
-    routes = require('./routes')(app),
+    WebSocket = require('ws'),
+    config = require('./server/config'),
+    ws = new WebSocket('ws://' + config.host + ':' + config.port + '/userwebsocket'),
+    routes = require('./routes')(app, ws, io),
     port = process.env.PORT || 3000,
     host = process.env.HOST || "127.0.0.1",
     chokidar = require('chokidar'),
     fs = require('fs'),
     dir = 'videos/',
-    config = require('./server/config'),
     watcher = chokidar.watch(dir, {ignored: /^\./, persistent: true});    
 app.use('/', express.static(__dirname));
 app.get('/*', function(req, res){
@@ -31,8 +33,6 @@ io.on('connection', function(socket){
 http.listen(port, function() {
   console.log("app is running on port " + port);
 });
-
-//require('./routes')(app);
 
 function connected(cameraInfo, socket){
   var dir_path = dir + cameraInfo.camera + '/',

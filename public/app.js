@@ -2,100 +2,81 @@ angular.module('neoviewApp', [
     'ui.router',
     'ui.bootstrap',
     'ngAnimate',
+    'LocalStorageModule',
     'btford.socket-io',
     'restangular',
     'ngCookies'
 ])
-.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'RestangularProvider', function($stateProvider, $urlRouterProvider, $locationProvider, RestangularProvider) {
-    
-    //RestangularProvider.setBaseUrl('http:127.0.0.1:3000/');
-
+.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'RestangularProvider', 'localStorageServiceProvider', function($stateProvider, $urlRouterProvider, $locationProvider, RestangularProvider, localStorageServiceProvider) {
+    localStorageServiceProvider.setPrefix('neoview');
     $stateProvider
-        .state('home', {
-            url: '/',
-            templateUrl: 'public/views/home.html',
-            controller: 'homeController'
-        })
-        .state('stream', {
-            url: '/stream',
-            templateUrl: 'public/views/stream.html',
-            controller: 'streamController'
-        })
-        .state('login', {
-            url: '/login',
-            templateUrl : 'public/views/login.html',
-            controller: 'loginController'
-        })
-        .state('app', {
-            templateUrl: 'public/views/admin/admin.html',
-            controller: 'adminController',
-            resolve: {
-                'task' : function($cookieStore, $location) {
-                    var cookieData = $cookieStore.get('users');
-                    if(!cookieData) {
-                        $location.url('/login');
-                    }
+    .state('home', {
+        url: '/',
+        templateUrl: 'public/views/home.html',
+        controller : 'homeController'
+    })
+    .state('app.stream', {
+        url: '/stream',
+        templateUrl: 'public/views/stream.html',
+        controller: 'streamController'
+    })
+    .state('login', {
+        url: '/login',
+        templateUrl : 'public/views/login.html',
+        controller: 'loginController'
+    })
+    .state('app', {
+        templateUrl: 'public/views/app.html',
+        controller: 'appController',
+        resolve: {
+            'task' : function($cookieStore, $location) {
+                var cookieData = $cookieStore.get('users');
+                if(!cookieData) {
+                    $location.url('/login');
                 }
             }
-        })
-        .state('app.dashboard',{
-            url: '/dashboard',
-            templateUrl: 'public/views/admin/dashboard.html'
-            //controller: 'adminController'
-        })
-        .state('app.newUser', {
-            url : '/newUser',
-            templateUrl : 'public/views/admin/user.html',
-            controller : 'userController'
-        })
-        .state('app.nurseList', {
-            url: '/nurses',
-            templateUrl: 'public/views/admin/nurseList.html',
-            controller: 'userController'
-        })
-        .state('app.nurse', {
-            url : '/nurse/:id',
-            templateUrl : 'public/views/admin/user.html',
-            controller: 'userController'
-        })
-        .state('app.nurseDashboard', {
-            url: '/nurseDashboard',
-            templateUrl : 'public/views/nurse/dashboard.html'
-            //controller: 'adminController'
-        })
-        // .state('admin', {
-        //     templateUrl: 'client/views/admin/dashboard.html',
-        //     controller: 'homeController',
-        //     resolve: {
-        //         'task' : function(localStorageService, $location) {
-        //             var userInfo = localStorageService.get('userInfo');
-        //             // if(!userInfo.userId) {
-        //             //   $location.url('/')
-        //             // }
-        //         }
-        //     }
-        // })
-        // .state('admin.dashboard', {
-        //   url : '/admin',
-        //   templateUrl: 'client/views/admin/adminDashboard.html',
-        //   controller: 'adminController'
-        // })
-        // .state('admin.addUser', {
-        //     url : '/addUser',
-        //     templateUrl: 'client/views/admin/addUser.html',
-        //     controller: 'adminController'
-        // })
-        // .state('admin.addCamera', {
-        //     url : '/addCamera',
-        //     templateUrl: 'client/views/admin/addCamera.html',
-        //     controller: 'adminController'
-        // })
-        // .state('stream',{
-        //     url: '/stream',
-        //     templateUrl : 'client/views/stream.html',
-        //     controller: 'mainController'
-        // })
-
+        }
+    })
+    .state('app.adminDashboard', {
+        url : '/adminDashboard',
+        templateUrl : 'public/views/userList.html',
+        controller : 'adminController'
+    })
+    .state('app.adminPatientList', {
+        url: '/adminPatientList',
+        templateUrl : 'public/views/userList.html',
+        controller : 'adminController'
+    })
+    .state('app.adminCreateUser', {
+        url: '/adminCreateUser',
+        templateUrl: 'public/views/user.html',
+        controller: 'adminController'
+    })
+    .state('app.adminUser', {
+        url: '/adminUser/:id',
+        templateUrl: 'public/views/user.html',
+        controller: 'adminController'
+    })
+    .state('app.staffDashboard', {
+        url: '/staffDashboard',
+        templateUrl : 'public/views/userList.html',
+        controller : 'staffController'
+    })
+    .state('app.staffCreateUser', {
+        url: '/staffCreateUser',
+        templateUrl: 'public/views/user.html',
+        controller: 'staffController'
+    })
+    .state('app.staffUser', {
+        url: '/staffUser/:id',
+        templateUrl: 'public/views/user.html',
+        controller: 'staffController'
+    })
+    .state('app.patient', {
+        url: '/patient',
+        templateUrl: 'public/views/patient.html',
+        controller: 'patientController'
+    })
     $urlRouterProvider.otherwise('/');
     $locationProvider.html5Mode({
         enabled: true,

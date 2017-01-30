@@ -10,7 +10,9 @@
       </button>
     </div>
     <!-- /.navbar-header -->
+    
     <ul class="nav navbar-top-links navbar-right">
+      <li>Hi {{ user.username }}</li>
       <li class="dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
           <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
@@ -32,16 +34,32 @@
 
       <div class="navbar-default sidebar" role="navigation">
           <div class="sidebar-nav navbar-collapse">
-              <ul class="nav" id="side-menu">
-                  <li>
-                    <a ui-sref="admin.dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
-                  </li>
-                  <li>
-                    <a ui-sref="admin.newUser"><i class="fa fa-table fa-fw"></i> New User</a>
-                  </li>
-                  <li>
-                    <a ui-sref="admin.nurseList"><i class="fa fa-edit fa-fw"></i> Nurses</a>
-                  </li>
+              <ul class="nav" id="side-menu" ng-if="userType === 0">
+                <li>
+                  <a class="app_a" ui-sref="app.staffDashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                </li>
+                <li>
+                  <a class="app_a" ui-sref="app.staffCreateUser"><i class="fa fa-table fa-fw"></i> New Patient</a>
+                </li>
+              </ul>
+              <ul class="nav" id="side-menu" ng-if="userType === 1">
+                <li>
+                  <a class="app_a" ui-sref="app.patient"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                </li>
+                <li>
+                  <a class="app_a" ui-sref="app.stream"><i class="fa fa-table fa-fw"></i>Stream Video</a>
+                </li>
+              </ul>
+              <ul class="nav" id="side-menu" ng-if="userType === 2">
+                <li>
+                  <a class="app_a" ui-sref="app.adminDashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                </li>
+                <li>
+                  <a class="app_a" ui-sref="app.adminCreateUser"><i class="fa fa-table fa-fw"></i> New User</a>
+                </li>
+                <li>
+                  <a class="app_a" ui-sref="app.adminPatientList"><i class="fa fa-edit fa-fw"></i> Patients</a>
+                </li>
               </ul>
           </div>
           <!-- /.sidebar-collapse -->
