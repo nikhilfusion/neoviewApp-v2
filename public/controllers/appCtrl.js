@@ -1,7 +1,8 @@
 angular.module('neoviewApp')
-.controller('appController', ['$scope', '$cookieStore', '$state', 'Restangular', function ($scope, $cookieStore, $state, Restangular) {
+.controller('appController', ['$scope', '$cookieStore', '$state', 'Restangular', 'localStorageService', function ($scope, $cookieStore, $state, Restangular, localStorageService) {
 	$scope.logout = function() {
 		$cookieStore.remove('users');
+		localStorageService.remove('camStatus');
 		$state.go('login')
 	};
 	var cookieInfo = $cookieStore.get('users');
