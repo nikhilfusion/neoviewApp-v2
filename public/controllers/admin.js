@@ -54,6 +54,9 @@ angular.module('neoviewApp')
 		$scope.sucMsg = "";
 		$scope.errorMsg = "";
 		if(newFlg) {
+			if(user.role === 0) {
+				user.camera = "";
+			}
 			Restangular.all('user').post(user, {}).then(function(res) {
 				$scope.sucMsg="User created successfully";
 				$scope.user = {};

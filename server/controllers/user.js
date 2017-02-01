@@ -168,7 +168,7 @@ module.exports = function(ws, io) {
   };
 
   this.getCamera = function(req, res) {
-    if(newCameraInfo.length > 0){
+    if(newCameraInfo && newCameraInfo.length > 0){
       var connCameras = newCameraInfo.map(function(cam) {
         return cam.name;
       });

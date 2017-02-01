@@ -7,7 +7,7 @@ angular.module('neoviewApp')
 	};
 	var cookieInfo = $cookieStore.get('users');
 	if(cookieInfo) {
-		$scope.user = cookieInfo;
+		$scope.headerInfo = cookieInfo;
 		$scope.userType = cookieInfo.role;
 	} else {
 		$state.go('login');

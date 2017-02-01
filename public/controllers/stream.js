@@ -1,9 +1,19 @@
 angular.module('neoviewApp')
-.controller('streamController', ['$scope', 'socket', '$cookieStore', 'localStorageService', '$window', function($scope, socket, $cookieStore, localStorageService, $window) {
+.controller('streamController', ['$scope', 'socket', '$cookieStore', 'localStorageService', '$window', 'Restangular', function($scope, socket, $cookieStore, localStorageService, $window, Restangular) {
     var pushIndex=0, playIndex=0, queueLength = 3, videoQueue = [], playSrc,
 	    videoPlayer = document.getElementById("myVideo"),
-        cookieInfo = $cookieStore.get('users'),
-        camLocalStatus = localStorageService.get('camStatus');
+        cookieInfo = $cookieStore.get('users'),camLocalStatus;
+    if(cookieInfo.camera) {
+        Restangular.one('getCamStatus').get({},{}).then(function(camStatus) {
+            for(var i=0;i<camStatus.length;i++) {
+                if(camStatus[i].name === cookieInfo.camera) {
+                    camLocalStatus = camStatus[i];
+                    localStorageService.set('camStatus', camStatus[i]);            
+                }
+            }
+        });
+    }
+    camLocalStatus = localStorageService.get('camStatus');
     socket.emit('cameraConnect', {'camera' : cookieInfo.camera});	
     angular.element(document).ready(function ()  {
         $('#myVideo').bind('contextmenu',function() {
@@ -33,6 +43,7 @@ angular.module('neoviewApp')
         } else {
             playSrc = 'videos/default.mp4';
         }
+        console.log("playSrc", playSrc, videoPlayer);
         if(playSrc) {
             videoPlayer.src = playSrc;
             videoPlayer.play();
