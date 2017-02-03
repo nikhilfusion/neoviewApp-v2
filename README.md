@@ -25,3 +25,5 @@ $npm install && bower install
 $node server.js
 
 open the app in browser: 127.0.0.1:8080
+
+**********************************************
