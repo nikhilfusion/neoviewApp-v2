@@ -5,7 +5,16 @@ var sqlite3 = require('sqlite3').verbose(),
   dbFile = '../neoview.db',
   keyBy = require('lodash.keyby'),
   nodemailer = require('nodemailer'),
-  db = new sqlite3.Database(dbFile);
+  smtpTransport = require('nodemailer-smtp-transport'),
+  config = require('../config'),
+  db = new sqlite3.Database(dbFile),
+  transporter = nodemailer.createTransport(smtpTransport ({
+    service: 'gmail',
+    auth: {
+      user: config.gmailUser, // Your email id
+      pass: config.gmailPswd // Your password
+    }
+  }));
 
 module.exports = function(ws, io) {
   var newCameraInfo, oldCameraInfo;
@@ -106,6 +115,7 @@ module.exports = function(ws, io) {
           var stmt = db.prepare("INSERT INTO users VALUES(?,?,?,?,?,?)", [newId, reqDt.username, reqDt.password, reqDt.email, reqDt.role, reqDt.camera]);
           stmt.run();
           stmt.finalize();
+          sendMail(reqDt, "New Account");
           res.send(reqDt);
         } else if(rows.length > 0) {
           res.status(403).send("user already exist");
@@ -206,29 +216,21 @@ module.exports = function(ws, io) {
     res.send(newCameraInfo);
   }
 
-  function sendMail(toMail, ) {
-    var transporter = nodemailer.createTransport({
-      service: 'Gmail',
-      auth: {
-        user: 'niktestplancess@gmail.com', // Your email id
-        pass: 'nikhil123' // Your password
-      }
-    });
+  function sendMail(userInfo, subject) {
     var mailOptions = {
-      from: 'niktestplancess@gmail.com', // sender address
-      to: 'receiver@destination.com', // list of receivers
-      subject: 'Email Example', // Subject line
-      text: text //, // plaintext body
-      // html: '<b>Hello world ✔</b>' // You can choose to send an HTML body instead
-    };
+      from: 'niktestplancess@gmail.com',
+      to: userInfo.email,
+      subject: subject,
+      html: '<h2>This is Your Neoview Credentails</h2></br>'+
+            '<p>Username : ' + userInfo.username + '</p></br>' +
+            '<p>Password : ' + userInfo.password + '</p></br>'     
+      };
     transporter.sendMail(mailOptions, function(error, info){
       if(error){
-          console.log(error);
-          res.json({yo: 'error'});
+          console.log("err is", error);
       }else{
           console.log('Message sent: ' + info.response);
-          res.json({yo: info.response});
       };
     });  
-  }
+  };
 }  

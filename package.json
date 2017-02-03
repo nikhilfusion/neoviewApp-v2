@@ -15,6 +15,7 @@
     "lodash.keyby": "^4.6.0",
     "method-override": "^2.3.7",
     "nodemailer": "^3.0.0",
+    "nodemailer-smtp-transport": "^2.7.2",
     "socket.io": "^1.7.2",
     "sqlite3": "^3.1.8",
     "underscore": "^1.8.3",
