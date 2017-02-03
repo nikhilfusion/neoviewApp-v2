@@ -76,10 +76,10 @@ angular.module('neoviewApp', [
         templateUrl: 'public/views/user.html',
         controller: 'staffController'
     })
-    .state('app.patient', {
-        url: '/patient',
-        templateUrl: 'public/views/patient.html',
-        controller: 'patientController'
+    .state('app.profile', {
+        url: '/profile',
+        templateUrl: 'public/views/profile.html',
+        controller: 'profileController'
     })
     $urlRouterProvider.otherwise('/');
     $locationProvider.html5Mode({

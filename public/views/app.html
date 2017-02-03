@@ -18,7 +18,7 @@
           <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
         </a>
         <ul class="dropdown-menu dropdown-user">
-          <li><a><i class="fa fa-user fa-fw"></i> User Profile</a>
+          <li><a ui-sref="app.profile"><i class="fa fa-user fa-fw"></i> User Profile</a>
           </li>
           <li><a><i class="fa fa-gear fa-fw"></i> Settings</a>
           </li>
@@ -42,23 +42,15 @@
                   <a class="app_a" ui-sref="app.staffCreateUser"><i class="fa fa-table fa-fw"></i> New Patient</a>
                 </li>
               </ul>
-              <ul class="nav" id="side-menu" ng-if="userType === 1">
-                <li>
-                  <a class="app_a" ui-sref="app.patient"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
-                </li>
-                <li>
-                  <a class="app_a" ui-sref="app.stream"><i class="fa fa-table fa-fw"></i>Stream Video</a>
-                </li>
-              </ul>
               <ul class="nav" id="side-menu" ng-if="userType === 2">
                 <li>
-                  <a class="app_a" ui-sref="app.adminDashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                  <a class="app_a" ui-sref="app.adminCreateUser"><i class="fa fa-table fa-fw"></i>Add Account</a>
                 </li>
                 <li>
-                  <a class="app_a" ui-sref="app.adminCreateUser"><i class="fa fa-table fa-fw"></i> New User</a>
+                  <a class="app_a" ui-sref="app.adminDashboard"><i class="fa fa-dashboard fa-fw"></i>View Manager</a>
                 </li>
                 <li>
-                  <a class="app_a" ui-sref="app.adminPatientList"><i class="fa fa-edit fa-fw"></i> Patients</a>
+                  <a class="app_a" ui-sref="app.adminPatientList"><i class="fa fa-edit fa-fw"></i>View Users</a>
                 </li>
               </ul>
           </div>

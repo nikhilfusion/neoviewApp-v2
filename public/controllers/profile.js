@@ -1,5 +1,5 @@
 angular.module('neoviewApp')
-.controller('patientController', ['$scope', 'Restangular', '$cookieStore', '$state', '$uibModal', '$rootScope', '$stateParams', 'localStorageService', '$window', function ($scope, Restangular, $cookieStore, $state, $uibModal, $rootScope, $stateParams, localStorageService, $window) {
+.controller('profileController', ['$scope', 'Restangular', '$cookieStore', '$state', '$uibModal', '$rootScope', '$stateParams', 'localStorageService', '$window', function ($scope, Restangular, $cookieStore, $state, $uibModal, $rootScope, $stateParams, localStorageService, $window) {
 	$scope.cancelPswd = function() {
 		$state.reload();
 	};

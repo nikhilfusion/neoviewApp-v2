@@ -4,6 +4,7 @@ var sqlite3 = require('sqlite3').verbose(),
   _ = require("underscore"),
   dbFile = '../neoview.db',
   keyBy = require('lodash.keyby'),
+  nodemailer = require('nodemailer'),
   db = new sqlite3.Database(dbFile);
 
 module.exports = function(ws, io) {
@@ -98,28 +99,21 @@ module.exports = function(ws, io) {
   this.signup = function(req, res) {
     var reqDt = req.body;
     db.serialize(function() {
+      db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, email TEXT, role INTEGER, camera TEXT)");
       db.all("SELECT * from users  WHERE username=?", [reqDt.username], function(err,rows){
         if(!err && rows.length === 0) {
-          db.all("SELECT * FROM users ORDER BY id DESC LIMIT 1", function(err, data) {
-            if(!err) {
-              if(data.length < 1){ 
-                db.run("CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, role INTEGER, camera TEXT)");
-              }
-              var newId = data[0].id + 1;
-              var stmt = db.prepare("INSERT INTO users VALUES(?,?,?,?,?)", [newId, reqDt.username, reqDt.password, reqDt.role, reqDt.camera]);
-              stmt.run();
-              stmt.finalize();
-              res.send(reqDt);
-            } else {
-              res.send(err);
-            }
-          })   
-        } else {
+          var newId = new Date().getTime();
+          var stmt = db.prepare("INSERT INTO users VALUES(?,?,?,?,?,?)", [newId, reqDt.username, reqDt.password, reqDt.email, reqDt.role, reqDt.camera]);
+          stmt.run();
+          stmt.finalize();
+          res.send(reqDt);
+        } else if(rows.length > 0) {
           res.status(403).send("user already exist");
-        }
-      });  
-    });
-    //db.close();
+        } else {
+          res.send(err);
+        }  
+      });
+    });  
   };
   this.getAllUsers = function(req, res) {
     db.all("SELECT * from users where role=?", [req.query.userType], function(err, users){
@@ -210,5 +204,31 @@ module.exports = function(ws, io) {
 
   this.getCamStatus = function(req, res) {
     res.send(newCameraInfo);
+  }
+
+  function sendMail(toMail, ) {
+    var transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+        user: 'niktestplancess@gmail.com', // Your email id
+        pass: 'nikhil123' // Your password
+      }
+    });
+    var mailOptions = {
+      from: 'niktestplancess@gmail.com', // sender address
+      to: 'receiver@destination.com', // list of receivers
+      subject: 'Email Example', // Subject line
+      text: text //, // plaintext body
+      // html: '<b>Hello world ✔</b>' // You can choose to send an HTML body instead
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+      if(error){
+          console.log(error);
+          res.json({yo: 'error'});
+      }else{
+          console.log('Message sent: ' + info.response);
+          res.json({yo: info.response});
+      };
+    });  
   }
 }  
