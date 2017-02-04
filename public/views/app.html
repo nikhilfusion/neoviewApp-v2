@@ -20,7 +20,7 @@
         <ul class="dropdown-menu dropdown-user">
           <li><a ui-sref="app.profile"><i class="fa fa-user fa-fw"></i> User Profile</a>
           </li>
-          <li><a><i class="fa fa-gear fa-fw"></i> Settings</a>
+          <li ng-if="userType === 1"><a ui-sref="app.stream"><i class="fa fa-gear fa-fw"></i> Stream Video</a>
           </li>
           <li class="divider"></li>
           <li><a style="cursor:pointer;" ng-click="logout()"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
@@ -36,10 +36,10 @@
           <div class="sidebar-nav navbar-collapse">
               <ul class="nav" id="side-menu" ng-if="userType === 0">
                 <li>
-                  <a class="app_a" ui-sref="app.staffDashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                  <a class="app_a" ui-sref="app.staffDashboard"><i class="fa fa-dashboard fa-fw"></i>View Users</a>
                 </li>
                 <li>
-                  <a class="app_a" ui-sref="app.staffCreateUser"><i class="fa fa-table fa-fw"></i> New Patient</a>
+                  <a class="app_a" ui-sref="app.staffCreateUser"><i class="fa fa-table fa-fw"></i> Add User</a>
                 </li>
               </ul>
               <ul class="nav" id="side-menu" ng-if="userType === 2">

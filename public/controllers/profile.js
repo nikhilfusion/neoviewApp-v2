@@ -1,5 +1,6 @@
 angular.module('neoviewApp')
 .controller('profileController', ['$scope', 'Restangular', '$cookieStore', '$state', '$uibModal', '$rootScope', '$stateParams', 'localStorageService', '$window', function ($scope, Restangular, $cookieStore, $state, $uibModal, $rootScope, $stateParams, localStorageService, $window) {
+	var cookieInfo = $cookieStore.get('users');
 	$scope.cancelPswd = function() {
 		$state.reload();
 	};

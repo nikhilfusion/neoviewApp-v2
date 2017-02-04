@@ -109,16 +109,19 @@ module.exports = function(ws, io) {
     var reqDt = req.body;
     db.serialize(function() {
       db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, email TEXT, role INTEGER, camera TEXT)");
-      db.all("SELECT * from users  WHERE username=?", [reqDt.username], function(err,rows){
-        if(!err && rows.length === 0) {
-          var newId = new Date().getTime();
-          var stmt = db.prepare("INSERT INTO users VALUES(?,?,?,?,?,?)", [newId, reqDt.username, reqDt.password, reqDt.email, reqDt.role, reqDt.camera]);
-          stmt.run();
-          stmt.finalize();
-          sendMail(reqDt, "New Account");
-          res.send(reqDt);
-        } else if(rows.length > 0) {
-          res.status(403).send("user already exist");
+      db.all("SELECT id from users  WHERE username=? or email=?", [reqDt.username, reqDt.email], function(err,rows){
+        if(!err){
+          if(rows.length === 0) {
+            var newId = new Date().getTime();
+            var stmt = db.prepare("INSERT INTO users VALUES(?,?,?,?,?,?)", [newId, reqDt.username, reqDt.password, reqDt.email, reqDt.role, reqDt.camera]);
+            stmt.run();
+            stmt.finalize();
+            sendMail(reqDt, "Neoview Credentials");
+            res.send(reqDt);  
+          }  
+          else if(rows.length > 0) {
+            res.status(403).send("user already exist");
+          }
         } else {
           res.send(err);
         }  
@@ -221,7 +224,7 @@ module.exports = function(ws, io) {
       from: 'niktestplancess@gmail.com',
       to: userInfo.email,
       subject: subject,
-      html: '<h2>This is Your Neoview Credentails</h2></br>'+
+      html: '<h2>This is Your Neoview Credentials</h2></br>'+
             '<p>Username : ' + userInfo.username + '</p></br>' +
             '<p>Password : ' + userInfo.password + '</p></br>'     
       };

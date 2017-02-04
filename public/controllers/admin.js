@@ -41,6 +41,7 @@ angular.module('neoviewApp')
 								});
 								break;
 		case "app.adminCreateUser": $scope.newFlg = true;
+									$scope.user = {};
 									Restangular.one('getCamera').get({}, {}).then(function(cameras) {
 										if(cameras.plain().length > 0) {
 											$scope.cameras = cameras.plain();
@@ -54,6 +55,7 @@ angular.module('neoviewApp')
 		$scope.sucMsg = "";
 		$scope.errorMsg = "";
 		if(newFlg) {
+			user.password = user.username;
 			if(user.role === 0) {
 				user.camera = "";
 			}
@@ -71,6 +73,7 @@ angular.module('neoviewApp')
 		} else {
 			var userInfo = {};
 			userInfo.password = user.password;
+			userInfo.email = user.email;
 			if(user.camera) {
 				userInfo.camera = user.camera;
 			}

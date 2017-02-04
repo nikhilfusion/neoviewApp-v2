@@ -3,7 +3,7 @@ angular.module('neoviewApp')
 	$scope.logout = function() {
 		$cookieStore.remove('users');
 		localStorageService.remove('camStatus');
-		$state.go('login')
+		$state.go('login');
 	};
 	var cookieInfo = $cookieStore.get('users');
 	if(cookieInfo) {
