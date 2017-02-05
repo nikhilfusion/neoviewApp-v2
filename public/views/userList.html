@@ -4,9 +4,10 @@
 	  <thead>
 	    <tr>
 	      <th>#</th>
-	      <th>Username</th>
+	      <th>User Name</th>
+	      <th>Email</th>
 	      <th ng-if="patient">Camera</th>
-	      <th></th>
+	      <th ng-if="patient">Status</th>
 	      <th></th>
 	    </tr>
 	  </thead>
@@ -14,8 +15,10 @@
 	    <tr>
 	      <th scope="row">{{$index+1}}</th>
 	      <td>{{user.username}}</td>
+	      <td>{{user.email}}</td>
 	      <td ng-if="patient">{{user.camera}}</td>
-	      <td><button class="btn btn-success" style="width:100px;" ng-click="editUser(user)">Edit</button></td>
+	      <td ng-if="patient">{{user.conn_flg ? 'loggedIn' : 'loggedOut' }}</td>
+	      <!-- <td><button class="btn btn-success" style="width:100px;" ng-click="editUser(user)">Edit</button></td> -->
 	      <td><button class="btn btn-danger" style="width:100px;" ng-click="dltUser(user)">Delete</button></td>
 	    </tr>
 	  </tbody>

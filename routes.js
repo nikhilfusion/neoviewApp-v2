@@ -9,6 +9,7 @@ module.exports = function(app, ws, io){
   app.get('/users', user.getAllUsers);
   app.get('/user/:id', user.getUser);
   app.put('/user/:id', user.editUser);
+  app.post('/logout', user.logout);
   app.delete('/user/:id', user.deleteUser);
   app.get('/getCamera', user.getCamera);
   app.get('/getCamStatus', user.getCamStatus);

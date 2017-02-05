@@ -97,6 +97,7 @@ module.exports = function(ws, io) {
     db.serialize(function () {
       db.all("SELECT * from users  WHERE username=? and password=?", [reqInfo.username,reqInfo.password], function(err,rows){
         if(rows.length > 0) {
+          db.run("UPDATE users SET conn_flg = ? WHERE id = ?" , [true, parseInt(rows[0].id)]);
           res.send(rows[0]);
         } else {
           res.status(404).send("Invid username or password");
@@ -104,16 +105,29 @@ module.exports = function(ws, io) {
       });
     });  
   };
+  
+  this.logout = function(req, res) {
+    var reqDt = req.body;
+    console.log("reqDt", reqDt);
+    db.all("SELECT * from users  WHERE id=?", [parseInt(reqDt.id)], function(err,rows){
+      if(rows.length > 0) {
+        console.log("rows", rows[0]);
+        db.run("UPDATE users SET conn_flg = ? WHERE id = ?" , [false, parseInt(rows[0].id)]);
+      } else {
+        res.send(err);
+      }
+    });
+  };
 
   this.signup = function(req, res) {
     var reqDt = req.body;
     db.serialize(function() {
-      db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, email TEXT, role INTEGER, camera TEXT)");
+      db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, email TEXT, role INTEGER, camera TEXT, conn_flg Boolean)");
       db.all("SELECT id from users  WHERE username=? or email=?", [reqDt.username, reqDt.email], function(err,rows){
         if(!err){
           if(rows.length === 0) {
             var newId = new Date().getTime();
-            var stmt = db.prepare("INSERT INTO users VALUES(?,?,?,?,?,?)", [newId, reqDt.username, reqDt.password, reqDt.email, reqDt.role, reqDt.camera]);
+            var stmt = db.prepare("INSERT INTO users VALUES(?,?,?,?,?,?,?)", [newId, reqDt.username, reqDt.password, reqDt.email, reqDt.role, reqDt.camera, false]);
             stmt.run();
             stmt.finalize();
             sendMail(reqDt, "Neoview Credentials");
