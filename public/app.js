@@ -27,7 +27,15 @@ angular.module('neoviewApp', [
     .state('login', {
         url: '/login',
         templateUrl : 'public/views/login.html',
-        controller: 'loginController'
+        controller: 'loginController',
+        resolve: {
+            'task' : function($cookieStore, $location) {
+                var cookieData = $cookieStore.get('users');
+                if(!cookieData) {
+                    $location.url('/login');
+                }
+            }
+        }
     })
     .state('app', {
         templateUrl: 'public/views/app.html',

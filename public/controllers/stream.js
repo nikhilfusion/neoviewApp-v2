@@ -2,8 +2,10 @@ angular.module('neoviewApp')
 .controller('streamController', ['$scope', 'socket', '$cookieStore', 'localStorageService', '$window', 'Restangular', function($scope, socket, $cookieStore, localStorageService, $window, Restangular) {
     var pushIndex=0, playIndex=0, queueLength = 3, videoQueue = [], playSrc,
 	    videoPlayer = document.getElementById("myVideo"),
-        default_video = "videos/default.mp4",    
-        cookieInfo = $cookieStore.get('users'),camLocalStatus;
+        default_video = "videos/default.mp4",
+        openTab = true,
+        cookieInfo = $cookieStore.get('users'),
+        camLocalStatus;
     if(cookieInfo.camera) {
         Restangular.one('getCamStatus').get({},{}).then(function(camStatus) {
             for(var i=0;i<camStatus.length;i++) {
@@ -80,12 +82,17 @@ angular.module('neoviewApp')
         if(cam === cookieInfo.camera && fileName) {
             if(videoQueue[pushIndex] && videoQueue[pushIndex].status) {
                 videoQueue[pushIndex].src = fileName;
-                if(videoQueue[pushIndex].status === "playing" || playSrc === "videos/default.mp4") {
+                if(videoQueue[pushIndex].status === "playing" || playSrc === default_video) {
                     camLocalStatus = localStorageService.get('camStatus');
-                    if(camLocalStatus.status === 2) {
-                        videoPlayer.src = 'videos/' + cookieInfo.camera + '/' + fileName;
+                    if(videoQueue[pushIndex].status === "playing") {
+                        videoQueue[(pushIndex+2)%3].src = fileName;
+                        videoQueue[(pushIndex+2)%3].status = "Not Played";
                     } else {
-                        videoPlayer.src = default_video;  
+                        if(camLocalStatus.status === 2) {
+                            videoPlayer.src = 'videos/' + cookieInfo.camera + '/' + fileName;
+                        } else {
+                            videoPlayer.src = default_video;  
+                        }
                     }
                     videoPlayer.play();
                 } else {
@@ -138,6 +145,9 @@ angular.module('neoviewApp')
     });
 
     function openEducationTab() {
-        $window.open($window.location.origin + '/default', '_blank');
+        if(openTab) {
+            $window.open($window.location.origin + '/default', '_blank');
+            openTab = false;
+        }
     }
 }]);

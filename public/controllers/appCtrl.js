@@ -5,7 +5,6 @@ angular.module('neoviewApp')
 		var user = {
 			"id" : cookieInfo.id
 		};
-		console.log("user", user);
 		Restangular.all('logout').post(user, {}).then(function(res) {
 
 		})
