@@ -7,5 +7,5 @@ module.exports = {
     host : "127.0.0.1",
     port : "8080",
     gmailUser : "niktestplancess@gmail.com",
-    gmailPswd : "nikhil123" 	
+    gmailPswd : "nikhil123"
 };

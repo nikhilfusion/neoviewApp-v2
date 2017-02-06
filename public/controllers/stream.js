@@ -2,6 +2,7 @@ angular.module('neoviewApp')
 .controller('streamController', ['$scope', 'socket', '$cookieStore', 'localStorageService', '$window', 'Restangular', function($scope, socket, $cookieStore, localStorageService, $window, Restangular) {
     var pushIndex=0, playIndex=0, queueLength = 3, videoQueue = [], playSrc,
 	    videoPlayer = document.getElementById("myVideo"),
+        default_video = "videos/default.mp4",    
         cookieInfo = $cookieStore.get('users'),camLocalStatus;
     if(cookieInfo.camera) {
         Restangular.one('getCamStatus').get({},{}).then(function(camStatus) {
@@ -38,12 +39,11 @@ angular.module('neoviewApp')
                 playSrc = 'videos/' + cookieInfo.camera + '/' + videoQueue[playIndex].src;
                 videoQueue[playIndex].status = "playing";
             } else {
-                playSrc = 'videos/default.mp4';
+                playSrc = default_video;
             }
         } else {
-            playSrc = 'videos/default.mp4';
+            playSrc = default_video;
         }
-        console.log("playSrc", playSrc, videoPlayer);
         if(playSrc) {
             videoPlayer.src = playSrc;
             videoPlayer.play();
@@ -52,26 +52,24 @@ angular.module('neoviewApp')
 
     function nextVideo() {
         camLocalStatus = localStorageService.get('camStatus');
-        if(videoQueue.length > 0 && camLocalStatus.status === 2) {
+        if(videoQueue.length > 0 && camLocalStatus.status === 2 && videoQueue[(playIndex+1)%3].status != 'played') {
+            playSrc= 'videos/' + cookieInfo.camera + '/' + videoQueue[(playIndex+1)%3].src;
+            videoPlayer.src = playSrc;
+            videoPlayer.play();
             if(videoQueue[(playIndex)%3].status === 'playing') {
                 videoQueue[(playIndex)%3].status = 'played'
             }
             //play next index
             playIndex= (playIndex+1)%3;
-            if(videoQueue[playIndex].status === 'played') {
-                playSrc = 'videos/default.mp4';
-            } else {
-                playSrc = 'videos/' + cookieInfo.camera + '/' + videoQueue[playIndex].src;
-                videoQueue[playIndex].status = "playing";
-            }
+            videoQueue[playIndex].status = "playing";
         } else {
-            if(playSrc === 'videos/default.mp4') {
+            if(playSrc === default_video) {
                 openEducationTab();
-                playSrc = 'videos/default.mp4';   
             }
+            playSrc = default_video;
+            videoPlayer.src = playSrc;
+            videoPlayer.play();
         }
-        videoPlayer.src = playSrc;
-        videoPlayer.play();
     };
 
     socket.on('newFile', function(fileInfo) {
@@ -87,7 +85,7 @@ angular.module('neoviewApp')
                     if(camLocalStatus.status === 2) {
                         videoPlayer.src = 'videos/' + cookieInfo.camera + '/' + fileName;
                     } else {
-                        videoPlayer.src = 'videos/default.mp4';  
+                        videoPlayer.src = default_video;  
                     }
                     videoPlayer.play();
                 } else {
@@ -100,7 +98,7 @@ angular.module('neoviewApp')
                 if(camLocalStatus.status === 2) {
                     videoPlayer.src = 'videos/' + cookieInfo.camera + '/' + videoQueue[playIndex].src;
                 } else {
-                    videoPlayer.src = 'videos/default.mp4';
+                    videoPlayer.src = default_video;
                 }
                 videoPlayer.play();
             }
@@ -122,15 +120,16 @@ angular.module('neoviewApp')
     socket.on('ChangeCamStatus', function(camStatus) {
         var camLocalStatus = localStorageService.get('camStatus');
         if(camStatus.camInfo.name === cookieInfo.camera) {
-            if(camStatus.camInfo.status === 2 && camLocalStatus.status != 2)
+            if(camStatus.camInfo.status === 2 && camLocalStatus.status != 2) {
                 if(videoQueue[playIndex].status != "playing") {
                     nextVideo();
                 } else {
-                    playSrc = 'videos/default.mp4';
+                    playSrc = default_video;
                     videoPlayer.src = playSrc;
                     videoPlayer.play();
+                }    
             } else {
-                playSrc = 'videos/default.mp4';
+                playSrc = default_video;
                 videoPlayer.src = playSrc;
                 videoPlayer.play();    
             }
@@ -141,4 +140,4 @@ angular.module('neoviewApp')
     function openEducationTab() {
         $window.open($window.location.origin + '/default', '_blank');
     }
-}]);           
+}]);
