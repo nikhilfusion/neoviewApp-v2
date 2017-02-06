@@ -4,7 +4,7 @@ angular.module('neoviewApp')
 	$scope.users = [
 		{
 			id : 0,
-			name : "Nurse"
+			name : "Staff"
 		}, {
 			id : 1,
 			name : "Patient"

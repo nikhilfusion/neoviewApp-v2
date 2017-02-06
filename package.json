@@ -12,6 +12,7 @@
     "body-parser": "^1.15.2",
     "chokidar": "^1.6.1",
     "express": "^4.14.0",
+    "lodash": "^4.17.4",
     "lodash.keyby": "^4.6.0",
     "method-override": "^2.3.7",
     "nodemailer": "^3.0.0",
