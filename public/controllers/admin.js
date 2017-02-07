@@ -55,7 +55,6 @@ angular.module('neoviewApp')
 		$scope.sucMsg = "";
 		$scope.errorMsg = "";
 		if(newFlg) {
-			user.password = user.username;
 			if(user.role === 0) {
 				user.camera = "";
 			}
@@ -72,7 +71,6 @@ angular.module('neoviewApp')
 			});
 		} else {
 			var userInfo = {};
-			userInfo.password = user.password;
 			userInfo.email = user.email;
 			if(user.camera) {
 				userInfo.camera = user.camera;

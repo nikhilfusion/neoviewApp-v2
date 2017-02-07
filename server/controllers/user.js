@@ -8,6 +8,7 @@ var sqlite3 = require('sqlite3').verbose(),
   smtpTransport = require('nodemailer-smtp-transport'),
   config = require('../config'),
   db = new sqlite3.Database(dbFile),
+  randomstring = require('randomstring'),
   transporter = nodemailer.createTransport(smtpTransport ({
     service: 'gmail',
     auth: {
@@ -121,6 +122,7 @@ module.exports = function(ws, io) {
 
   this.signup = function(req, res) {
     var reqDt = req.body;
+    reqDt.password = randomstring.generate(7);
     db.serialize(function() {
       db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, email TEXT, role INTEGER, camera TEXT, conn_flg Boolean)");
       db.all("SELECT id from users  WHERE username=? or email=?", [reqDt.username, reqDt.email], function(err,rows){

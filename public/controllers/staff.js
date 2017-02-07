@@ -45,7 +45,6 @@ angular.module('neoviewApp')
 			});
 		} else {
 			var userInfo = {};
-			userInfo.password = user.password;
 			userInfo.email = user.email;
 			if(user.camera) {
 				userInfo.camera = user.camera;
