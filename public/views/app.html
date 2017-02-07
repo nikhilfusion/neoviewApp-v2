@@ -43,13 +43,13 @@
                 </li>
               </ul>
               <ul class="nav" id="side-menu" ng-if="userType === 2">
-                <li>
+                <li ng-class="{'active-li' : curr_state== 'app.adminCreateUser'}">
                   <a class="app_a" ui-sref="app.adminCreateUser"><i class="fa fa-table fa-fw"></i>Add Account</a>
                 </li>
-                <li>
+                <li ng-class="{'active-li' : curr_state== 'app.adminDashboard'}">
                   <a class="app_a" ui-sref="app.adminDashboard"><i class="fa fa-dashboard fa-fw"></i>Staff Accounts</a>
                 </li>
-                <li>
+                <li ng-class="{'active-li' : curr_state== 'app.adminPatientList'}">
                   <a class="app_a" ui-sref="app.adminPatientList"><i class="fa fa-edit fa-fw"></i>User Accounts</a>
                 </li>
               </ul>
@@ -61,3 +61,8 @@
   <div ui-view=""></div>
   <!-- /#page-wrapper -->
 </div>
+<style type="text/css">
+  .active-li {
+    background-color: #eee;
+  }
+</style>

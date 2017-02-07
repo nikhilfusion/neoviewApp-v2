@@ -1,5 +1,12 @@
 angular.module('neoviewApp')
 .controller('appController', ['$scope', '$cookieStore', '$state', 'Restangular', 'localStorageService', function ($scope, $cookieStore, $state, Restangular, localStorageService) {
+	$scope.curr_state = $state.current.name;
+	angular.element(document).ready(function ()  {
+		$("#side-menu li").click(function() {
+    		$("#side-menu li").removeClass('active-li');
+  		});
+	});
+
 	var cookieInfo = $cookieStore.get('users');
 	$scope.logout = function() {
 		var user = {
