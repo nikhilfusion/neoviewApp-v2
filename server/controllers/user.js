@@ -7,6 +7,7 @@ var sqlite3 = require('sqlite3').verbose(),
   nodemailer = require('nodemailer'),
   smtpTransport = require('nodemailer-smtp-transport'),
   config = require('../config'),
+  bcrypt = require('bcryptjs'),
   db = new sqlite3.Database(dbFile),
   randomstring = require('randomstring'),
   transporter = nodemailer.createTransport(smtpTransport ({
@@ -121,28 +122,34 @@ module.exports = function(ws, io) {
   };
 
   this.signup = function(req, res) {
-    var reqDt = req.body;
-    reqDt.password = randomstring.generate(7);
-    db.serialize(function() {
-      db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, email TEXT, role INTEGER, camera TEXT, conn_flg Boolean)");
-      db.all("SELECT id from users  WHERE username=? or email=?", [reqDt.username, reqDt.email], function(err,rows){
-        if(!err){
-          if(rows.length === 0) {
-            var newId = new Date().getTime();
-            var stmt = db.prepare("INSERT INTO users VALUES(?,?,?,?,?,?,?)", [newId, reqDt.username, reqDt.password, reqDt.email, reqDt.role, reqDt.camera, false]);
-            stmt.run();
-            stmt.finalize();
-            sendMail(reqDt, "Neoview Credentials");
-            res.send(reqDt);  
-          }  
-          else if(rows.length > 0) {
-            res.status(403).send("user already exist");
-          }
-        } else {
-          res.send(err);
-        }  
-      });
-    });  
+    var reqDt = req.body,
+        password = randomstring.generate(7);
+    bcrypt.genSalt(10, function(err, salt) {
+      bcrypt.hash(password, salt, function(err, hash) {
+        reqDt.password = hash;
+        db.serialize(function() {
+          db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, email TEXT, role INTEGER, camera TEXT, conn_flg Boolean)");
+          db.all("SELECT id from users  WHERE username=? or email=?", [reqDt.username, reqDt.email], function(err,rows){
+            if(!err){
+              if(rows.length === 0) {
+                var newId = new Date().getTime();
+                var stmt = db.prepare("INSERT INTO users VALUES(?,?,?,?,?,?,?)", [newId, reqDt.username, reqDt.password, reqDt.email, reqDt.role, reqDt.camera, false]);
+                stmt.run();
+                stmt.finalize();
+                sendMail(reqDt, "Neoview Credentials");
+                res.send(reqDt);  
+              }  
+              else if(rows.length > 0) {
+                res.status(403).send("user already exist");
+              }
+            } else {
+              res.send(err);
+            }  
+          });
+        }); 
+      })
+    })
+
   };
   this.getAllUsers = function(req, res) {
     db.all("SELECT * from users where role=?", [req.query.userType], function(err, users){
