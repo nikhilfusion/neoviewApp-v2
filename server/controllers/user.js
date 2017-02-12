@@ -8,6 +8,7 @@ var sqlite3 = require('sqlite3').verbose(),
   smtpTransport = require('nodemailer-smtp-transport'),
   config = require('../config'),
   bcrypt = require('bcryptjs'),
+  salt = bcrypt.genSaltSync(10),
   db = new sqlite3.Database(dbFile),
   randomstring = require('randomstring'),
   transporter = nodemailer.createTransport(smtpTransport ({
@@ -96,11 +97,16 @@ module.exports = function(ws, io) {
   
   this.login = function(req, res) {
     var reqInfo = req.body;
-    db.serialize(function () {
-      db.all("SELECT * from users  WHERE username=? and password=?", [reqInfo.username,reqInfo.password], function(err,rows){
+    db.serialize(function() {
+      db.all("SELECT * from users  WHERE username = ?", [reqInfo.username], function(err,rows){
         if(rows.length > 0) {
-          db.run("UPDATE users SET conn_flg = ? WHERE id = ?" , [true, parseInt(rows[0].id)]);
-          res.send(rows[0]);
+          if(bcrypt.compareSync(reqInfo.password, rows[0].password)) {
+            db.run("UPDATE users SET conn_flg = ? WHERE id = ?" , [true, parseInt(rows[0].id)]);
+            delete rows[0].password;
+            res.send(rows[0]);
+          } else {
+            res.status(404).send("Invid username or password");
+          }
         } else {
           res.status(404).send("Invid username or password");
         }
@@ -110,10 +116,8 @@ module.exports = function(ws, io) {
   
   this.logout = function(req, res) {
     var reqDt = req.body;
-    console.log("reqDt", reqDt);
     db.all("SELECT * from users  WHERE id=?", [parseInt(reqDt.id)], function(err,rows){
       if(rows.length > 0) {
-        console.log("rows", rows[0]);
         db.run("UPDATE users SET conn_flg = ? WHERE id = ?" , [false, parseInt(rows[0].id)]);
       } else {
         res.send(err);
@@ -122,34 +126,29 @@ module.exports = function(ws, io) {
   };
 
   this.signup = function(req, res) {
-    var reqDt = req.body,
-        password = randomstring.generate(7);
-    bcrypt.genSalt(10, function(err, salt) {
-      bcrypt.hash(password, salt, function(err, hash) {
-        reqDt.password = hash;
-        db.serialize(function() {
-          db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, email TEXT, role INTEGER, camera TEXT, conn_flg Boolean)");
-          db.all("SELECT id from users  WHERE username=? or email=?", [reqDt.username, reqDt.email], function(err,rows){
-            if(!err){
-              if(rows.length === 0) {
-                var newId = new Date().getTime();
-                var stmt = db.prepare("INSERT INTO users VALUES(?,?,?,?,?,?,?)", [newId, reqDt.username, reqDt.password, reqDt.email, reqDt.role, reqDt.camera, false]);
-                stmt.run();
-                stmt.finalize();
-                sendMail(reqDt, "Neoview Credentials");
-                res.send(reqDt);  
-              }  
-              else if(rows.length > 0) {
-                res.status(403).send("user already exist");
-              }
-            } else {
-              res.send(err);
-            }  
-          });
-        }); 
-      })
-    })
-
+    var reqDt = req.body;
+    reqDt.old_pswd = randomstring.generate(7);
+    reqDt.password = bcrypt.hashSync(reqDt.old_pswd, salt);
+    db.serialize(function() {
+      db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, email TEXT, role INTEGER, camera TEXT, conn_flg Boolean)");
+      db.all("SELECT id from users  WHERE username=? or email=?", [reqDt.username, reqDt.email], function(err,rows){
+        if(!err){
+          if(rows.length === 0) {
+            var newId = new Date().getTime();
+            var stmt = db.prepare("INSERT INTO users VALUES(?,?,?,?,?,?,?)", [newId, reqDt.username, reqDt.password, reqDt.email, reqDt.role, reqDt.camera, false]);
+            stmt.run();
+            stmt.finalize();
+            sendMail(reqDt, "Neoview Credentials");
+            res.send(reqDt);  
+          }  
+          else if(rows.length > 0) {
+            res.status(403).send("user already exist");
+          }
+        } else {
+          res.send(err);
+        }  
+      });
+    }); 
   };
   this.getAllUsers = function(req, res) {
     db.all("SELECT * from users where role=?", [req.query.userType], function(err, users){
@@ -224,18 +223,21 @@ module.exports = function(ws, io) {
 
   this.resetPswd = function(req, res) {
     var reqDt = req.body;
-    db.all("SELECT * FROM users WHERE password = ? and id= ?" , [reqDt.currPswd, parseInt(reqDt.userId)], function(err, user) {
-      if(!err) {
-        if(user.length>0) {
-          db.run("UPDATE users SET password = ? WHERE id = ?" , [reqDt.newPswd, parseInt(reqDt.userId)]);
-          res.send("Password reset successfully.");
+    db.serialize(function() {
+      db.all("SELECT password FROM users WHERE id= ?" , [parseInt(reqDt.userId)], function(err, user) {
+        if(!err && user.length>0) {
+          if(bcrypt.compareSync(reqDt.currPswd, user[0].password)) {
+            var hash_pswd = bcrypt.hashSync(reqDt.newPswd, salt);
+            db.run("UPDATE users SET password = ? WHERE id = ?" , [hash_pswd, parseInt(reqDt.userId)]);
+              res.send("Password reset successfully.");
+          } else {
+            res.status(404).send("User not found!");
+          }
         } else {
           res.status(404).send("User not found!");
-        }
-      } else {
-        console.log("err", err);
-      }  
-    })
+        }    
+      })
+    });  
   };
 
   this.getCamStatus = function(req, res) {
@@ -249,7 +251,7 @@ module.exports = function(ws, io) {
       subject: subject,
       html: '<h2>This is Your Neoview Credentials</h2></br>'+
             '<p>Username : ' + userInfo.username + '</p></br>' +
-            '<p>Password : ' + userInfo.password + '</p></br>'     
+            '<p>Password : ' + userInfo.old_pswd + '</p></br>'     
       };
     transporter.sendMail(mailOptions, function(error, info){
       if(error){
