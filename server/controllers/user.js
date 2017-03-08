@@ -113,6 +113,25 @@ module.exports = function(ws, io) {
       });
     });  
   };
+
+  this.forgot = function(req, res) {
+    var reqInfo = req.body;
+    db.serialize(function() {
+      db.all("SELECT * from users WHERE email = ?", [reqInfo.email], function(err,rows){
+        if(rows.length > 0) {
+          var resInfo = rows[0],
+            old_pswd = randomstring.generate(7),
+            new_password = bcrypt.hashSync(old_pswd, salt);
+          resInfo['old_pswd'] = old_pswd;
+          db.run("UPDATE users SET password = ? WHERE id = ?" , [new_password, parseInt(resInfo.id)]);  
+          sendMail(resInfo, "Neoview Reset Password");
+          res.send("Email sent successfully");
+        } else {
+          res.status(404).send("Invid username or password");
+        }
+      });
+    });  
+  };
   
   this.logout = function(req, res) {
     var reqDt = req.body;

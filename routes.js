@@ -6,6 +6,7 @@ module.exports = function(app, ws, io){
   app.use(bodyParser.json());
   app.post('/user', user.signup);
   app.post('/login', user.login);
+  app.post('/forgot', user.forgot);
   app.get('/users', user.getAllUsers);
   app.get('/user/:id', user.getUser);
   app.put('/user/:id', user.editUser);

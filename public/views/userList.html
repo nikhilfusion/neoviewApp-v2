@@ -17,8 +17,8 @@
 	      <td>{{user.email}}</td>
 	      <td ng-if="patient">{{user.camera}}</td>
 	      <td ng-if="patient">{{user.conn_flg ? 'loggedIn' : 'loggedOut' }}</td>
-	      <!-- <td><button class="btn btn-success" style="width:100px;" ng-click="editUser(user)">Edit</button></td> -->
-	      <td><button class="btn btn-danger" style="width:100px; margin-top:0px !important;" ng-click="dltUser(user)">Delete</button></td>
+	      <td><button class="btn btn-success" style="width:100px; margin-top:0px !important;" ng-click="editUser(user)">Transfer</button></td>
+	      <td><button class="btn btn-danger" style="width:100px; margin-top:0px !important;" ng-click="dltUser(user)">Discharge</button></td>
 	    </tr>
 	  </tbody>
 	</table>

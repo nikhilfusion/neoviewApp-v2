@@ -20,10 +20,6 @@ angular.module('neoviewApp', [
         templateUrl: 'public/views/stream.html',
         controller: 'streamController'
     })
-    .state('default', {
-        url : '/default',
-        templateUrl: 'public/views/default.html'
-    })
     .state('login', {
         url: '/login',
         templateUrl : 'public/views/login.html',
@@ -36,6 +32,11 @@ angular.module('neoviewApp', [
                 }
             }
         }
+    })
+    .state('forgot', {
+        url: '/forgot-password',
+        templateUrl : 'public/views/login.html',
+        controller: 'loginController'
     })
     .state('app', {
         templateUrl: 'public/views/app.html',

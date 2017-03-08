@@ -55,7 +55,7 @@ angular.module('neoviewApp')
 		}
 	};
 	$scope.editUser = function(userInfo) {
-		$state.go('app.adminUser', { id : userInfo.id });
+		$state.go('app.staffUser', { id : userInfo.id });
 	};
 	$scope.dltUser = function(userInfo) {
 		$uibModal.open({
@@ -68,6 +68,13 @@ angular.module('neoviewApp')
           	}
         });
 	};
+	$scope.changeCamera = function(flg) {
+		if(!flg && $scope.cameras.length === 1) {
+			alert("No camera found!");
+		} else if(flg && $scope.cameras.length > 0) {
+			alert("No camera found!");
+		}
+	}
 	$scope.cancel = function() {
 		$state.reload();
 	};

@@ -101,6 +101,10 @@ angular.module('neoviewApp')
 	$scope.cancel = function() {
 		$state.reload();
 	};
+	$scope.changeCamera = function(flg) {
+
+		console.log("$scope.cameras", $scope.cameras, flg);
+	};
 	var deleteFn = $rootScope.$on('DeleteUser', function(evt, userInfo) {
 		Restangular.one('user', userInfo.userId).remove().then(function(res) {
 			$state.reload();
