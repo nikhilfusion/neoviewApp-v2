@@ -11,6 +11,7 @@ var sqlite3 = require('sqlite3').verbose(),
   salt = bcrypt.genSaltSync(10),
   db = new sqlite3.Database(dbFile),
   randomstring = require('randomstring'),
+  dir = 'videos/'
   transporter = nodemailer.createTransport(smtpTransport ({
     service: 'gmail',
     auth: {
@@ -138,6 +139,7 @@ module.exports = function(ws, io) {
     db.all("SELECT * from users  WHERE id=?", [parseInt(reqDt.id)], function(err,rows){
       if(rows.length > 0) {
         db.run("UPDATE users SET conn_flg = ? WHERE id = ?" , [false, parseInt(rows[0].id)]);
+        res.send("logout successfully");
       } else {
         res.send(err);
       }
@@ -195,9 +197,20 @@ module.exports = function(ws, io) {
       if(!err && userInfo.length > 0) {
         var newDt = {};
         for (var property in userInfo[0]) {
-          newDt[property] = req.body[property] || userInfo[0][property];
+          newDt[property] = reqDt[property] || userInfo[0][property];
         }
-        db.run("UPDATE users SET username = ?, password = ?, role = ? WHERE id = ?" , [newDt.username, newDt.password, parseInt(newDt.role), parseInt(newDt.id)]);
+        if(userInfo[0].camera !== reqDt.camera) {
+          var dir_path = dir + userInfo[0].camera + '/';
+          var files = fs.readdirSync(dir_path);
+          if(files.length > 0) {
+            _.each(files, function(file) {
+              fs.unlink(dir_path + file); 
+            });
+          }
+          delete newDt.password;
+          io.sockets.emit('ChangeCamera', newDt);
+        }  
+        db.run("UPDATE users SET username = ?, password = ?, role = ?, camera = ? WHERE id = ?" , [newDt.username, newDt.password, parseInt(newDt.role), newDt.camera, parseInt(newDt.id)]);
         res.send("User updated successfully")
       } else {
         res.status(404).send("User not found");
@@ -206,13 +219,20 @@ module.exports = function(ws, io) {
   };
 
   this.deleteUser = function(req, res) {
-    db.all("DELETE FROM users where id=?", [parseInt(req.params.id)], function(err, userRes) {
+    db.all("SELECT * from users  WHERE id=?", [parseInt(req.params.id)], function(err, userInfo){
       if(!err) {
-        res.send("User deleted successfully");
-      } else {
+        db.all("DELETE FROM users where id=?", [parseInt(req.params.id)], function(err, userRes) {
+          if(!err) {
+            io.sockets.emit('dltUser', userInfo[0])
+            res.send("User deleted successfully");
+          } else {
+            res.status(404).send("User not found");
+          }
+        })
+      } else{
         res.status(404).send("User not found");
       }
-    })
+    })  
   };
 
   this.getCamera = function(req, res) {

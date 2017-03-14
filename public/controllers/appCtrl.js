@@ -1,5 +1,11 @@
 angular.module('neoviewApp')
-.controller('appController', ['$scope', '$cookieStore', '$state', 'Restangular', 'localStorageService', function ($scope, $cookieStore, $state, Restangular, localStorageService) {
+.controller('appController', ['$scope', '$cookieStore', '$state', 'Restangular', 'localStorageService', 'socket', function ($scope, $cookieStore, $state, Restangular, localStorageService, socket) {
+	function logout() {
+		$cookieStore.remove('users');
+		localStorageService.remove('camStatus');
+		$state.go('login');
+	};
+
 	$scope.curr_state = $state.current.name;
 	angular.element(document).ready(function ()  {
 		$("#side-menu li").click(function() {
@@ -13,11 +19,8 @@ angular.module('neoviewApp')
 			"id" : cookieInfo.id
 		};
 		Restangular.all('logout').post(user, {}).then(function(res) {
-
+			logout();
 		})
-		$cookieStore.remove('users');
-		localStorageService.remove('camStatus');
-		$state.go('login');
 	};
 	if(cookieInfo) {
 		$scope.headerInfo = cookieInfo;
@@ -25,6 +28,13 @@ angular.module('neoviewApp')
 	} else {
 		$state.go('login');
 	}
+
+	socket.on('dltUser', function(userInfo) {
+		var cookieInfo = $cookieStore.get('users');
+		if(cookieInfo && cookieInfo.id === userInfo.id) {
+			logout();
+		}
+	})
 }]);
 /*
 role 

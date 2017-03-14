@@ -10,9 +10,11 @@ angular.module('neoviewApp')
 			name : "Patient"
 		}
 	];
+	var userCam = "";
 
 	switch($state.current.name) {
 		case 'app.adminDashboard' : $scope.noUser = false;
+									$scope.staffList = true;
 									$scope.title = "Nurse List";
 									Restangular.one('users').get({'userType' : 0}, {}).then(function(users) {
 										$scope.users = users.plain();
@@ -32,6 +34,7 @@ angular.module('neoviewApp')
 		case 'app.adminUser' :  $scope.newFlg = false;
 								Restangular.one('user', $stateParams.id).get({}, {}).then(function(userInfo) {
 								  	$scope.user = userInfo;
+								  	userCam = userInfo.camera;
 								  	Restangular.one('getCamera').get({}, {}).then(function(cameras) {
 										$scope.cameras = [];
 										$scope.cameras = cameras.plain();
@@ -72,38 +75,76 @@ angular.module('neoviewApp')
 		} else {
 			var userInfo = {};
 			userInfo.email = user.email;
-			if(user.camera) {
-				userInfo.camera = user.camera;
+			userInfo.camera = user.camera;
+			if(user.camera != userCam) {
+				var modalInfo = {
+					type: 'alert',
+					msg: "It seems like you have changed patients camera. Are you sure want to continue",
+					heading: 'Notification',
+					user: user.plain(),
+					formInfo: userInfo
+				};
+				$uibModal.open({
+		          	templateUrl: 'public/views/modal.html',
+		          	controller: 'modalController',
+		          	resolve : {
+		          		params : function() {
+		          			return modalInfo;
+		          		}
+		          	},
+		          	backdrop: true 
+		        });
 			}
-			Restangular.all('user').all($stateParams.id).customPUT(userInfo).then(function(userInfo) {
-				if(user.userType === 0) {
-					$state.go("app.adminDashboard");
-				} else {
-					$state.go("app.adminPatientList");
-				}
-			});
 		}
 	};
 	$scope.editUser = function(userInfo) {
 		$state.go('app.adminUser', { id : userInfo.id });
 	};
-	$scope.dltUser = function(userInfo) {
+	$scope.changeUser = function(role) {
+		if(role === 1) {
+			if(!$scope.cameras || $scope.cameras.length === 0) {
+				var modalInfo = {
+					type: 'notification',
+					msg: "No camera found.Please add cameras",
+					heading: 'Notification'
+				}
+				$uibModal.open({
+		          	templateUrl: 'public/views/modal.html',
+		          	controller: 'modalController',
+		          	resolve : {
+		          		params : function() {
+		          			return modalInfo;
+		          		}
+		          	},
+		          	backdrop: true 
+		        });
+			}
+		}
+	}
+	$scope.dltUser = function(userInfo, staffFlg) {
+		var modalInfo = {
+			user: userInfo,
+			type:'confirm',
+			heading: 'Confirm Modal'
+		}
+		if(staffFlg) {
+			modalInfo['msg'] = "Are you sure want to Delete"
+		} else {
+			modalInfo['msg'] = "Are you sure want to Discharge"
+		}
 		$uibModal.open({
           	templateUrl: 'public/views/modal.html',
           	controller: 'modalController',
           	resolve : {
           		params : function() {
-          			return userInfo.id;
+          			return modalInfo;
           		}
-          	}
+          	},
+          	backdrop: 'static'
         });
 	};
 	$scope.cancel = function() {
 		$state.reload();
-	};
-	$scope.changeCamera = function(flg) {
-
-		console.log("$scope.cameras", $scope.cameras, flg);
 	};
 	var deleteFn = $rootScope.$on('DeleteUser', function(evt, userInfo) {
 		Restangular.one('user', userInfo.userId).remove().then(function(res) {

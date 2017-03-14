@@ -58,12 +58,16 @@ angular.module('neoviewApp')
 		$state.go('app.staffUser', { id : userInfo.id });
 	};
 	$scope.dltUser = function(userInfo) {
+		var modalInfo = {
+			user: userInfo,
+			staffFlag: staffFlg
+		}
 		$uibModal.open({
           	templateUrl: 'public/views/modal.html',
           	controller: 'modalController',
           	resolve : {
           		params : function() {
-          			return userInfo.id;
+          			return modalInfo;
           		}
           	}
         });

@@ -1,20 +1,23 @@
 <div id="page-wrapper">
   <h2 ng-if="newFlg">New User</h2>
-  <h2 ng-if="!newFlg">Transfer User</h2>
+  <h2 ng-if="!newFlg">Transfer Patient</h2>
   <form name="loginForm" style="width: 500px;">
     <div class="container" style="width: 400px;">
       <label><b>Username</b></label>
       <input type="text" placeholder="Enter Username" name="uname" ng-model="user.username" ng-disabled="!newFlg" required>
       <label><b>Email</b></label>
-      <input type="text" placeholder="Enter Email" name="email" ng-model="user.email" ng-disabled="!newFlg" required>
+      <input type="text" placeholder="Enter Email" name="email" ng-model="user.email" required>
+
       <label ng-if="userType === 2"><b>User Type</b></label>
-      <select ng-if="userType === 2" ng-model="user.role" ng-options="user.id as user.name for user in users" ng-disabled="!newFlg" required>
+      <select ng-if="userType === 2" ng-model="user.role" ng-options="user.id as user.name for user in users" ng-disabled="!newFlg" ng-change="changeUser(user.role)" required>
         <option value="">Choose a user</option>
       </select></br>
+      
       <label ng-if="userType === 0 || user.role === 1"><b>Camera</b></label>
-      <select ng-if="userType === 0 || user.role === 1" ng-model="user.camera" ng-options="camera as camera for camera in cameras" ng-click="changeCamera(newFlg)" required>
+      <select ng-if="userType === 0 || user.role === 1" ng-model="user.camera" ng-options="camera as camera for camera in cameras" ng-required="newFlg">
         <option value="">Choose a camera</option>
       </select></br>
+
       <button type="submit" class="btn btn-primary" style="width:75px;" ng-click="register(user, newFlg)" ng-disabled="loginForm.$invalid">Save</button>
       <button class="btn btn-warning" ng-click="cancel()" style="width:75px;">Cancel</button>
       <span ng-if="errorMsg" class="error-msg">{{errorMsg}}</span></br>

@@ -144,6 +144,17 @@ angular.module('neoviewApp')
         localStorageService.set('camStatus', camStatus.camInfo);
     });
 
+    socket.on('ChangeCamera', function(camInfo) {
+        if(camInfo.id === cookieInfo.id) {
+            pushIndex=0; 
+            playIndex=0;
+            videoQueue = [];
+            playSrc = default_video;
+            videoPlayer.src = playSrc;
+            videoPlayer.play();
+        }
+    })
+
     function openEducationTab() {
         if(openTab) {
             $window.open($window.location.origin + '/default', '_blank');
