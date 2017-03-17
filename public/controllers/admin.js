@@ -1,5 +1,5 @@
 angular.module('neoviewApp')
-.controller('adminController', ['$scope', '$cookieStore', '$state', 'Restangular', '$stateParams', '$uibModal', '$rootScope', function ($scope, $cookieStore, $state, Restangular, $stateParams, $uibModal, $rootScope) {
+.controller('adminController', ['$scope', '$cookieStore', '$state', 'Restangular', '$stateParams', '$rootScope', 'commonService', function ($scope, $cookieStore, $state, Restangular, $stateParams, $rootScope, commonService) {
 
 	$scope.users = [
 		{
@@ -73,27 +73,21 @@ angular.module('neoviewApp')
 				$scope.errorMsg = err.data;
 			});
 		} else {
-			var userInfo = {};
-			userInfo.email = user.email;
-			userInfo.camera = user.camera;
 			if(user.camera != userCam) {
-				var modalInfo = {
-					type: 'alert',
-					msg: "It seems like you have changed patients camera. Are you sure want to continue",
-					heading: 'Notification',
-					user: user.plain(),
-					formInfo: userInfo
-				};
-				$uibModal.open({
-		          	templateUrl: 'public/views/modal.html',
-		          	controller: 'modalController',
-		          	resolve : {
-		          		params : function() {
-		          			return modalInfo;
-		          		}
-		          	},
-		          	backdrop: true 
-		        });
+				var user = user.plain(),
+					userType = 'admin',
+					userInfo = {};
+				userInfo.email = user.email;
+				userInfo.camera = user.camera;
+				commonService.openNotificationModal(user,userInfo,userType);
+			} else {
+				Restangular.all('user').all($stateParams.id).customPUT(userInfo).then(function(userInfo) {
+					if(userInfo.role === 0) {
+						$state.go("app.adminDashboard");
+					} else {
+						$state.go("app.adminPatientList");
+					}
+				});
 			}
 		}
 	};
@@ -108,16 +102,7 @@ angular.module('neoviewApp')
 					msg: "No camera found.Please add cameras",
 					heading: 'Notification'
 				}
-				$uibModal.open({
-		          	templateUrl: 'public/views/modal.html',
-		          	controller: 'modalController',
-		          	resolve : {
-		          		params : function() {
-		          			return modalInfo;
-		          		}
-		          	},
-		          	backdrop: true 
-		        });
+				commonService.changeUserModal(modalInfo);
 			}
 		}
 	}
@@ -132,16 +117,7 @@ angular.module('neoviewApp')
 		} else {
 			modalInfo['msg'] = "Are you sure want to Discharge"
 		}
-		$uibModal.open({
-          	templateUrl: 'public/views/modal.html',
-          	controller: 'modalController',
-          	resolve : {
-          		params : function() {
-          			return modalInfo;
-          		}
-          	},
-          	backdrop: 'static'
-        });
+		commonService.dltModal(modalInfo);
 	};
 	$scope.cancel = function() {
 		$state.reload();

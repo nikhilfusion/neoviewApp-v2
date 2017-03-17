@@ -6,11 +6,15 @@ angular.module('neoviewApp')
 			$rootScope.$emit('DeleteUser', {'userId' : modalInfo.user.id});
 		} else if(modalInfo.type === 'alert') {
 			Restangular.all('user').all(modalInfo.user.id).customPUT(modalInfo.formInfo).then(function(userInfo) {
-				if(modalInfo.user.role === 0) {
-					$state.go("app.adminDashboard");
+				if(modalInfo.userType === 'admin') {
+					if(modalInfo.user.role === 0) {
+						$state.go("app.adminDashboard");
+					} else {
+						$state.go("app.adminPatientList");
+					}
 				} else {
-					$state.go("app.adminPatientList");
-				}
+					$state.go("app.staffDashboard");
+				}	
 			});
 		}
 		$uibModalInstance.close();

@@ -1,5 +1,6 @@
 angular.module('neoviewApp')
-.controller('staffController', ['$scope', '$cookieStore', '$state', 'Restangular', '$stateParams', '$uibModal', '$rootScope', function ($scope, $cookieStore, $state, Restangular, $stateParams, $uibModal, $rootScope) {
+.controller('staffController', ['$scope', '$cookieStore', '$state', 'Restangular', '$stateParams', '$uibModal', '$rootScope', 'commonService', function ($scope, $cookieStore, $state, Restangular, $stateParams, $uibModal, $rootScope, commonService) {
+	var userCam = "";
 	switch($state.current.name) {
 		case 'app.staffDashboard' : $scope.patient = true;
 									$scope.noUser = false;
@@ -13,6 +14,7 @@ angular.module('neoviewApp')
 		case 'app.staffUser' :  $scope.newFlg = false;
 								Restangular.one('user', $stateParams.id).get({}, {}).then(function(userInfo) {
 								  	$scope.user = userInfo;
+								  	var userCam = userInfo.camera;
 								  	Restangular.one('getCamera').get({}, {}).then(function(cameras) {
 										$scope.cameras = [];
 										$scope.cameras = cameras.plain();
@@ -23,13 +25,17 @@ angular.module('neoviewApp')
 								break;
 		case "app.staffCreateUser": $scope.newFlg = true;
 									Restangular.one('getCamera').get({}, {}).then(function(cameras) {
+										console.log("$scope.cameras", $scope.cameras);
 										if(cameras.plain().length > 0) {
 											$scope.cameras = cameras.plain();
+											console.log("$scope.cameras", $scope.cameras);
+										} else {
+											$scope.cameras = [];
+											$scope.cameras.push("camera-2");
 										}
 									});			 
 								  	break;
 	}
-
 
 	$scope.register = function (user, newFlg) {
 		$scope.sucMsg = "";
@@ -44,34 +50,39 @@ angular.module('neoviewApp')
 				$scope.errorMsg = err.data;
 			});
 		} else {
-			var userInfo = {};
-			userInfo.email = user.email;
-			if(user.camera) {
-				userInfo.camera = user.camera;
+			if(user.camera != userCam) {
+				var user = user.plain(),
+					userType = 'staff',
+					userInfo = {};
+				userInfo.email = user.email;
+				userInfo.camera = user.camera;	
+				commonService.openNotificationModal(user,userInfo,userType);
+			} else {
+				Restangular.all('user').all($stateParams.id).customPUT(userInfo).then(function(userInfo) {
+					$state.go("app.staffDashboard");
+				});
 			}
-			Restangular.all('user').all($stateParams.id).customPUT(userInfo).then(function(userInfo) {
-				$state.go("app.staffDashboard");
-			});
 		}
 	};
+
 	$scope.editUser = function(userInfo) {
 		$state.go('app.staffUser', { id : userInfo.id });
 	};
+
+	$scope.changeUser = function(role) {
+		if(!$scope.cameras || $scope.cameras.length === 0) {
+			commonService.changeUserModal(modalInfo);
+		}
+	};
+
 	$scope.dltUser = function(userInfo) {
 		var modalInfo = {
 			user: userInfo,
-			staffFlag: staffFlg
+			msg:'Are you sure want to Discharge'
 		}
-		$uibModal.open({
-          	templateUrl: 'public/views/modal.html',
-          	controller: 'modalController',
-          	resolve : {
-          		params : function() {
-          			return modalInfo;
-          		}
-          	}
-        });
+		commonService.dltModal(modalInfo);
 	};
+	
 	$scope.changeCamera = function(flg) {
 		if(!flg && $scope.cameras.length === 1) {
 			alert("No camera found!");
@@ -79,9 +90,11 @@ angular.module('neoviewApp')
 			alert("No camera found!");
 		}
 	}
+	
 	$scope.cancel = function() {
 		$state.reload();
 	};
+	
 	var deleteFn = $rootScope.$on('DeleteUser', function(evt, userInfo) {
 		Restangular.one('user', userInfo.userId).remove().then(function(res) {
 			$state.reload();

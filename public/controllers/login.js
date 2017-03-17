@@ -36,13 +36,16 @@ angular.module('neoviewApp')
 		}
 	};
 	$scope.forgot = function(user){
-		$scope.errMsg = false;
-		$scope.SucMsg = false;
-		Restangular.all('forgot').post(user, {}).then(function(res) {
-			$scope.SucMsg = "Password sent to your mail id."
-		}, function(err) {
-			$scope.errMsg = "Wrong email id."
-		})	
+		console.log("user", $scope.user);
+		if(user.email) {
+			$scope.errMsg = false;
+			$scope.SucMsg = false;
+			Restangular.all('forgot').post(user, {}).then(function(res) {
+				$scope.SucMsg = "Password sent to your mail id.Please login again.";
+			}, function(err) {
+				$scope.errMsg = "Wrong email id."
+			})
+		}	
 	};
 	init();
 }]);
