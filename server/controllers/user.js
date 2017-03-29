@@ -106,10 +106,10 @@ module.exports = function(ws, io) {
             delete rows[0].password;
             res.send(rows[0]);
           } else {
-            res.status(404).send("Invid username or password");
+            res.status(404).send("Invalid username or password");
           }
         } else {
-          res.status(404).send("Invid username or password");
+          res.status(404).send("Invalid username or password");
         }
       });
     });  
@@ -128,7 +128,7 @@ module.exports = function(ws, io) {
           sendMail(resInfo, "Neoview Reset Password");
           res.send("Email sent successfully");
         } else {
-          res.status(404).send("Invid username or password");
+          res.status(404).send("Invalid username or password");
         }
       });
     });  
@@ -152,7 +152,7 @@ module.exports = function(ws, io) {
     reqDt.password = bcrypt.hashSync(reqDt.old_pswd, salt);
     db.serialize(function() {
       db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, email TEXT, role INTEGER, camera TEXT, conn_flg Boolean)");
-      db.all("SELECT id from users  WHERE username=? or email=?", [reqDt.username, reqDt.email], function(err,rows){
+      db.all("SELECT id from users WHERE username=? or email=?", [reqDt.username, reqDt.email], function(err,rows){
         if(!err){
           if(rows.length === 0) {
             var newId = new Date().getTime();
