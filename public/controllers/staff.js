@@ -25,10 +25,8 @@ angular.module('neoviewApp')
 								break;
 		case "app.staffCreateUser": $scope.newFlg = true;
 									Restangular.one('getCamera').get({}, {}).then(function(cameras) {
-										console.log("$scope.cameras", $scope.cameras);
 										if(cameras.plain().length > 0) {
 											$scope.cameras = cameras.plain();
-											console.log("$scope.cameras", $scope.cameras);
 										} else {
 											$scope.cameras = [];
 											$scope.cameras.push("camera-2");
@@ -71,7 +69,7 @@ angular.module('neoviewApp')
 
 	$scope.changeUser = function(role) {
 		if(!$scope.cameras || $scope.cameras.length === 0) {
-			commonService.changeUserModal(modalInfo);
+			commonService.changeUserModal();
 		}
 	};
 

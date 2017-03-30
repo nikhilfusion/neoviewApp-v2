@@ -1,21 +1,12 @@
 angular.module('neoviewApp')
-.controller('streamController', ['$scope', 'socket', '$cookieStore', 'localStorageService', '$window', 'Restangular', function($scope, socket, $cookieStore, localStorageService, $window, Restangular) {
+.controller('streamController', ['$scope', 'socket', '$cookieStore', 'localStorageService', '$window', 'Restangular', 'commonService', '$rootScope', function($scope, socket, $cookieStore, localStorageService, $window, Restangular, commonService, $rootScope) {
     var pushIndex=0, playIndex=0, queueLength = 5, videoQueue = [], playSrc,
 	    videoPlayer = document.getElementById("myVideo"),
         default_video = "videos/default.mp4",
         openTab = true,
         cookieInfo = $cookieStore.get('users'),
         camLocalStatus;
-    if(cookieInfo.camera) {
-        Restangular.one('getCamStatus').get({},{}).then(function(camStatus) {
-            for(var i=0;i<camStatus.length;i++) {
-                if(camStatus[i].name === cookieInfo.camera) {
-                    camLocalStatus = camStatus[i];
-                    localStorageService.set('camStatus', camStatus[i]);            
-                }
-            }
-        });
-    }
+    setLocalData(cookieInfo);
     camLocalStatus = localStorageService.get('camStatus');
     socket.emit('cameraConnect', {'camera' : cookieInfo.camera});	
     angular.element(document).ready(function ()  {
@@ -52,9 +43,22 @@ angular.module('neoviewApp')
         }
     });
 
+    function setLocalData(cookie) {
+        if(cookie.camera) {
+            Restangular.one('getCamStatus').get({},{}).then(function(camStatus) {
+                for(var i=0;i<camStatus.length;i++) {
+                    if(camStatus[i].name === cookie.camera) {
+                        camLocalStatus = camStatus[i];
+                        localStorageService.set('camStatus', camStatus[i]);            
+                    }
+                }
+            });
+        }
+    }
+
     function nextVideo() {
         camLocalStatus = localStorageService.get('camStatus');
-        if(videoQueue.length > 0 && camLocalStatus.status === 2 && videoQueue[(playIndex+1)%queueLength].status != 'played') {
+        if(videoQueue.length > 0 && camLocalStatus.status === 2 && videoQueue[(playIndex+1)%queueLength] && videoQueue[(playIndex+1)%queueLength].status != 'played') {
             playSrc= 'videos/' + cookieInfo.camera + '/' + videoQueue[(playIndex+1)%queueLength].src;
             videoPlayer.src = playSrc;
             videoPlayer.play();
@@ -146,6 +150,9 @@ angular.module('neoviewApp')
 
     socket.on('ChangeCamera', function(camInfo) {
         if(camInfo.id === cookieInfo.id) {
+            $cookieStore.put('users', camInfo);
+            cookieInfo = camInfo;
+            setLocalData(camInfo);
             pushIndex=0; 
             playIndex=0;
             videoQueue = [];
@@ -157,8 +164,15 @@ angular.module('neoviewApp')
 
     function openEducationTab() {
         if(openTab) {
-            $window.open($window.location.origin + '/default', '_blank');
+            commonService.openBlog();
             openTab = false;
         }
-    }
+    };
+
+    var newTab = $rootScope.$on('newTab', function(){
+        $window.open($window.location.origin + '/default', '_blank');
+    })
+    $scope.$on('$destroy', function () {
+      newTab();
+    });
 }]);

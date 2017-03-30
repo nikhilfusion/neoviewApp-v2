@@ -57,6 +57,23 @@ angular.module('neoviewApp')
 	          	},
 	          	backdrop: true 
 	        });
+	    },
+	    openBlog: function() {
+	    	var modalInfo = {
+				type: 'newTab',
+				msg: "Video streaming take some time mean while you can check our blog",
+				heading: 'Notification'
+			};
+	    	return $uibModal.open({
+	          	templateUrl: 'public/views/modal.html',
+	          	controller: 'modalController',
+	          	resolve : {
+	          		params : function() {
+	          			return modalInfo;
+	          		}
+	          	},
+	          	backdrop: false 
+	        });
 	    }
 	}
 }]);

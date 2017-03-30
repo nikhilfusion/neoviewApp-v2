@@ -100,7 +100,7 @@ module.exports = function(ws, io) {
     var reqInfo = req.body;
     db.serialize(function() {
       db.all("SELECT * from users  WHERE username = ?", [reqInfo.username], function(err,rows){
-        if(rows.length > 0) {
+        if(!err && rows.length > 0) {
           if(bcrypt.compareSync(reqInfo.password, rows[0].password)) {
             db.run("UPDATE users SET conn_flg = ? WHERE id = ?" , [true, parseInt(rows[0].id)]);
             delete rows[0].password;
@@ -124,7 +124,7 @@ module.exports = function(ws, io) {
             old_pswd = randomstring.generate(7),
             new_password = bcrypt.hashSync(old_pswd, salt);
           resInfo['old_pswd'] = old_pswd;
-          db.run("UPDATE users SET password = ? WHERE id = ?" , [new_password, parseInt(resInfo.id)]);  
+          db.run("UPDATE users SET password = ? WHERE id = ?" , [new_password, parseInt(resInfo.id)]);
           sendMail(resInfo, "Neoview Reset Password");
           res.send("Email sent successfully");
         } else {
@@ -192,7 +192,7 @@ module.exports = function(ws, io) {
   };
 
   this.editUser = function(req, res){
-    var reqDt = req.body;
+    var reqDt = req.body, flg=false;
     db.all("SELECT * from users  WHERE id=?", [parseInt(req.params.id)], function(err, userInfo){
       if(!err && userInfo.length > 0) {
         var newDt = {};
@@ -200,23 +200,32 @@ module.exports = function(ws, io) {
           newDt[property] = reqDt[property] || userInfo[0][property];
         }
         if(userInfo[0].camera !== reqDt.camera) {
-          var dir_path = dir + userInfo[0].camera + '/';
-          var files = fs.readdirSync(dir_path);
-          if(files.length > 0) {
-            _.each(files, function(file) {
-              fs.unlink(dir_path + file); 
-            });
-          }
+          deleteVideos(userInfo[0].camera);
+          deleteVideos(reqDt.camera);
+          flg = true;
+        }
+        db.run("UPDATE users SET username = ?, password = ?, role = ?, camera = ? WHERE id = ?" , [newDt.username, newDt.password, parseInt(newDt.role), newDt.camera, parseInt(newDt.id)]);
+        if(flg) {
           delete newDt.password;
           io.sockets.emit('ChangeCamera', newDt);
-        }  
-        db.run("UPDATE users SET username = ?, password = ?, role = ?, camera = ? WHERE id = ?" , [newDt.username, newDt.password, parseInt(newDt.role), newDt.camera, parseInt(newDt.id)]);
+          flg = false;
+        }
         res.send("User updated successfully")
       } else {
         res.status(404).send("User not found");
       }
     });
   };
+
+  function deleteVideos(cameraName) {
+    var dir_path = dir + cameraName + '/',
+      files = fs.readdirSync(dir_path);
+    if(files.length > 0) {
+      _.each(files, function(file) {
+        fs.unlink(dir_path + file); 
+      });
+    }
+  }
 
   this.deleteUser = function(req, res) {
     db.all("SELECT * from users  WHERE id=?", [parseInt(req.params.id)], function(err, userInfo){

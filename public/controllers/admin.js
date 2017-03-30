@@ -97,12 +97,7 @@ angular.module('neoviewApp')
 	$scope.changeUser = function(role) {
 		if(role === 1) {
 			if(!$scope.cameras || $scope.cameras.length === 0) {
-				var modalInfo = {
-					type: 'notification',
-					msg: "No camera found.Please add cameras",
-					heading: 'Notification'
-				}
-				commonService.changeUserModal(modalInfo);
+				commonService.changeUserModal();
 			}
 		}
 	}
