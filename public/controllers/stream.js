@@ -67,6 +67,7 @@ angular.module('neoviewApp')
             }
             //play next index
             playIndex= (playIndex+1)%queueLength;
+            console.log("playIndex", playIndex);
             videoQueue[playIndex].status = "playing";
         } else {
             if(playSrc === default_video) {
@@ -114,6 +115,7 @@ angular.module('neoviewApp')
                 videoPlayer.play();
             }
             pushIndex = (pushIndex+1)%queueLength;
+            console.log("pushIndex is", pushIndex);
         }
     });
 
