@@ -197,11 +197,19 @@ module.exports = function(ws, io) {
       if(!err && userInfo.length > 0) {
         var newDt = {};
         for (var property in userInfo[0]) {
-          newDt[property] = reqDt[property] || userInfo[0][property];
+          if(reqDt.hasOwnProperty(property)) {
+            newDt[property] = reqDt[property]
+          } else {
+            newDt[property] = userInfo[0][property];
+          }
         }
         if(userInfo[0].camera !== reqDt.camera) {
-          deleteVideos(userInfo[0].camera);
-          deleteVideos(reqDt.camera);
+          if(userInfo[0].camera) {
+            deleteVideos(userInfo[0].camera);
+          }
+          if(reqDt.camera) {
+            deleteVideos(reqDt.camera);
+          }
           flg = true;
         }
         db.run("UPDATE users SET username = ?, password = ?, role = ?, camera = ? WHERE id = ?" , [newDt.username, newDt.password, parseInt(newDt.role), newDt.camera, parseInt(newDt.id)]);
@@ -218,12 +226,14 @@ module.exports = function(ws, io) {
   };
 
   function deleteVideos(cameraName) {
-    var dir_path = dir + cameraName + '/',
+    if(cameraName) {
+      var dir_path = dir + cameraName + '/',
       files = fs.readdirSync(dir_path);
-    if(files.length > 0) {
-      _.each(files, function(file) {
-        fs.unlink(dir_path + file); 
-      });
+      if(files.length > 0) {
+        _.each(files, function(file) {
+          fs.unlink(dir_path + file); 
+        });
+      }
     }
   }
 
