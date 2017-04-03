@@ -9,13 +9,13 @@
       <input type="text" ng-disabled="!newFlg" placeholder="Enter Email" name="email" ng-model="user.email" required>
 
       <label ng-if="userType === 2"><b>User Type</b></label>
-      <select ng-if="userType === 2" ng-model="user.role" ng-options="user.id as user.name for user in users" ng-disabled="!newFlg" ng-change="changeUser(user.role)" required>
+      <select ng-if="userType === 2" ng-style="!newFlg && { 'background-color':'white'}" ng-model="user.role" ng-options="user.id as user.name for user in users" ng-disabled="!newFlg" ng-change="changeUser(user.role)" ng-style={} required>
         <option value="">Choose a user</option>
       </select></br>
       
       <label ng-if="userType === 0 || user.role === 1"><b>Camera</b></label>
-      <select ng-if="userType === 0 || user.role === 1" ng-model="user.camera" ng-options="camera as camera for camera in cameras" ng-required="newFlg">
-        <option value="">Choose a camera</option>
+      <select ng-if="userType === 0 || user.role === 1"  ng-model="user.camera" ng-options="camera as camera for camera in cameras" ng-required="newFlg">
+        <option value="">No Camera</option>
       </select></br>
 
       <button type="submit" class="btn btn-primary" style="width:75px;" ng-click="register(user, newFlg)" ng-disabled="loginForm.$invalid">Save</button>

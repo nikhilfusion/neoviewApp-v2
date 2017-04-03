@@ -34,11 +34,14 @@ angular.module('neoviewApp')
 		case 'app.adminUser' :  $scope.newFlg = false;
 								Restangular.one('user', $stateParams.id).get({}, {}).then(function(userInfo) {
 								  	$scope.user = userInfo;
+								  	$scope.user.camera = $scope.user.camera === null ? "" : $scope.user.camera;
 								  	userCam = userInfo.camera;
 								  	Restangular.one('getCamera').get({}, {}).then(function(cameras) {
 										$scope.cameras = [];
 										$scope.cameras = cameras.plain();
-										$scope.cameras.push($scope.user.camera);
+										if($scope.user.camera) {
+											$scope.cameras.push($scope.user.camera);
+										}
 									});	
 								  },function (err) {
 								});
