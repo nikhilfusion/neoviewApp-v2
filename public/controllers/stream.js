@@ -1,5 +1,5 @@
 angular.module('neoviewApp')
-.controller('streamController', ['$scope', 'socket', '$cookieStore', 'localStorageService', '$window', 'Restangular', 'commonService', '$rootScope', function($scope, socket, $cookieStore, localStorageService, $window, Restangular, commonService, $rootScope) {
+.controller('streamController', ['$scope', 'socket', '$cookieStore', 'localStorageService', '$window', 'Restangular', 'commonService', '$rootScope', '$state', function($scope, socket, $cookieStore, localStorageService, $window, Restangular, commonService, $rootScope, $state) {
     var pushIndex=0, playIndex=0, queueLength = 5, videoQueue = [], playSrc,
 	    videoPlayer = document.getElementById("myVideo"),
         default_video = "videos/default.mp4",
@@ -17,6 +17,13 @@ angular.module('neoviewApp')
         $('#myVideo').bind('ended', function(){
             nextVideo();
         });
+        $('#myVideo')[0].addEventListener('pause', function(){
+           $state.reload();
+        })
+        // if($('#myVideo').get(0).paused) {
+        //     console.log("video got paused");
+        //     $state.reload();
+        // }
     });
     
     socket.on('videoSend', function(videoInfo) {
