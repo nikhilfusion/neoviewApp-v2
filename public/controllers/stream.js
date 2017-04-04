@@ -17,12 +17,12 @@ angular.module('neoviewApp')
         $('#myVideo').bind('ended', function(){
             nextVideo();
         });
-         $('#myVideo')[0].addEventListener('pause', function(){
-            var defaultVideoPath = this.baseURI + 'videos/default.mp4';
-            if(this.src != defaultVideoPath && this.currentTime && this.currentTime > 0) {
-                $state.reload();
-            }
-        })
+        //  $('#myVideo')[0].addEventListener('pause', function(){
+        //     var defaultVideoPath = this.baseURI + 'videos/default.mp4';
+        //     if(this.src != defaultVideoPath && this.currentTime && this.currentTime > 0) {
+        //         $state.reload();
+        //     }
+        // })
     });
     
     socket.on('videoSend', function(videoInfo) {
