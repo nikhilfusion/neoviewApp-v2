@@ -17,9 +17,6 @@ angular.module('neoviewApp')
         $('#myVideo').bind('ended', function(){
             nextVideo();
         });
-        $('#myVideo')[0].addEventListener('pause', function(){
-           $state.reload();
-        })
         // if($('#myVideo').get(0).paused) {
         //     console.log("video got paused");
         //     $state.reload();
