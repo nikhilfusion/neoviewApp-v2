@@ -17,10 +17,11 @@ angular.module('neoviewApp')
         $('#myVideo').bind('ended', function(){
             nextVideo();
         });
-        // if($('#myVideo').get(0).paused) {
-        //     console.log("video got paused");
-        //     $state.reload();
-        // }
+         $('#myVideo')[0].addEventListener('pause', function(){
+            if(this.src === (this.baseURI + 'videos/default.mp4') && this.currentTime && this.currentTime > 0) {
+                $state.reload();
+            }
+        })
     });
     
     socket.on('videoSend', function(videoInfo) {
