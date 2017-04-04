@@ -18,7 +18,7 @@ angular.module('neoviewApp')
             nextVideo();
         });
          $('#myVideo')[0].addEventListener('pause', function(){
-            if(this.src === (this.baseURI + 'videos/default.mp4') && this.currentTime && this.currentTime > 0) {
+            if(this.src != (this.baseURI + 'videos/default.mp4') && this.currentTime && this.currentTime > 0) {
                 $state.reload();
             }
         })
