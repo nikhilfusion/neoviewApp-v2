@@ -162,9 +162,10 @@ angular.module('neoviewApp')
             pushIndex=0; 
             playIndex=0;
             videoQueue = [];
-            playSrc = default_video;
-            videoPlayer.src = playSrc;
-            videoPlayer.play();
+            // playSrc = default_video;
+            // videoPlayer.src = playSrc;
+            // videoPlayer.play();
+            socket.emit('cameraConnect', {'camera' : cookieInfo.camera});
         }
     })
 
