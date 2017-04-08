@@ -67,19 +67,19 @@ angular.module('neoviewApp')
     function nextVideo() {
         camLocalStatus = localStorageService.get('camStatus');
         if(pushIndex == playIndex) {
-            videoPlayer.src = playSrc;
+            videoPlayer.src = default_video;
             videoPlayer.play();
         } else {
             if(videoQueue.length > 0 && camLocalStatus.status === 2 && videoQueue[(playIndex)%queueLength] && videoQueue[(playIndex)%queueLength].status != 'played') {
                 playSrc= 'videos/' + cookieInfo.camera + '/' + videoQueue[(playIndex)%queueLength].src;
                 videoPlayer.src = playSrc;
                 videoPlayer.play();
-                // if(videoQueue[(playIndex)%queueLength].status === 'playing') {
-                //     videoQueue[(playIndex)%queueLength].status = 'played'
-                // }
+                if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status === 'playing') {
+                    videoQueue[(playIndex+queueLength-1)%queueLength].status = 'played'
+                }
                 //play next index
-                playIndex= (playIndex+1)%queueLength;
                 videoQueue[playIndex].status = "playing";
+                playIndex= (playIndex+1)%queueLength;
             } else {
                 if(playSrc === default_video) {
                     openEducationTab();
@@ -104,6 +104,7 @@ angular.module('neoviewApp')
                         if(videoQueue[pushIndex].status === "playing") {
                             videoQueue[(pushIndex+1)%queueLength].src = fileName;
                             videoQueue[(pushIndex+1)%queueLength].status = "Not Played";
+                            pushIndex = (pushIndex+1)%queueLength;
                         } else {
                             if(camLocalStatus.status === 2) {
                                 videoPlayer.src = 'videos/' + cookieInfo.camera + '/' + fileName;
@@ -111,7 +112,6 @@ angular.module('neoviewApp')
                                 videoPlayer.src = default_video;  
                             }
                         }
-                        videoPlayer.play();
                     } else {
                         videoQueue[pushIndex].src = fileName;
                         videoQueue[pushIndex].status = "Not Played"
@@ -126,7 +126,8 @@ angular.module('neoviewApp')
                         videoPlayer.src = default_video;
                     }
                 }
-                videoPlayer.play();  
+                videoPlayer.play();
+                pushIndex = (pushIndex+1)%queueLength;
             } else {
                 if(fileInfo.files.length > 0) {
                     _.each(fileInfo.files, function(file, index) {
@@ -137,8 +138,6 @@ angular.module('neoviewApp')
                     })
                 }                
             }
-            pushIndex = (pushIndex+1)%queueLength;
-
         }   
     });
 
