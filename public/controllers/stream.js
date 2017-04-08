@@ -19,12 +19,12 @@ angular.module('neoviewApp')
             nextVideo();
         });
 
-         videoId[0].addEventListener('pause', function(){
-            var defaultVideoPath = this.baseURI + 'videos/default.mp4';
-            if(this.src != defaultVideoPath && this.currentTime && this.currentTime != videoId[0].duration) {
-                $window.location.reload(); 
-            }
-        })
+        // videoId[0].addEventListener('pause', function(){
+        //     var defaultVideoPath = this.baseURI + 'videos/default.mp4';
+        //     if(this.src != defaultVideoPath && this.currentTime && this.currentTime != videoId[0].duration) {
+        //         $window.location.reload(); 
+        //     }
+        // })
     });
     
     socket.on('videoSend', function(videoInfo) {
@@ -167,7 +167,7 @@ angular.module('neoviewApp')
             playSrc = default_video;
             videoPlayer.src = playSrc;
             videoPlayer.play();
-            //socket.emit('cameraConnect', {'camera' : cookieInfo.camera});
+            socket.emit('cameraConnect', {'camera' : cookieInfo.camera});
         }
     })
 
