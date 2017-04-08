@@ -67,7 +67,7 @@ watcher.on('ready', function() {
         }  
       });
       if(after_dlt.length >=3) {
-        io.sockets.emit("newFile", { 'path' : path});
+        io.sockets.emit("newFile", { 'path' : path, 'files': after_dlt });
       }
     }  
   });  

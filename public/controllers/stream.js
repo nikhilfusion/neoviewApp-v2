@@ -19,12 +19,12 @@ angular.module('neoviewApp')
             nextVideo();
         });
 
-        // videoId[0].addEventListener('pause', function(){
-        //     var defaultVideoPath = this.baseURI + 'videos/default.mp4';
-        //     if(this.src != defaultVideoPath && this.currentTime && this.currentTime != videoId[0].duration) {
-        //         $window.location.reload(); 
-        //     }
-        // })
+        videoId[0].addEventListener('pause', function(){
+            var defaultVideoPath = this.baseURI + 'videos/default.mp4';
+            if(this.src != defaultVideoPath && this.currentTime && this.currentTime != videoId[0].duration) {
+                $window.location.reload(); 
+            }
+        })
     });
     
     socket.on('videoSend', function(videoInfo) {
@@ -97,34 +97,45 @@ angular.module('neoviewApp')
             cam = camInfo.split("/")[0],
             fileName = camInfo.split("/")[1];  
         if(cam === cookieInfo.camera && fileName) {
-            if(videoQueue[pushIndex] && videoQueue[pushIndex].status) {
-                if(videoQueue[pushIndex].status === "playing" || playSrc === default_video) {
-                    camLocalStatus = localStorageService.get('camStatus');
-                    if(videoQueue[pushIndex].status === "playing") {
-                        videoQueue[(pushIndex+1)%queueLength].src = fileName;
-                        videoQueue[(pushIndex+1)%queueLength].status = "Not Played";
-                    } else {
-                        if(camLocalStatus.status === 2) {
-                            videoPlayer.src = 'videos/' + cookieInfo.camera + '/' + fileName;
+            if(videoQueue.length >0) {
+                if(videoQueue[pushIndex] && videoQueue[pushIndex].status) {
+                    if(videoQueue[pushIndex].status === "playing" || playSrc === default_video) {
+                        camLocalStatus = localStorageService.get('camStatus');
+                        if(videoQueue[pushIndex].status === "playing") {
+                            videoQueue[(pushIndex+1)%queueLength].src = fileName;
+                            videoQueue[(pushIndex+1)%queueLength].status = "Not Played";
                         } else {
-                            videoPlayer.src = default_video;  
+                            if(camLocalStatus.status === 2) {
+                                videoPlayer.src = 'videos/' + cookieInfo.camera + '/' + fileName;
+                            } else {
+                                videoPlayer.src = default_video;  
+                            }
                         }
+                        videoPlayer.play();
+                    } else {
+                        videoQueue[pushIndex].src = fileName;
+                        videoQueue[pushIndex].status = "Not Played"
                     }
-                    videoPlayer.play();
                 } else {
+                    videoQueue[pushIndex] = {};
                     videoQueue[pushIndex].src = fileName;
-                    videoQueue[pushIndex].status = "Not Played "
+                    videoQueue[pushIndex].status = "Not Played";
+                    if(camLocalStatus.status === 2) {
+                        videoPlayer.src = 'videos/' + cookieInfo.camera + '/' + videoQueue[playIndex].src;
+                    } else {
+                        videoPlayer.src = default_video;
+                    }
                 }
+                videoPlayer.play();  
             } else {
-                videoQueue[pushIndex] = {};
-                videoQueue[pushIndex].src = fileName;
-                videoQueue[pushIndex].status = "Not Played";
-                if(camLocalStatus.status === 2) {
-                    videoPlayer.src = 'videos/' + cookieInfo.camera + '/' + videoQueue[playIndex].src;
-                } else {
-                    videoPlayer.src = default_video;
-                }
-                videoPlayer.play();
+                if(fileInfo.files.length > 0) {
+                    _.each(fileInfo.files, function(file, index) {
+                        videoQueue[pushIndex] = {};
+                        videoQueue[pushIndex].src = file;
+                        videoQueue[pushIndex].status = "Not Played";
+                        pushIndex = (pushIndex+1)%queueLength;
+                    })
+                }                
             }
             pushIndex = (pushIndex+1)%queueLength;
 
@@ -170,10 +181,8 @@ angular.module('neoviewApp')
             pushIndex=0; 
             playIndex=0;
             videoQueue = [];
-            playSrc = default_video;
-            videoPlayer.src = playSrc;
+            videoPlayer.src = default_video;
             videoPlayer.play();
-            socket.emit('cameraConnect', {'camera' : cookieInfo.camera});
         }
     })
 
