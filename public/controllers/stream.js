@@ -22,7 +22,7 @@ angular.module('neoviewApp')
          videoId[0].addEventListener('pause', function(){
             var defaultVideoPath = this.baseURI + 'videos/default.mp4';
             if(this.src != defaultVideoPath && this.currentTime && this.currentTime != videoId[0].duration) {
-                $state.reload();
+                $window.location.reload(); 
             }
         })
     });
