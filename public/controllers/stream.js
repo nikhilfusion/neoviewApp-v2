@@ -10,19 +10,21 @@ angular.module('neoviewApp')
     camLocalStatus = localStorageService.get('camStatus');
     socket.emit('cameraConnect', {'camera' : cookieInfo.camera});	
     angular.element(document).ready(function ()  {
-        $('#myVideo').bind('contextmenu',function() {
+        var videoId = $('#myVideo');
+        videoId.bind('contextmenu',function() {
         	return false;
         });
         
-        $('#myVideo').bind('ended', function(){
+        videoId.bind('ended', function(){
             nextVideo();
         });
-        //  $('#myVideo')[0].addEventListener('pause', function(){
-        //     var defaultVideoPath = this.baseURI + 'videos/default.mp4';
-        //     if(this.src != defaultVideoPath && this.currentTime && this.currentTime > 0) {
-        //         $state.reload();
-        //     }
-        // })
+
+         videoId[0].addEventListener('pause', function(){
+            var defaultVideoPath = this.baseURI + 'videos/default.mp4';
+            if(this.src != defaultVideoPath && this.currentTime && this.currentTime != videoId[0].duration) {
+                $state.reload();
+            }
+        })
     });
     
     socket.on('videoSend', function(videoInfo) {
@@ -162,10 +164,10 @@ angular.module('neoviewApp')
             pushIndex=0; 
             playIndex=0;
             videoQueue = [];
-            // playSrc = default_video;
-            // videoPlayer.src = playSrc;
-            // videoPlayer.play();
-            socket.emit('cameraConnect', {'camera' : cookieInfo.camera});
+            playSrc = default_video;
+            videoPlayer.src = playSrc;
+            videoPlayer.play();
+            //socket.emit('cameraConnect', {'camera' : cookieInfo.camera});
         }
     })
 
