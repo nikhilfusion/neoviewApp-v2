@@ -5,13 +5,16 @@
       <label><b>Current Password</b></label>
       <input type="password" placeholder="Current Password" ng-model="patient.password" name="curr_pswd" required>
       <label><b>New Password</b></label>
-      <input type="password" placeholder="New Password" ng-model="patient.new_password" name="new_pswd" required>
+      <input type="password" placeholder="New Password" ng-model="patient.new_password" ng-trim="false" ng-pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/" name="new_pswd" required>
+      <span style="color:red;" ng-if="pswdForm.new_pswd.$invalid">
+        Password should contain 8 letters and minimum one Upper case, lower case and digit
+      </span></br>
       <label><b>Confirm Password</b></label>
       <input type="password" placeholder="Confirm Password" ng-model="patient.conf_password" name="conf_pswd" password-verify="patient.new_password" required>
       <span ng-if="pswdForm.conf_pswd.$dirty && pswdForm.conf_pswd.$error.passwordVerify" style="color:red;">*Password missmatch</span></br>	
       <button type="submit" class="btn btn-primary" style="width:75px;" ng-click="setPswd(patient)" ng-disabled="pswdForm.$invalid">Save</button>
-      <button class="btn btn-warning" ng-click="cancelPswd()" style="width:75px;">Cancel</button></br>
+      <button class="btn btn-warning" ng-click="cancelPswd()" style="width:75px;">Reset</button></br>
       <span ng-if="sucMsg || errMsg" ng-class="{'suc-msg' : sucMsg, 'err-msg' : errMsg}">{{sucMsg || errMsg}}</span></br>
     </div>
   </form>
-</div>  
+</div>

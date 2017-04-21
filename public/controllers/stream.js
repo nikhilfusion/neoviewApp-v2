@@ -1,30 +1,46 @@
 angular.module('neoviewApp')
-.controller('streamController', ['$scope', 'socket', '$cookieStore', 'localStorageService', '$window', 'Restangular', 'commonService', '$rootScope', '$state', function($scope, socket, $cookieStore, localStorageService, $window, Restangular, commonService, $rootScope, $state) {
-    var pushIndex=0, playIndex=0, queueLength = 5, videoQueue = [], playSrc,
-	    videoPlayer = document.getElementById("myVideo"),
+.controller('streamController', ['$scope', 'socket', '$cookieStore', 'localStorageService', '$window', 'Restangular', 'commonService', '$rootScope', '$state', '$timeout', '$rootScope', 
+    function($scope, socket, $cookieStore, localStorageService, $window, Restangular, commonService, $rootScope, $state, $timeout, $rootScope) {
+    var pushIndex=0, playIndex=0, queueLength = 5, videoQueue = [], playSrc,timerID,
         default_video = "videos/default.mp4",
-        openTab = true,
+        openTab = false,
         cookieInfo = $cookieStore.get('users'),
-        camLocalStatus;
+        camLocalStatus,
+        $video = $("#video"),
+        $canvas = $("#myCanvas"),
+        ctx = $canvas[0].getContext("2d"),
+        blinkHandler, originalTitle, blinkTitle, blinkLogicState = false, blinking=false;
+
+    function stopTimer() {
+        $window.clearInterval(timerID);
+    }
+
+    function drawImage(video) {
+        //last 2 params are video width and height
+        ctx.drawImage(video, 0, 0, 1450, 755);
+    }
+
+    // copy the 1st video frame to canvas as soon as it is loaded
+    $video.one("loadeddata", function () { drawImage($video[0]); });
+
+    $video.on('error', function(error) {
+        console.log("error is ", error);
+        playSrc = default_video;
+        $video.attr("src", default_video);
+        $video[0].play();
+    });
+
+    // copy video frame to canvas every 30 milliseconds
+    $video.on("play", function () {
+        timerID = $window.setInterval(function () { drawImage($video[0]); }, 30);
+    });
+
+    $video.on("ended", nextVideo);
     setLocalData(cookieInfo);
     camLocalStatus = localStorageService.get('camStatus');
     socket.emit('cameraConnect', {'camera' : cookieInfo.camera});	
     angular.element(document).ready(function ()  {
-        var videoId = $('#myVideo');
-        videoId.bind('contextmenu',function() {
-        	return false;
-        });
-        
-        videoId.bind('ended', function(){
-            nextVideo();
-        });
-
-        videoId[0].addEventListener('pause', function(){
-            var defaultVideoPath = this.baseURI + 'videos/default.mp4';
-            if(this.src != defaultVideoPath && this.currentTime && this.currentTime != videoId[0].duration) {
-                $window.location.reload(); 
-            }
-        })
+        stopTimer();
     });
     
     socket.on('videoSend', function(videoInfo) {
@@ -46,8 +62,10 @@ angular.module('neoviewApp')
             playSrc = default_video;
         }
         if(playSrc) {
-            videoPlayer.src = playSrc;
-            videoPlayer.play();
+            $video.attr("src", playSrc);
+            $video[0].play().catch(function() {
+                $video[0].play();
+            })
         }
     });
 
@@ -65,15 +83,21 @@ angular.module('neoviewApp')
     }
 
     function nextVideo() {
+        stopTimer();
         camLocalStatus = localStorageService.get('camStatus');
-        if(pushIndex == playIndex) {
-            videoPlayer.src = default_video;
-            videoPlayer.play();
+        if(pushIndex-1 == playIndex) {
+            $video.attr("src", default_video);
+            $video[0].play();
         } else {
             if(videoQueue.length > 0 && camLocalStatus.status === 2 && videoQueue[(playIndex)%queueLength] && videoQueue[(playIndex)%queueLength].status != 'played') {
+                console.log("chkVideo 1");
                 playSrc= 'videos/' + cookieInfo.camera + '/' + videoQueue[(playIndex)%queueLength].src;
-                videoPlayer.src = playSrc;
-                videoPlayer.play();
+                $video.attr("src", playSrc);
+                $video[0].play().catch(function() {
+                    $video.attr("src", default_video);
+                    $video[0].play();
+                })
+                chkVideo();
                 if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status === 'playing') {
                     videoQueue[(playIndex+queueLength-1)%queueLength].status = 'played'
                 }
@@ -85,8 +109,8 @@ angular.module('neoviewApp')
                     openEducationTab();
                 }
                 playSrc = default_video;
-                videoPlayer.src = playSrc;
-                videoPlayer.play();
+                $video.attr("src", playSrc);
+                $video[0].play();
             }
         }    
     };
@@ -107,10 +131,14 @@ angular.module('neoviewApp')
                             pushIndex = (pushIndex+1)%queueLength;
                         } else {
                             if(camLocalStatus.status === 2) {
-                                videoPlayer.src = 'videos/' + cookieInfo.camera + '/' + fileName;
+                                playSrc = 'videos/' + cookieInfo.camera + '/' + fileName;                                
                             } else {
-                                videoPlayer.src = default_video;  
+                                playSrc = default_video;  
                             }
+                            $video.attr("src", playSrc);
+                            $video[0].play().catch(function() {
+                                $video[0].play();
+                            })
                         }
                     } else {
                         videoQueue[pushIndex].src = fileName;
@@ -121,12 +149,19 @@ angular.module('neoviewApp')
                     videoQueue[pushIndex].src = fileName;
                     videoQueue[pushIndex].status = "Not Played";
                     if(camLocalStatus.status === 2) {
-                        videoPlayer.src = 'videos/' + cookieInfo.camera + '/' + videoQueue[playIndex].src;
+                        console.log("chkVideo 2");
+                        chkVideo();
+                        playSrc = 'videos/' + cookieInfo.camera + '/' + videoQueue[playIndex].src;
                     } else {
-                        videoPlayer.src = default_video;
+                        playSrc = default_video;
                     }
+                    $video.attr("src", playSrc);
+                    $video[0].play().catch(function(err) {
+                        console.log("err is ", err);
+                        $video.attr("src", default_video);
+                        $video[0].play();
+                    })
                 }
-                videoPlayer.play();
                 pushIndex = (pushIndex+1)%queueLength;
             } else {
                 if(fileInfo.files.length > 0) {
@@ -144,11 +179,6 @@ angular.module('neoviewApp')
     socket.on('DeleteCamera', function(cameraInfo) {
         if(cameraInfo.camera === cookieInfo.camera) {
             $state.go('login');
-            // playSrc = 'videos/default.mp4';
-            // videoPlayer.src = playSrc;
-            // videoPlayer.play();
-            // delete cookieInfo.camera;
-            // $cookieStore.put('users', cookieInfo);
         }
     });
 
@@ -156,17 +186,17 @@ angular.module('neoviewApp')
         var camLocalStatus = localStorageService.get('camStatus');
         if(camStatus.camInfo.name === cookieInfo.camera) {
             if(camStatus.camInfo.status === 2 && camLocalStatus.status != 2) {
-                if(videoQueue[playIndex].status != "playing") {
+                if(videoQueue[playIndex].status != "playing") {  
                     nextVideo();
                 } else {
                     playSrc = default_video;
-                    videoPlayer.src = playSrc;
-                    videoPlayer.play();
+                    $video.attr("src", playSrc);
+                    $video[0].play();
                 }    
             } else {
                 playSrc = default_video;
-                videoPlayer.src = playSrc;
-                videoPlayer.play();    
+                $video.attr("src", playSrc);
+                $video[0].play();    
             }
         }
         localStorageService.set('camStatus', camStatus.camInfo);
@@ -180,22 +210,74 @@ angular.module('neoviewApp')
             pushIndex=0; 
             playIndex=0;
             videoQueue = [];
-            videoPlayer.src = default_video;
-            videoPlayer.play();
+            $video.attr("src", default_video);
+            $video[0].play();
         }
     })
 
     function openEducationTab() {
-        if(openTab) {
+        if(!openTab) {
+            openTab = true;
             commonService.openBlog();
-            openTab = false;
         }
     };
 
     var newTab = $rootScope.$on('newTab', function(){
         $window.open($window.location.origin + '/default', '_blank');
     })
+    
     $scope.$on('$destroy', function () {
       newTab();
     });
+
+    function StartBlinking(title) {
+        originalTitle = $rootScope.title;
+        blinkTitle = title;  
+        BlinkIteration();
+    };
+
+    function BlinkIteration() {
+        if(blinkLogicState == false)
+        {
+            $rootScope.title = blinkTitle;
+        } else {
+            $rootScope.title = originalTitle;
+        }
+        $rootScope.$apply();
+        blinkLogicState = !blinkLogicState;  
+        blinkHandler = setTimeout(BlinkIteration, 1000);
+    };
+  
+    function StopBlinking() {
+        if(blinkHandler) {
+            clearTimeout(blinkHandler);
+        }
+        $rootScope.title = originalTitle;
+    };
+
+    $window.onfocus = function() {
+        //StopBlinking();
+    };
+
+    $window.onblur = function() {
+        console.log("onblur", openTab, playSrc, blinking);
+        if(openTab && playSrc && playSrc != default_video && !blinking) {
+            blinking = true;
+            StartBlinking("Video is ready");
+        }
+    }
+
+    function chkVideo() {
+        if(playSrc && playSrc != default_video) {
+            if(commonService.chkModal()) {
+                commonService.closeModal();
+            }
+        }    
+    }
+
+    setTimeout(function() {
+        openEducationTab();
+    }, 1000);
+    
+
 }]);

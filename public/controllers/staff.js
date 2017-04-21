@@ -79,7 +79,9 @@ angular.module('neoviewApp')
 	$scope.dltUser = function(userInfo) {
 		var modalInfo = {
 			user: userInfo,
-			msg:'Are you sure want to Discharge'
+			type:'confirm',
+			heading: 'Confirm Modal',
+			msg:'Are you sure you want to discharge'
 		}
 		commonService.dltModal(modalInfo);
 	};

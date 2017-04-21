@@ -111,9 +111,9 @@ angular.module('neoviewApp')
 			heading: 'Confirm Modal'
 		}
 		if(staffFlg) {
-			modalInfo['msg'] = "Are you sure want to Delete"
+			modalInfo['msg'] = "Are you sure you want to Delete"
 		} else {
-			modalInfo['msg'] = "Are you sure want to Discharge"
+			modalInfo['msg'] = "Are you sure you want to discharge"
 		}
 		commonService.dltModal(modalInfo);
 	};

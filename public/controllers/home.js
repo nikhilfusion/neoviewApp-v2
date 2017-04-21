@@ -1,5 +1,6 @@
 angular.module('neoviewApp')
-.controller('homeController', ['$scope', '$cookieStore', '$state', function ($scope, $cookieStore, $state) {
+.controller('homeController', ['$scope', '$cookieStore', '$state', '$rootScope', function ($scope, $cookieStore, $state, $rootScope) {
+	$rootScope.title = "NeoviewApp";
 	function init() {
 		var cookieInfo = $cookieStore.get('users');
 		if(cookieInfo){

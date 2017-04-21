@@ -10,7 +10,7 @@
 	      <th></th>
 	    </tr>
 	  </thead>
-	  <tbody ng-repeat="user in users">
+	  <tbody ng-repeat="user in users | orderBy:'camera'">
 	    <tr>
 	      <th scope="row">{{$index+1}}</th>
 	      <td>{{user.username}}</td>

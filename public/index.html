@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="neoviewApp" ng-controller="homeController">
 	<head>
 		<base href="/">
-		<title>Neoview</title>
+		<title>{{title}}</title>
 
 		<!-- BEGIN META -->
 		<meta charset="utf-8">
@@ -26,7 +26,7 @@
 		<link rel="stylesheet" type="text/css" href="public/assets/css/sb-admin.css">
 		<!-- END META -->
 	</head>
-	<body ng-app="neoviewApp">
+	<body oncontextmenu="return false;">
 	<div ui-view></div>
 	<script src="public/assets/js/classie.js"></script>
 	<script src="public/assets/js/gnmenu.js"></script>

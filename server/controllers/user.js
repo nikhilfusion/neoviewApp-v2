@@ -148,7 +148,7 @@ module.exports = function(ws, io) {
 
   this.signup = function(req, res) {
     var reqDt = req.body;
-    reqDt.old_pswd = randomstring.generate(7);
+    reqDt.old_pswd = randomstring.generate(8);
     reqDt.password = bcrypt.hashSync(reqDt.old_pswd, salt);
     db.serialize(function() {
       db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, email TEXT, role INTEGER, camera TEXT, conn_flg Boolean)");

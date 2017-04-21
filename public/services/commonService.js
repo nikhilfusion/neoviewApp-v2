@@ -1,5 +1,6 @@
 angular.module('neoviewApp')
 .service('commonService', ['$uibModal', function($uibModal) {
+	var modalInstance;
 	return {
 		isEmpty: function(obj) {
 	    	for (var prop in obj) {
@@ -64,7 +65,7 @@ angular.module('neoviewApp')
 				msg: "Video streaming take some time mean while you can check our blog",
 				heading: 'Notification'
 			};
-	    	return $uibModal.open({
+	    	modalInstance = $uibModal.open({
 	          	templateUrl: 'public/views/modal.html',
 	          	controller: 'modalController',
 	          	resolve : {
@@ -74,6 +75,13 @@ angular.module('neoviewApp')
 	          	},
 	          	backdrop: false 
 	        });
+	        return modalInstance;
+	    },
+	    closeModal: function() {
+	    	return modalInstance.close();
+	    },
+	    chkModal: function() {
+	    	return modalInstance ? true : false;
 	    }
 	}
 }]);
