@@ -9,7 +9,7 @@ angular.module('neoviewApp')
         $video = $("#video"),
         $canvas = $("#myCanvas"),
         ctx = $canvas[0].getContext("2d"),
-        blinkHandler, originalTitle, blinkTitle, blinkLogicState = false, blinking=false;
+        blinkHandler, originalTitle, blinkTitle, blinkLogicState = false, startPlaying=false;
 
     function stopTimer() {
         $window.clearInterval(timerID);
@@ -24,7 +24,6 @@ angular.module('neoviewApp')
     $video.one("loadeddata", function () { drawImage($video[0]); });
 
     $video.on('error', function(error) {
-        console.log("error is ", error);
         playSrc = default_video;
         $video.attr("src", default_video);
         $video[0].play();
@@ -90,14 +89,15 @@ angular.module('neoviewApp')
             $video[0].play();
         } else {
             if(videoQueue.length > 0 && camLocalStatus.status === 2 && videoQueue[(playIndex)%queueLength] && videoQueue[(playIndex)%queueLength].status != 'played') {
-                console.log("chkVideo 1");
+                if(playSrc == default_video) {
+                    chkVideo();
+                }
                 playSrc= 'videos/' + cookieInfo.camera + '/' + videoQueue[(playIndex)%queueLength].src;
                 $video.attr("src", playSrc);
                 $video[0].play().catch(function() {
                     $video.attr("src", default_video);
                     $video[0].play();
                 })
-                chkVideo();
                 if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status === 'playing') {
                     videoQueue[(playIndex+queueLength-1)%queueLength].status = 'played'
                 }
@@ -131,6 +131,9 @@ angular.module('neoviewApp')
                             pushIndex = (pushIndex+1)%queueLength;
                         } else {
                             if(camLocalStatus.status === 2) {
+                                if(playSrc == default_video) {
+                                    chkVideo()
+                                }
                                 playSrc = 'videos/' + cookieInfo.camera + '/' + fileName;                                
                             } else {
                                 playSrc = default_video;  
@@ -149,15 +152,15 @@ angular.module('neoviewApp')
                     videoQueue[pushIndex].src = fileName;
                     videoQueue[pushIndex].status = "Not Played";
                     if(camLocalStatus.status === 2) {
-                        console.log("chkVideo 2");
-                        chkVideo();
+                        if(playSrc == default_video) {
+                            chkVideo();
+                        }
                         playSrc = 'videos/' + cookieInfo.camera + '/' + videoQueue[playIndex].src;
                     } else {
                         playSrc = default_video;
                     }
                     $video.attr("src", playSrc);
                     $video[0].play().catch(function(err) {
-                        console.log("err is ", err);
                         $video.attr("src", default_video);
                         $video[0].play();
                     })
@@ -256,28 +259,16 @@ angular.module('neoviewApp')
     };
 
     $window.onfocus = function() {
-        //StopBlinking();
+        StopBlinking();
+        startPlaying = false;
     };
 
-    $window.onblur = function() {
-        console.log("onblur", openTab, playSrc, blinking);
-        if(openTab && playSrc && playSrc != default_video && !blinking) {
-            blinking = true;
-            StartBlinking("Video is ready");
-        }
-    }
-
     function chkVideo() {
-        if(playSrc && playSrc != default_video) {
-            if(commonService.chkModal()) {
-                commonService.closeModal();
-            }
+        if(document.hidden) {
+            StartBlinking("Video is ready");
         }    
-    }
-
-    setTimeout(function() {
-        openEducationTab();
-    }, 1000);
-    
-
+        if(commonService.chkModal()) {
+            commonService.closeModal();
+        }    
+    };
 }]);

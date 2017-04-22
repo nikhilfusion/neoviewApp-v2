@@ -5,11 +5,11 @@ angular.module('neoviewApp')
 		var cookieInfo = $cookieStore.get('users');
 		if(cookieInfo){
 			switch(cookieInfo.role) {
-				case 0 : $state.go("app.staffDashboard");
+				case 0 : $state.transitionTo("app.staffDashboard");
 						 break;
-				case 1 : $state.go("app.stream");
+				case 1 : $state.transitionTo("app.stream");
 						 break;
-				case 2 : $state.go("app.adminDashboard");
+				case 2 : $state.transitionTo("app.adminDashboard");
 						 break; 
 			}
 		}

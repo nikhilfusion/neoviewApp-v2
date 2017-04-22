@@ -102,4 +102,7 @@ angular.module('neoviewApp', [
 }])
 .factory('socket', ['socketFactory', function (socketFactory) {
     return socketFactory();
+}])
+.config(['$qProvider', function($qProvider){
+    $qProvider.errorOnUnhandledRejections(false);
 }]);
