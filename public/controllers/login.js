@@ -1,11 +1,13 @@
 angular.module('neoviewApp')
-.controller('loginController', ['$scope', 'Restangular', '$cookieStore', '$state', function ($scope, Restangular, $cookieStore, $state) {	
+.controller('loginController', ['$scope', 'Restangular', '$cookieStore', '$state', 'localStorageService', function ($scope, Restangular, $cookieStore, $state, localStorageService) {	
 	if($state.current.name === 'login') {
 		$scope.loginFlg = true;
 	} else {
 		$scope.loginFlg = false;
 	}
 	$scope.login = function(user) {
+		$cookieStore.remove('users');
+		localStorageService.remove('camStatus');
 		$scope.errorMsg = "";
 		Restangular.all('login').post(user, {}).then(function(res) {
 			var userInfo = res.plain();
