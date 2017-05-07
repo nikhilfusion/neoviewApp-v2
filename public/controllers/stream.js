@@ -84,7 +84,7 @@ angular.module('neoviewApp')
     function nextVideo() {
         stopTimer();
         camLocalStatus = localStorageService.get('camStatus');
-        if(pushIndex-1 == playIndex) {
+        if(pushIndex-1 == (playIndex % queueLength)) {
             $video.attr("src", default_video);
             $video[0].play();
         } else {

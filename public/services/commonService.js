@@ -13,7 +13,7 @@ angular.module('neoviewApp')
 	    openNotificationModal: function(user, userInfo, userType) {
 	    	var modalInfo = {
 				type: 'alert',
-				msg: "It seems like you have changed patients camera. Are you sure want to continue",
+				msg: "Do you wish to change the camera assigned to this parent’s account?  Continue?",
 				heading: 'Notification',
 				user: user,
 				formInfo: userInfo,

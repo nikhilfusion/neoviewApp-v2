@@ -67,6 +67,7 @@ angular.module('neoviewApp')
 			Restangular.all('user').post(user, {}).then(function(res) {
 				$scope.sucMsg="User created successfully";
 				$scope.user = {};
+				debugger;
 				if(res.role === 0) {
 					$state.go("app.adminDashboard");
 				} else {
@@ -108,7 +109,7 @@ angular.module('neoviewApp')
 		var modalInfo = {
 			user: userInfo,
 			type:'confirm',
-			heading: 'Confirm Modal'
+			heading: 'Confirm Action'
 		}
 		if(staffFlg) {
 			modalInfo['msg'] = "Are you sure you want to Delete"

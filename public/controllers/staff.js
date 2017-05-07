@@ -31,8 +31,7 @@ angular.module('neoviewApp')
 										if(cameras.plain().length > 0) {
 											$scope.cameras = cameras.plain();
 										} else {
-											$scope.cameras = [];
-											$scope.cameras.push("camera-2");
+											commonService.changeUserModal();
 										}
 									});			 
 								  	break;
@@ -80,7 +79,7 @@ angular.module('neoviewApp')
 		var modalInfo = {
 			user: userInfo,
 			type:'confirm',
-			heading: 'Confirm Modal',
+			heading: 'Confirm Action',
 			msg:'Are you sure you want to discharge'
 		}
 		commonService.dltModal(modalInfo);

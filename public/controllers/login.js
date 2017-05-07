@@ -36,7 +36,6 @@ angular.module('neoviewApp')
 		}
 	};
 	$scope.forgot = function(user){
-		console.log("user", $scope.user);
 		if(user.email) {
 			$scope.errMsg = false;
 			$scope.SucMsg = false;

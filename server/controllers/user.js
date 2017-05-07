@@ -148,7 +148,11 @@ module.exports = function(ws, io) {
 
   this.signup = function(req, res) {
     var reqDt = req.body;
-    reqDt.old_pswd = randomstring.generate(8);
+    reqDt.old_pswd = randomstring.generate({
+      length: 8,
+      charset: 'alphanumeric',
+      capitalization: 'lowercase'
+    });
     reqDt.password = bcrypt.hashSync(reqDt.old_pswd, salt);
     db.serialize(function() {
       db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, email TEXT, role INTEGER, camera TEXT, conn_flg Boolean)");
@@ -160,10 +164,10 @@ module.exports = function(ws, io) {
             stmt.run();
             stmt.finalize();
             sendMail(reqDt, "Neoview Credentials");
-            res.send(reqDt);  
+            res.send(reqDt);
           }  
           else if(rows.length > 0) {
-            res.status(403).send("user already exist");
+            res.status(403).send("User already exists");
           }
         } else {
           res.send(err);
@@ -171,6 +175,7 @@ module.exports = function(ws, io) {
       });
     }); 
   };
+
   this.getAllUsers = function(req, res) {
     db.all("SELECT * from users where role=?", [req.query.userType], function(err, users){
       if(!err && users.length > 0) {
@@ -311,12 +316,10 @@ module.exports = function(ws, io) {
             '<p>Username : ' + userInfo.username + '</p></br>' +
             '<p>Password : ' + userInfo.old_pswd + '</p></br>'     
       };
-    transporter.sendMail(mailOptions, function(error, info){
+    transporter.sendMail(mailOptions, function(error, info, res){
       if(error){
-          console.log("err is", error);
-      }else{
-          console.log('Message sent: ' + info.response);
-      };
-    });  
+        res.send(error);
+      }
+    });
   };
 }  
