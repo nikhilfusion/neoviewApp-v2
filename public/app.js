@@ -18,7 +18,14 @@ angular.module('neoviewApp', [
     .state('app.stream', {
         url: '/stream',
         templateUrl: 'public/views/stream.html',
-        controller: 'streamController'
+        controller: 'streamController',
+        resolve: {
+            'task' : function($cookieStore) {
+                if($cookieStore.get('users').role === 2) {
+                    $location.url('/adminDashboard')
+                }
+            }
+        }
     })
     .state('login', {
         url: '/login',

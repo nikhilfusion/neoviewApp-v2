@@ -2,14 +2,15 @@ angular.module('neoviewApp')
 .controller('streamController', ['$scope', 'socket', '$cookieStore', 'localStorageService', '$window', 'Restangular', 'commonService', '$rootScope', '$state', '$timeout', '$rootScope', 
     function($scope, socket, $cookieStore, localStorageService, $window, Restangular, commonService, $rootScope, $state, $timeout, $rootScope) {
     var pushIndex=0, playIndex=0, queueLength = 5, videoQueue = [], playSrc,timerID,
-        default_video = "videos/default.mp4",
-        openTab = false,
-        cookieInfo = $cookieStore.get('users'),
-        camLocalStatus,
-        $video = $("#video"),
-        $canvas = $("#myCanvas"),
-        ctx = $canvas[0].getContext("2d"),
-        blinkHandler, originalTitle, blinkTitle, blinkLogicState = false, startPlaying=false;
+    default_video = "videos/default.mp4",
+    openTab = false,
+    cookieInfo = $cookieStore.get('users'),
+    camLocalStatus,
+    $video = $("#video"),
+    $canvas = $("#myCanvas"),
+    ctx = $canvas[0].getContext("2d"),
+    blinkHandler, blinkTitle, blinkLogicState = false, startPlaying=false,
+    originalTitle = $rootScope.title;
 
     function stopTimer() {
         $window.clearInterval(timerID);
@@ -37,7 +38,7 @@ angular.module('neoviewApp')
     $video.on("ended", nextVideo);
     setLocalData(cookieInfo);
     camLocalStatus = localStorageService.get('camStatus');
-    socket.emit('cameraConnect', {'camera' : cookieInfo.camera});	
+    socket.emit('cameraConnect', {'camera' : cookieInfo.camera});   
     angular.element(document).ready(function ()  {
         stopTimer();
     });
@@ -234,7 +235,6 @@ angular.module('neoviewApp')
     });
 
     function StartBlinking(title) {
-        originalTitle = $rootScope.title;
         blinkTitle = title;  
         BlinkIteration();
     };
@@ -270,5 +270,6 @@ angular.module('neoviewApp')
         if(commonService.chkModal()) {
             commonService.closeModal();
         }    
-    };
+    };    
+    
 }]);
