@@ -2,13 +2,13 @@ angular.module('neoviewApp')
 .controller('streamController', ['$scope', 'socket', '$cookieStore', 'localStorageService', '$window', 'Restangular', 'commonService', '$rootScope', '$state', '$timeout', '$rootScope', 
     function($scope, socket, $cookieStore, localStorageService, $window, Restangular, commonService, $rootScope, $state, $timeout, $rootScope) {
     var pushIndex=0, playIndex=0, queueLength = 5, videoQueue = [], playSrc,timerID,
-    default_video = "videos/default.mp4",
+    default_video = 'videos/default.mp4',
     openTab = false,
     cookieInfo = $cookieStore.get('users'),
     camLocalStatus,
-    $video = $("#video"),
-    $canvas = $("#myCanvas"),
-    ctx = $canvas[0].getContext("2d"),
+    $video = $('#video'),
+    $canvas = $('#myCanvas'),
+    ctx = $canvas[0].getContext('2d'),
     blinkHandler, blinkTitle, blinkLogicState = false, startPlaying=false,
     originalTitle = $rootScope.title;
 
@@ -22,20 +22,20 @@ angular.module('neoviewApp')
     }
 
     // copy the 1st video frame to canvas as soon as it is loaded
-    $video.one("loadeddata", function () { drawImage($video[0]); });
+    $video.one('loadeddata', function () { drawImage($video[0]); });
 
     $video.on('error', function(error) {
         playSrc = default_video;
-        $video.attr("src", default_video);
+        $video.attr('src', default_video);
         $video[0].play();
     });
 
     // copy video frame to canvas every 30 milliseconds
-    $video.on("play", function () {
+    $video.on('play', function () {
         timerID = $window.setInterval(function () { drawImage($video[0]); }, 30);
     });
 
-    $video.on("ended", nextVideo);
+    $video.on('ended', nextVideo);
     setLocalData(cookieInfo);
     camLocalStatus = localStorageService.get('camStatus');
     socket.emit('cameraConnect', {'camera' : cookieInfo.camera});   
@@ -49,20 +49,21 @@ angular.module('neoviewApp')
             _.each(videos, function(video, index) {
                 videoQueue[pushIndex] = {};
                 videoQueue[pushIndex].src = video;
-                videoQueue[pushIndex].status = "Not Played";
+                videoQueue[pushIndex].status = 'Not Played';
                 pushIndex = (pushIndex+1)%queueLength;
             })
             if(camLocalStatus.status === 2) {
                 playSrc = 'videos/' + cookieInfo.camera + '/' + videoQueue[playIndex].src;
-                videoQueue[playIndex].status = "playing";
+                videoQueue[playIndex].status = 'playing';
             } else {
                 playSrc = default_video;
+                commonService.notification('streaming takes a while…')
             }
         } else {
             playSrc = default_video;
         }
         if(playSrc) {
-            $video.attr("src", playSrc);
+            $video.attr('src', playSrc);
             $video[0].play().catch(function() {
                 $video[0].play();
             })
@@ -86,7 +87,7 @@ angular.module('neoviewApp')
         stopTimer();
         camLocalStatus = localStorageService.get('camStatus');
         if(pushIndex-1 == (playIndex % queueLength)) {
-            $video.attr("src", default_video);
+            $video.attr('src', default_video);
             $video[0].play();
         } else {
             if(videoQueue.length > 0 && camLocalStatus.status === 2 && videoQueue[(playIndex)%queueLength] && videoQueue[(playIndex)%queueLength].status != 'played') {
@@ -94,23 +95,23 @@ angular.module('neoviewApp')
                     chkVideo();
                 }
                 playSrc= 'videos/' + cookieInfo.camera + '/' + videoQueue[(playIndex)%queueLength].src;
-                $video.attr("src", playSrc);
+                $video.attr('src', playSrc);
                 $video[0].play().catch(function() {
-                    $video.attr("src", default_video);
+                    $video.attr('src', default_video);
                     $video[0].play();
                 })
                 if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status === 'playing') {
                     videoQueue[(playIndex+queueLength-1)%queueLength].status = 'played'
                 }
                 //play next index
-                videoQueue[playIndex].status = "playing";
+                videoQueue[playIndex].status = 'playing';
                 playIndex= (playIndex+1)%queueLength;
             } else {
                 if(playSrc === default_video) {
                     openEducationTab();
                 }
                 playSrc = default_video;
-                $video.attr("src", playSrc);
+                $video.attr('src', playSrc);
                 $video[0].play();
             }
         }    
@@ -118,17 +119,17 @@ angular.module('neoviewApp')
 
     socket.on('newFile', function(fileInfo) {
         var filePath = fileInfo.path,
-            camInfo = filePath.split("videos/")[1],
-            cam = camInfo.split("/")[0],
-            fileName = camInfo.split("/")[1];  
+            camInfo = filePath.split('videos/')[1],
+            cam = camInfo.split('/')[0],
+            fileName = camInfo.split('/')[1];  
         if(cam === cookieInfo.camera && fileName) {
             if(videoQueue.length >0) {
                 if(videoQueue[pushIndex] && videoQueue[pushIndex].status) {
-                    if(videoQueue[pushIndex].status === "playing" || playSrc === default_video) {
+                    if(videoQueue[pushIndex].status === 'playing' || playSrc === default_video) {
                         camLocalStatus = localStorageService.get('camStatus');
-                        if(videoQueue[pushIndex].status === "playing") {
+                        if(videoQueue[pushIndex].status === 'playing') {
                             videoQueue[(pushIndex+1)%queueLength].src = fileName;
-                            videoQueue[(pushIndex+1)%queueLength].status = "Not Played";
+                            videoQueue[(pushIndex+1)%queueLength].status = 'Not Played';
                             pushIndex = (pushIndex+1)%queueLength;
                         } else {
                             if(camLocalStatus.status === 2) {
@@ -139,19 +140,19 @@ angular.module('neoviewApp')
                             } else {
                                 playSrc = default_video;  
                             }
-                            $video.attr("src", playSrc);
+                            $video.attr('src', playSrc);
                             $video[0].play().catch(function() {
                                 $video[0].play();
                             })
                         }
                     } else {
                         videoQueue[pushIndex].src = fileName;
-                        videoQueue[pushIndex].status = "Not Played"
+                        videoQueue[pushIndex].status = 'Not Played'
                     }
                 } else {
                     videoQueue[pushIndex] = {};
                     videoQueue[pushIndex].src = fileName;
-                    videoQueue[pushIndex].status = "Not Played";
+                    videoQueue[pushIndex].status = 'Not Played';
                     if(camLocalStatus.status === 2) {
                         if(playSrc == default_video) {
                             chkVideo();
@@ -160,9 +161,9 @@ angular.module('neoviewApp')
                     } else {
                         playSrc = default_video;
                     }
-                    $video.attr("src", playSrc);
+                    $video.attr('src', playSrc);
                     $video[0].play().catch(function(err) {
-                        $video.attr("src", default_video);
+                        $video.attr('src', default_video);
                         $video[0].play();
                     })
                 }
@@ -172,7 +173,7 @@ angular.module('neoviewApp')
                     _.each(fileInfo.files, function(file, index) {
                         videoQueue[pushIndex] = {};
                         videoQueue[pushIndex].src = file;
-                        videoQueue[pushIndex].status = "Not Played";
+                        videoQueue[pushIndex].status = 'Not Played';
                         pushIndex = (pushIndex+1)%queueLength;
                     })
                 }                
@@ -190,16 +191,17 @@ angular.module('neoviewApp')
         var camLocalStatus = localStorageService.get('camStatus');
         if(camStatus.camInfo.name === cookieInfo.camera) {
             if(camStatus.camInfo.status === 2 && camLocalStatus.status != 2) {
-                if(videoQueue[playIndex].status != "playing") {  
+                if(videoQueue[playIndex].status != 'playing') {  
+                    commonService.notification('Video getting ready for streaming. Please with a moment')
                     nextVideo();
                 } else {
                     playSrc = default_video;
-                    $video.attr("src", playSrc);
+                    $video.attr('src', playSrc);
                     $video[0].play();
                 }    
             } else {
                 playSrc = default_video;
-                $video.attr("src", playSrc);
+                $video.attr('src', playSrc);
                 $video[0].play();    
             }
         }
@@ -214,7 +216,7 @@ angular.module('neoviewApp')
             pushIndex=0; 
             playIndex=0;
             videoQueue = [];
-            $video.attr("src", default_video);
+            $video.attr('src', default_video);
             $video[0].play();
         }
     })
@@ -265,7 +267,7 @@ angular.module('neoviewApp')
 
     function chkVideo() {
         if(document.hidden) {
-            StartBlinking("Video is ready");
+            StartBlinking('Video is ready');
         }    
         if(commonService.chkModal()) {
             commonService.closeModal();

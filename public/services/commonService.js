@@ -11,15 +11,18 @@ angular.module('neoviewApp')
 	      	return true;
 	    },
 	    openNotificationModal: function(user, userInfo, userType) {
+	    	if(modalInstance) {
+	    		modalInstance.close();
+	    	}
 	    	var modalInfo = {
 				type: 'alert',
-				msg: "Do you wish to change the camera assigned to this parent’s account?  Continue?",
+				msg: "Do you wish to change the camera assigned to this parent’s account?",
 				heading: 'Notification',
 				user: user,
 				formInfo: userInfo,
 				userType: userType
 			};
-			return $uibModal.open({
+			modalInstance = $uibModal.open({
 	          	templateUrl: 'public/views/modal.html',
 	          	controller: 'modalController',
 	          	resolve : {
@@ -29,9 +32,13 @@ angular.module('neoviewApp')
 	          	},
 	          	backdrop: true 
 	        });
+	        return modalInstance;
 	    },
 	    dltModal: function(modalInfo) {
-	    	return $uibModal.open({
+	    	if(modalInstance) {
+	    		modalInstance.close();
+	    	}
+	    	modalInstance = $uibModal.open({
 	          	templateUrl: 'public/views/modal.html',
 	          	controller: 'modalController',
 	          	resolve : {
@@ -41,14 +48,18 @@ angular.module('neoviewApp')
 	          	},
 	          	backdrop: 'static'
 	        });
+	        return modalInstance
 	    },
 	    changeUserModal: function() {
+	    	if(modalInstance) {
+	    		modalInstance.close();
+	    	}
 	    	var modalInfo = {
 				type: 'notification',
-				msg: "No camera found.Please add cameras",
+				msg: "All cameras have been assigned",
 				heading: 'Notification'
 			};
-	    	return $uibModal.open({
+	    	modalInstance = $uibModal.open({
 	          	templateUrl: 'public/views/modal.html',
 	          	controller: 'modalController',
 	          	resolve : {
@@ -58,11 +69,36 @@ angular.module('neoviewApp')
 	          	},
 	          	backdrop: true 
 	        });
+	        return modalInstance;
 	    },
 	    openBlog: function() {
+	    	if(modalInstance) {
+	    		modalInstance.close();
+	    	}
 	    	var modalInfo = {
 				type: 'newTab',
-				msg: "Video streaming take some time mean while you can check our blog",
+				msg: "Try again later. Meanwhile do you want to use our education resource?",
+				heading: 'Notification'
+			};
+	    	modalInstance = $uibModal.open({
+	          	templateUrl: 'public/views/modal.html',
+	          	controller: 'modalController',
+	          	resolve : {
+	          		params : function() {
+	          			return modalInfo;
+	          		}
+	          	},
+	          	backdrop: false 
+	        });
+	        return modalInstance;
+	    },
+	    notification: function(msg) {
+	    	if(modalInstance) {
+	    		modalInstance.close();
+	    	}
+	    	var modalInfo = {
+				type: 'notification',
+				msg: msg,
 				heading: 'Notification'
 			};
 	    	modalInstance = $uibModal.open({
