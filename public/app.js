@@ -20,9 +20,15 @@ angular.module('neoviewApp', [
         templateUrl: 'public/views/stream.html',
         controller: 'streamController',
         resolve: {
-            'task' : function($cookieStore) {
+            'task' : function($cookieStore, $window) {
+                switch($cookieStore.get('users').role) {
+                    case 0 : $window.location.assign("/staffDashboard");
+                             break;
+                    case 2 : $window.location.assign('/adminDashboard')
+                             break; 
+                }
                 if($cookieStore.get('users').role === 2) {
-                    $location.url('/adminDashboard')
+                    $window.location.assign('/adminDashboard')
                 }
             }
         }
@@ -30,15 +36,7 @@ angular.module('neoviewApp', [
     .state('login', {
         url: '/login',
         templateUrl : 'public/views/login.html',
-        controller: 'loginController',
-        resolve: {
-            'task' : function($cookieStore, $location) {
-                var cookieData = $cookieStore.get('users');
-                if(!cookieData) {
-                    $location.url('/login');
-                }
-            }
-        }
+        controller: 'loginController'
     })
     .state('forgot', {
         url: '/forgot-password',
@@ -49,10 +47,10 @@ angular.module('neoviewApp', [
         templateUrl: 'public/views/app.html',
         controller: 'appController',
         resolve: {
-            'task' : function($cookieStore, $location) {
+            'task' : function($cookieStore, $window) {
                 var cookieData = $cookieStore.get('users');
                 if(!cookieData) {
-                    $location.url('/login');
+                    $window.location.assign('/login');
                 }
             }
         }
