@@ -38,7 +38,11 @@ angular.module('neoviewApp')
     $video.on('ended', nextVideo);
     setLocalData(cookieInfo);
     camLocalStatus = localStorageService.get('camStatus');
-    socket.emit('cameraConnect', {'camera' : cookieInfo.camera});   
+     if(cookieInfo.camera == 'null' || !cookieInfo.camera) {
+        commonService.notification("No camera Selected");
+    } else {
+        socket.emit('cameraConnect', {'camera' : cookieInfo.camera});
+    }  
     angular.element(document).ready(function ()  {
         stopTimer();
     });
