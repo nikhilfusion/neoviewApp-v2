@@ -9,7 +9,7 @@ angular.module('neoviewApp')
     $video = $('#video'),
     $canvas = $('#myCanvas'),
     ctx = $canvas[0].getContext('2d'),
-    blinkHandler, blinkTitle, blinkLogicState = false, startPlaying=false,
+    blinkHandler, blinkTitle, blinkLogicState = false,
     originalTitle = $rootScope.title;
 
     function stopTimer() {
@@ -87,41 +87,60 @@ angular.module('neoviewApp')
         }
     }
 
-    //playIndexupdates only here
+    //check the upcoming 3 files are ready or not
+    function checkUpcomingVideo() {
+        var i=0;
+        while(i<3) {
+            if(!videoQueue[(playIndex+i+queueLength)%queueLength] || !videoQueue[(playIndex+i+queueLength)%queueLength].src || videoQueue[(playIndex+i+queueLength)%queueLength].status === 'played') {
+                return false
+            }
+            i++;
+        }
+        return true
+    }
+
+    //playIndex updates only here
 
     function nextVideo() {
         stopTimer();
         camLocalStatus = localStorageService.get('camStatus');
-        //if pushindex and playindex are pointing to same element in the queue then play default video
-        if(pushIndex-1 == (playIndex % queueLength)) {
-            $video.attr('src', default_video);
-            $video[0].play();
-        } else {
-            if(videoQueue.length > 0 && camLocalStatus.status === 2 && videoQueue[(playIndex)%queueLength] && videoQueue[(playIndex)%queueLength].status != 'played') {
-                if(playSrc == default_video) {
+        if(videoQueue.length > 0 && camLocalStatus.status === 2) {
+            if(playSrc === default_video){
+                if(videoQueue[(playIndex)%queueLength].src && videoQueue[(playIndex)%queueLength].status != 'played' && checkUpcomingVideo(playIndex)) {
                     chkVideo();
-                }
-                playSrc= 'videos/' + cookieInfo.camera + '/' + videoQueue[(playIndex)%queueLength].src;
-                $video.attr('src', playSrc);
-                $video[0].play().catch(function() {
-                    $video.attr('src', default_video);
-                    $video[0].play();
-                })
-                if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status === 'playing') {
-                    videoQueue[(playIndex+queueLength-1)%queueLength].status = 'played'
-                }
-                //play next index
-                videoQueue[playIndex].status = 'playing';
-                playIndex= (playIndex+1)%queueLength;
-            } else {
-                if(playSrc === default_video) {
+                    playSrc= 'videos/' + cookieInfo.camera + '/' + videoQueue[playIndex%queueLength].src;
+                    if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status === 'playing') {
+                        videoQueue[(playIndex+queueLength-1)%queueLength].status = 'played'
+                    }
+                    //play next index
+                    videoQueue[playIndex].status = 'playing';
+                    playIndex= (playIndex+1)%queueLength;
+                } else{
+                    playSrc = default_video;
                     openEducationTab();
                 }
-                playSrc = default_video;
-                $video.attr('src', playSrc);
-                $video[0].play();
+                
+            } else {
+                if(videoQueue[(playIndex)%queueLength].src && videoQueue[(playIndex)%queueLength].status != 'played') {
+                    playSrc= 'videos/' + cookieInfo.camera + '/' + videoQueue[(playIndex)%queueLength].src;
+                    if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status === 'playing') {
+                        videoQueue[(playIndex+queueLength-1)%queueLength].status = 'played'
+                    }
+                    //play next index
+                    videoQueue[playIndex].status = 'playing';
+                    playIndex= (playIndex+1)%queueLength;
+                } else {
+                    playSrc = default_video;
+                }
             }
-        }    
+        } else {
+            playSrc = default_video;
+        }
+        $video.attr('src', playSrc);
+        $video[0].play().catch(function() {
+            $video.attr('src', default_video);
+            $video[0].play();
+        })
     };
 
     //Only pushIndex updates here
@@ -244,7 +263,6 @@ angular.module('neoviewApp')
 
     $window.onfocus = function() {
         StopBlinking();
-        startPlaying = false;
     };
 
     function chkVideo() {
