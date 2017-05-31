@@ -1,9 +1,9 @@
 angular.module('neoviewApp')
 .controller('streamController', ['$scope', 'socket', '$cookieStore', 'localStorageService', '$window', 'Restangular', 'commonService', '$rootScope', '$state', '$timeout', '$rootScope', 
     function($scope, socket, $cookieStore, localStorageService, $window, Restangular, commonService, $rootScope, $state, $timeout, $rootScope) {
-    var pushIndex=0, playIndex=0, queueLength = 5, videoQueue = [], playSrc,timerID,
+    var pushIndex=0, playIndex=0, queueLength = 5, videoQueue = [], playSrc,timerID,count=0,
     default_video = 'videos/default.mp4',
-    openTab = false,
+    openTab = false,backMsg = false,
     cookieInfo = $cookieStore.get('users'),
     camLocalStatus,
     $video = $('#video'),
@@ -63,7 +63,6 @@ angular.module('neoviewApp')
                 playIndex= (playIndex+1)%queueLength;
             } else {
                 playSrc = default_video;
-                commonService.notification('streaming takes a while…')
             }
         } else {
             playSrc = default_video;
@@ -121,7 +120,6 @@ angular.module('neoviewApp')
                     playIndex= (playIndex+1)%queueLength;
                 } else{
                     playSrc = default_video;
-                    openEducationTab();
                 }
                 
             } else {
@@ -138,7 +136,11 @@ angular.module('neoviewApp')
                 }
             }
         } else {
+            if(playSrc === default_video) {
+                openEducationTab();
+            }
             playSrc = default_video;
+            count++;
         }
         $video.attr('src', playSrc);
         $video[0].play().catch(function() {
@@ -263,6 +265,10 @@ angular.module('neoviewApp')
             clearTimeout(blinkHandler);
         }
         $rootScope.title = originalTitle;
+        if(playSrc != default_video && openTab && !backMsg) {
+            commonService.notification('Welcome back')
+            backMsg = true;
+        }
     };
 
     $window.onfocus = function() {

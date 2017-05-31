@@ -6,7 +6,7 @@
       <label><b>Username</b></label>
       <input type="text" placeholder="Enter Username" name="uname" ng-model="user.username" ng-disabled="!newFlg" required>
       <label><b>Email</b></label>
-      <input type="text" ng-disabled="!newFlg" placeholder="Enter Email" name="email" ng-model="user.email" required>
+      <input type="text" ng-disabled="!newFlg" placeholder="Enter Email" name="email" ng-model="user.email" ng-pattern="/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/" required>
 
       <label ng-if="userType === 2"><b>User Type</b></label>
       <select ng-if="userType === 2" ng-style="!newFlg && { 'background-color':'white'}" ng-model="user.role" ng-options="user.id as user.name for user in users" ng-disabled="!newFlg" ng-change="changeUser(user.role)" ng-style={} required>
@@ -14,7 +14,7 @@
       </select></br>
       
       <label ng-if="userType === 0 || user.role === 1"><b>Camera</b></label>
-      <select ng-if="userType === 0 || user.role === 1"  ng-model="user.camera" ng-options="camera as camera for camera in cameras" ng-required="newFlg">
+      <select ng-if="userType === 0 || user.role === 1"  ng-model="user.camera" ng-options="camera as camera for camera in cameras">
         <option value="">No Camera</option>
       </select></br>
 

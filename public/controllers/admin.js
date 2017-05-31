@@ -7,7 +7,7 @@ angular.module('neoviewApp')
 			name : "Staff"
 		}, {
 			id : 1,
-			name : "Patient"
+			name : "Parent"
 		}
 	];
 	var userCam = "";

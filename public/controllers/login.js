@@ -6,6 +6,9 @@ angular.module('neoviewApp')
 		$scope.loginFlg = false;
 	}
 	$scope.login = function(user) {
+		for(key in user) {
+			user[key] = user[key].replace(/ /g,'');
+		};
 		$cookieStore.remove('users');
 		localStorageService.remove('camStatus');
 		$scope.errorMsg = "";

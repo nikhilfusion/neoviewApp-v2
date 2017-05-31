@@ -77,7 +77,7 @@ angular.module('neoviewApp')
 	    	}
 	    	var modalInfo = {
 				type: 'newTab',
-				msg: "Try again later. Meanwhile do you want to use our education resource?",
+				msg: "Camera is unavailable. Meanwhile, would you like to visit our education resource?",
 				heading: 'Notification'
 			};
 	    	modalInstance = $uibModal.open({
@@ -109,7 +109,7 @@ angular.module('neoviewApp')
 	          			return modalInfo;
 	          		}
 	          	},
-	          	backdrop: false 
+	          	backdrop: false
 	        });
 	        return modalInstance;
 	    },

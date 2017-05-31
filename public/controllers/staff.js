@@ -4,7 +4,7 @@ angular.module('neoviewApp')
 	switch($state.current.name) {
 		case 'app.staffDashboard' : $scope.patient = true;
 									$scope.noUser = false;
-									$scope.title = "Patient List";
+									$scope.title = "Parent List";
 									Restangular.one('users/').get({'userType' : 1}, {}).then(function(users) {
 										$scope.users = users.plain();
 								  	}, function(err) {

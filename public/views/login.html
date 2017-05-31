@@ -4,10 +4,10 @@
 	<h3 ng-if="!loginFlg" style="text-align:center;">Fogot Password</h3>
   	<div class="col-md-4 col-xs-12 col-md-offset-4" id="login-div" ng-if="loginFlg">
 	    <label><b>Username</b></label>
-	    <input type="text" placeholder="Enter Username" name="uname" ng-model="user.username" required>
-	    <span style="color:blue;" ng-if="!user.username">Username is case sensitive</span></br>
+	    <input type="text" placeholder="Enter Username" ng-trim="true" name="uname" ng-model="user.username" required>
+	    <span style="color:blue;">Username is case sensitive</span></br>
 	    <label><b>Password</b></label>
-	    <input type="password" placeholder="Enter Password" name="psw" ng-model="user.password" required>
+	    <input type="password" placeholder="Enter Password" name="psw" ng-trim="true" ng-model="user.password" required>
 	    <button type="submit" style="cursor:pointer;" ng-click="login(user)" ng-disabled="loginForm.$invalid">Login</button>
 	    <span ng-if="errorMsg" class="error-msg">{{errorMsg}}</span></br>
 	    <a style="cursor:pointer;text-decoration: none;" ui-sref="forgot">Forgot Password?</a>
