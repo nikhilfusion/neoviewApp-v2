@@ -68,10 +68,22 @@ angular.module('neoviewApp')
             playSrc = default_video;
         }
         if(playSrc) {
-            $video.attr('src', playSrc);
-            $video[0].play().catch(function() {
-                $video[0].play();
-            })
+            var timeOut;
+            if(camLocalStatus.status === 2) {
+                timeOut = 3000;
+            } else {
+                timeOut = 0;
+            }
+            setTimeout(function(){
+                commonService.closeModal(); 
+                $video.attr('src', playSrc);
+                $video[0].play().catch(function() {
+                    $video[0].play();
+                })
+            }, timeOut);
+            if(camLocalStatus.status === 2) {
+                commonService.notification('Video getting ready for streaming. Please with a moment')
+            }
         }
     });
 
@@ -192,10 +204,23 @@ angular.module('neoviewApp')
         }
     });
 
+    function StopBlinking() {
+        if(blinkHandler) {
+            clearTimeout(blinkHandler);
+        }
+        $rootScope.title = originalTitle;
+        if(playSrc != default_video && openTab && !backMsg) {
+            commonService.notification('Welcome back')
+            backMsg = true;
+        }
+    };
+
     //Toggling camera on/off stage
     socket.on('ChangeCamStatus', function(camStatus) {
+        commonService.closeModal();
         var camLocalStatus = localStorageService.get('camStatus');
         if(camStatus.camInfo.name === cookieInfo.camera) {
+            localStorageService.set('camStatus',camStatus.camInfo);
             if(camStatus.camInfo.status === 2 && camLocalStatus.status != 2) {
                 if(videoQueue[playIndex].status != 'playing') {  
                     commonService.notification('Video getting ready for streaming. Please with a moment')
@@ -207,6 +232,7 @@ angular.module('neoviewApp')
                 }    
             } else {
                 playSrc = default_video;
+                StopBlinking();
                 $video.attr('src', playSrc);
                 $video[0].play();    
             }
@@ -260,16 +286,7 @@ angular.module('neoviewApp')
         blinkHandler = setTimeout(BlinkIteration, 1000);
     };
   
-    function StopBlinking() {
-        if(blinkHandler) {
-            clearTimeout(blinkHandler);
-        }
-        $rootScope.title = originalTitle;
-        if(playSrc != default_video && openTab && !backMsg) {
-            commonService.notification('Welcome back')
-            backMsg = true;
-        }
-    };
+    
 
     $window.onfocus = function() {
         StopBlinking();

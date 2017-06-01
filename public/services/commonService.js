@@ -114,7 +114,9 @@ angular.module('neoviewApp')
 	        return modalInstance;
 	    },
 	    closeModal: function() {
-	    	return modalInstance.close();
+	    	if(modalInstance) {
+	    		return modalInstance.close();
+	    	}
 	    },
 	    chkModal: function() {
 	    	return modalInstance ? true : false;
