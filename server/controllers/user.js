@@ -121,7 +121,7 @@ module.exports = function(ws, io) {
       db.all("SELECT * from users WHERE email = ?", [reqInfo.email], function(err,rows){
         if(rows.length > 0) {
           var resInfo = rows[0],
-            old_pswd = randomstring.generate(7),
+            old_pswd = randomstring.generate(8),
             new_password = bcrypt.hashSync(old_pswd, salt);
           resInfo['old_pswd'] = old_pswd;
           db.run("UPDATE users SET password = ? WHERE id = ?" , [new_password, parseInt(resInfo.id)]);
@@ -292,7 +292,7 @@ module.exports = function(ws, io) {
           if(bcrypt.compareSync(reqDt.currPswd, user[0].password)) {
             var hash_pswd = bcrypt.hashSync(reqDt.newPswd, salt);
             db.run("UPDATE users SET password = ? WHERE id = ?" , [hash_pswd, parseInt(reqDt.userId)]);
-              res.send("Password reset successfully.");
+              res.send("Password reset successful.");
           } else {
             res.status(404).send("User not found!");
           }
