@@ -5,33 +5,19 @@ angular.module('neoviewApp', [
     'LocalStorageModule',
     'btford.socket-io',
     'restangular',
-    'ngCookies'
+    'ngCookies',
+    'ngSessionStorage'
 ])
-.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'RestangularProvider', 'localStorageServiceProvider', function($stateProvider, $urlRouterProvider, $locationProvider, RestangularProvider, localStorageServiceProvider) {
-    localStorageServiceProvider.setPrefix('neoview');
+.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'RestangularProvider', function($stateProvider, $urlRouterProvider, $locationProvider, RestangularProvider) {
     $stateProvider
     .state('home', {
         url: '/',
         templateUrl: 'public/views/home.html',
-        controller : 'homeController'
     })
     .state('app.stream', {
         url: '/stream',
         templateUrl: 'public/views/stream.html',
-        controller: 'streamController',
-        resolve: {
-            'task' : function($cookieStore, $window) {
-                switch($cookieStore.get('users').role) {
-                    case 0 : $window.location.assign("/staffDashboard");
-                             break;
-                    case 2 : $window.location.assign('/adminDashboard')
-                             break; 
-                }
-                if($cookieStore.get('users').role === 2) {
-                    $window.location.assign('/adminDashboard')
-                }
-            }
-        }
+        controller: 'streamController'
     })
     .state('login', {
         url: '/login',
@@ -45,15 +31,7 @@ angular.module('neoviewApp', [
     })
     .state('app', {
         templateUrl: 'public/views/app.html',
-        controller: 'appController',
-        resolve: {
-            'task' : function($cookieStore, $window) {
-                var cookieData = $cookieStore.get('users');
-                if(!cookieData) {
-                    $window.location.assign('/login');
-                }
-            }
-        }
+        controller: 'appController'
     })
     .state('app.adminDashboard', {
         url : '/adminDashboard',

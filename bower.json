@@ -21,6 +21,7 @@
     "restangular": "^1.6.1",
     "font-awesome": "^4.7.0",
     "angular-cookies": "^1.6.1",
-    "angular-local-storage": "^0.5.2"
+    "angular-local-storage": "^0.5.2",
+    "angular-sessionstorage": "^1.1.5"
   }
 }

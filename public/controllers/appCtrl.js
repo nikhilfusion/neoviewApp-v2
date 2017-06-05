@@ -1,8 +1,9 @@
 angular.module('neoviewApp')
-.controller('appController', ['$scope', '$cookieStore', '$state', 'Restangular', 'localStorageService', 'socket', function ($scope, $cookieStore, $state, Restangular, localStorageService, socket) {
+.controller('appController', ['$scope', 'commonService', '$state', 'Restangular', 'socket', '$rootScope', function ($scope, commonService, $state, Restangular, socket, $rootScope) {
+	$rootScope.title = "NeoviewApp";
+	var userInfo = commonService.getSession('users');
 	function logout() {
-		$cookieStore.remove('users');
-		localStorageService.remove('camStatus');
+		commonService.clearSession();
 		$state.go('login');
 	};
 
@@ -13,25 +14,24 @@ angular.module('neoviewApp')
   		});
 	});
 
-	var cookieInfo = $cookieStore.get('users');
 	$scope.logout = function() {
 		var user = {
-			"id" : cookieInfo.id
+			"id" : userInfo.id
 		};
 		Restangular.all('logout').post(user, {}).then(function(res) {
 			logout();
 		})
 	};
-	if(cookieInfo) {
-		$scope.headerInfo = cookieInfo;
-		$scope.userType = cookieInfo.role;
+	if(userInfo) {
+		$scope.headerInfo = userInfo;
+		$scope.userType = userInfo.role;
 	} else {
 		$state.go('login');
 	}
 
-	socket.on('dltUser', function(userInfo) {
-		var cookieInfo = $cookieStore.get('users');
-		if(cookieInfo && cookieInfo.id === userInfo.id) {
+	socket.on('dltUser', function(userDtls) {
+		userInfo = commonService.getSession('users');
+		if(userInfo && userInfo.id === userDtls.id) {
 			logout();
 		}
 	})

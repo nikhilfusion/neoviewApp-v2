@@ -1,10 +1,10 @@
 angular.module('neoviewApp')
-.controller('streamController', ['$scope', 'socket', '$cookieStore', 'localStorageService', '$window', 'Restangular', 'commonService', '$rootScope', '$state', '$timeout', '$rootScope', 
-    function($scope, socket, $cookieStore, localStorageService, $window, Restangular, commonService, $rootScope, $state, $timeout, $rootScope) {
+.controller('streamController', ['$scope', 'socket', '$window', 'Restangular', 'commonService', '$rootScope', '$state', '$timeout', '$rootScope', 
+    function($scope, socket, $window, Restangular, commonService, $rootScope, $state, $timeout, $rootScope) {
     var pushIndex=0, playIndex=0, queueLength = 5, videoQueue = [], playSrc,timerID,count=0,
     default_video = 'videos/default.mp4',
     openTab = false,backMsg = false,
-    cookieInfo = $cookieStore.get('users'),
+    sessionInfo = commonService.getSession('users'),
     camLocalStatus,
     $video = $('#video'),
     $canvas = $('#myCanvas'),
@@ -36,12 +36,15 @@ angular.module('neoviewApp')
     });
 
     $video.on('ended', nextVideo);
-    setLocalData(cookieInfo);
-    camLocalStatus = localStorageService.get('camStatus');
-     if(cookieInfo.camera == 'null' || !cookieInfo.camera) {
+    setLocalData(sessionInfo);
+    camLocalStatus = commonService.getSession('camStatus');
+    if(!camLocalStatus && sessionInfo.role != 1) {
+        $state.go('login');
+    }
+     if(sessionInfo.camera == 'null' || !sessionInfo.camera) {
         commonService.notification("No camera Selected");
     } else {
-        socket.emit('cameraConnect', {'camera' : cookieInfo.camera});
+        socket.emit('cameraConnect', {'camera' : sessionInfo.camera});
     }  
     angular.element(document).ready(function ()  {
         stopTimer();
@@ -58,33 +61,25 @@ angular.module('neoviewApp')
                 pushIndex = (pushIndex+1)%queueLength;
             })
             if(camLocalStatus.status === 2) {
-                playSrc = 'videos/' + cookieInfo.camera + '/' + videoQueue[playIndex].src;
+                playSrc = 'videos/' + sessionInfo.camera + '/' + videoQueue[playIndex].src;
                 videoQueue[playIndex].status = 'playing';
                 playIndex= (playIndex+1)%queueLength;
+                commonService.notification('Video getting ready for streaming. Please with a moment')
             } else {
                 playSrc = default_video;
+                commonService.notification('Camera is not available. Try after some time')
             }
         } else {
             playSrc = default_video;
+            commonService.notification('Camera is not available. Try after some time')
         }
-        if(playSrc) {
-            var timeOut;
-            if(camLocalStatus.status === 2) {
-                timeOut = 3000;
-            } else {
-                timeOut = 0;
-            }
-            setTimeout(function(){
-                commonService.closeModal(); 
-                $video.attr('src', playSrc);
-                $video[0].play().catch(function() {
-                    $video[0].play();
-                })
-            }, timeOut);
-            if(camLocalStatus.status === 2) {
-                commonService.notification('Video getting ready for streaming. Please with a moment')
-            }
-        }
+        var timeOut=3000;
+        setTimeout(function(){
+            commonService.closeModal(); 
+            $video.attr('src', playSrc);
+            $video[0].play();
+        }, timeOut);
+            
     });
 
     //setting cameraInfo to localstorage
@@ -95,7 +90,7 @@ angular.module('neoviewApp')
                 for(var i=0;i<camStatus.length;i++) {
                     if(camStatus[i].name === cookie.camera) {
                         camLocalStatus = camStatus[i];
-                        localStorageService.set('camStatus', camStatus[i]);            
+                        commonService.setSession('camStatus', camStatus[i])
                     }
                 }
             });
@@ -118,12 +113,13 @@ angular.module('neoviewApp')
 
     function nextVideo() {
         stopTimer();
-        camLocalStatus = localStorageService.get('camStatus');
+        camLocalStatus = commonService.getSession('camStatus')
+        //need a test fun
         if(videoQueue.length > 0 && camLocalStatus.status === 2) {
             if(playSrc === default_video){
                 if(videoQueue[(playIndex)%queueLength].src && videoQueue[(playIndex)%queueLength].status != 'played' && checkUpcomingVideo(playIndex)) {
                     chkVideo();
-                    playSrc= 'videos/' + cookieInfo.camera + '/' + videoQueue[playIndex%queueLength].src;
+                    playSrc= 'videos/' + sessionInfo.camera + '/' + videoQueue[playIndex%queueLength].src;
                     if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status === 'playing') {
                         videoQueue[(playIndex+queueLength-1)%queueLength].status = 'played'
                     }
@@ -136,7 +132,7 @@ angular.module('neoviewApp')
                 
             } else {
                 if(videoQueue[(playIndex)%queueLength].src && videoQueue[(playIndex)%queueLength].status != 'played') {
-                    playSrc= 'videos/' + cookieInfo.camera + '/' + videoQueue[(playIndex)%queueLength].src;
+                    playSrc= 'videos/' + sessionInfo.camera + '/' + videoQueue[(playIndex)%queueLength].src;
                     if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status === 'playing') {
                         videoQueue[(playIndex+queueLength-1)%queueLength].status = 'played'
                     }
@@ -155,10 +151,7 @@ angular.module('neoviewApp')
             count++;
         }
         $video.attr('src', playSrc);
-        $video[0].play().catch(function() {
-            $video.attr('src', default_video);
-            $video[0].play();
-        })
+        $video[0].play();
     };
 
     //Only pushIndex updates here
@@ -168,7 +161,7 @@ angular.module('neoviewApp')
             camInfo = filePath.split('videos/')[1],
             cam = camInfo.split('/')[0],
             fileName = camInfo.split('/')[1];  
-        if(cam === cookieInfo.camera && fileName) {
+        if(cam === sessionInfo.camera && fileName) {
             if(videoQueue.length >0) {
                 if(videoQueue[pushIndex] && videoQueue[pushIndex].status) {
                     if(videoQueue[pushIndex].status === 'playing') {
@@ -199,7 +192,7 @@ angular.module('neoviewApp')
 
     //If we discharge the patient this code will execute
     socket.on('DeleteCamera', function(cameraInfo) {
-        if(cameraInfo.camera === cookieInfo.camera) {
+        if(cameraInfo.camera === sessionInfo.camera) {
             $state.go('login');
         }
     });
@@ -208,7 +201,7 @@ angular.module('neoviewApp')
         if(blinkHandler) {
             clearTimeout(blinkHandler);
         }
-        $rootScope.title = originalTitle;
+        $rootScope.title = "NeoviewApp";
         if(playSrc != default_video && openTab && !backMsg) {
             commonService.notification('Welcome back')
             backMsg = true;
@@ -218,9 +211,10 @@ angular.module('neoviewApp')
     //Toggling camera on/off stage
     socket.on('ChangeCamStatus', function(camStatus) {
         commonService.closeModal();
-        var camLocalStatus = localStorageService.get('camStatus');
-        if(camStatus.camInfo.name === cookieInfo.camera) {
-            localStorageService.set('camStatus',camStatus.camInfo);
+        var camLocalStatus = commonService.getSession('camStatus')
+        //need a test
+        if(camStatus.camInfo.name === sessionInfo.camera) {
+            commonService.setSession('camStatus',camStatus.camInfo)
             if(camStatus.camInfo.status === 2 && camLocalStatus.status != 2) {
                 if(videoQueue[playIndex].status != 'playing') {  
                     commonService.notification('Video getting ready for streaming. Please with a moment')
@@ -237,14 +231,17 @@ angular.module('neoviewApp')
                 $video[0].play();    
             }
         }
-        localStorageService.set('camStatus', camStatus.camInfo);
+        commonService.setSession('camStatus', camStatus.camInfo)
     });
 
     //Its for discharge patient. Clear localstorage and setwith a new info
     socket.on('ChangeCamera', function(camInfo) {
-        if(camInfo.id === cookieInfo.id) {
-            $cookieStore.put('users', camInfo);
-            cookieInfo = camInfo;
+        if(camInfo.id === sessionInfo.id) {
+            if(camInfo.camera == 'null' || !camInfo.camera) {
+                commonService.notification("Camera is not available. Try after some time");
+            }    
+            commonService.setSession('users', camInfo)
+            sessionInfo = camInfo;
             setLocalData(camInfo);
             pushIndex=0; 
             playIndex=0;
@@ -275,7 +272,7 @@ angular.module('neoviewApp')
     };
 
     function BlinkIteration() {
-        if(blinkLogicState == false)
+        if(!blinkLogicState)
         {
             $rootScope.title = blinkTitle;
         } else {
@@ -285,12 +282,31 @@ angular.module('neoviewApp')
         blinkLogicState = !blinkLogicState;  
         blinkHandler = setTimeout(BlinkIteration, 1000);
     };
-  
-    
 
-    $window.onfocus = function() {
-        StopBlinking();
-    };
+    var vis = (function(){
+        var stateKey, eventKey, keys = {
+            hidden: "visibilitychange",
+            webkitHidden: "webkitvisibilitychange",
+            mozHidden: "mozvisibilitychange",
+            msHidden: "msvisibilitychange"
+        };
+        for (stateKey in keys) {
+            if (stateKey in document) {
+                eventKey = keys[stateKey];
+                break;
+            }
+        }
+        return function(c) {
+            if (c) document.addEventListener(eventKey, c);
+            return !document[stateKey];
+        }
+    })();
+    
+    vis(function(){
+        if(vis()) {
+           StopBlinking(); 
+        }
+    });
 
     function chkVideo() {
         if(document.hidden) {

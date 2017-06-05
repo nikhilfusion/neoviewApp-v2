@@ -4,7 +4,8 @@
   <form name="loginForm" style="width: 500px;">
     <div class="container" style="width: 400px;">
       <label><b>Username</b></label>
-      <input type="text" placeholder="Enter Username" name="uname" ng-model="user.username" ng-disabled="!newFlg" required>
+      <input type="text" placeholder="Enter Username" name="uname" ng-model="user.username" ng-disabled="!newFlg" ng-minlength="6" ng-pattern="/^[a-z]+$/" required>
+      <div class="warning">Username should be small letter with min. 6 characters</div>
       <label><b>Email</b></label>
       <input type="text" ng-disabled="!newFlg" placeholder="Enter Email" name="email" ng-model="user.email" ng-pattern="/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/" required>
 

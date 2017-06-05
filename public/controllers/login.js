@@ -1,5 +1,5 @@
 angular.module('neoviewApp')
-.controller('loginController', ['$scope', 'Restangular', '$cookieStore', '$state', 'localStorageService', function ($scope, Restangular, $cookieStore, $state, localStorageService) {	
+.controller('loginController', ['$scope', 'Restangular', '$state', 'commonService', function ($scope, Restangular, $state, commonService) {	
 	if($state.current.name === 'login') {
 		$scope.loginFlg = true;
 	} else {
@@ -9,12 +9,11 @@ angular.module('neoviewApp')
 		for(key in user) {
 			user[key] = user[key].replace(/ /g,'');
 		};
-		$cookieStore.remove('users');
-		localStorageService.remove('camStatus');
+		commonService.clearSession();
 		$scope.errorMsg = "";
 		Restangular.all('login').post(user, {}).then(function(res) {
 			var userInfo = res.plain();
-			$cookieStore.put('users', userInfo);
+			commonService.setSession('users', userInfo)
 			switch(userInfo.role) {
 				case 0 : $state.go("app.staffDashboard");
 						 break;
@@ -28,17 +27,7 @@ angular.module('neoviewApp')
 		});
 	};
 	function init() {
-		var cookieInfo = $cookieStore.get('users');
-		if(cookieInfo){
-			switch(cookieInfo.role) {
-				case 0 : $state.go("app.staffDashboard");
-						 break;
-				case 1 : $state.go("app.stream");
-						 break;
-				case 2 : $state.go("app.adminDashboard");
-						 break;
-			}
-		}
+		commonService.clearSession();
 	};
 	$scope.forgot = function(user){
 		if(user.email) {

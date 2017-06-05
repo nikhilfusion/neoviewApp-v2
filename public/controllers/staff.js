@@ -1,6 +1,10 @@
 angular.module('neoviewApp')
-.controller('staffController', ['$scope', '$cookieStore', '$state', 'Restangular', '$stateParams', '$uibModal', '$rootScope', 'commonService', function ($scope, $cookieStore, $state, Restangular, $stateParams, $uibModal, $rootScope, commonService) {
-	var userCam = "";
+.controller('staffController', ['$scope', '$state', 'Restangular', '$stateParams', '$uibModal', '$rootScope', 'commonService', function ($scope, $state, Restangular, $stateParams, $uibModal, $rootScope, commonService) {
+	var userCam = "",
+		userInfo = commonService.getSession('users');
+	if(!userInfo || (userInfo && userInfo.role != 0)) {
+		$state.go('login');
+	}
 	switch($state.current.name) {
 		case 'app.staffDashboard' : $scope.patient = true;
 									$scope.noUser = false;

@@ -1,6 +1,6 @@
 angular.module('neoviewApp')
-.controller('profileController', ['$scope', 'Restangular', '$cookieStore', '$state', '$uibModal', '$rootScope', '$stateParams', 'localStorageService', '$window', function ($scope, Restangular, $cookieStore, $state, $uibModal, $rootScope, $stateParams, localStorageService, $window) {
-	var cookieInfo = $cookieStore.get('users');
+.controller('profileController', ['$scope', 'Restangular', '$sessionStorage', '$state', '$uibModal', '$rootScope', '$stateParams', '$window', function ($scope, Restangular, $sessionStorage, $state, $uibModal, $rootScope, $stateParams, $window) {
+	var sessionInfo = $sessionStorage.get('users');
 	$scope.cancelPswd = function() {
 		$state.reload();
 	};
@@ -10,7 +10,7 @@ angular.module('neoviewApp')
 		var pswdDt = {
 			currPswd: pswd.password,
 			newPswd : pswd.new_password,
-			userId	: cookieInfo.id
+			userId	: sessionInfo.id
 		};	
 		Restangular.all('resetPassword').customPUT(pswdDt).then(function(userInfo) {
 			$scope.patient = {};

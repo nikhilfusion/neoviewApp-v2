@@ -1,5 +1,10 @@
 angular.module('neoviewApp')
-.controller('adminController', ['$scope', '$cookieStore', '$state', 'Restangular', '$stateParams', '$rootScope', 'commonService', function ($scope, $cookieStore, $state, Restangular, $stateParams, $rootScope, commonService) {
+.controller('adminController', ['$scope', '$state', 'Restangular', '$stateParams', '$rootScope', 'commonService', function ($scope, $state, Restangular, $stateParams, $rootScope, commonService) {
+
+	var userInfo = commonService.getSession('users');
+	if(!userInfo || (userInfo && userInfo.role != 2)) {
+		$state.go('login');
+	}
 
 	$scope.users = [
 		{

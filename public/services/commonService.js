@@ -1,5 +1,5 @@
 angular.module('neoviewApp')
-.service('commonService', ['$uibModal', function($uibModal) {
+.service('commonService', ['$uibModal', '$sessionStorage', '$window', function($uibModal, $sessionStorage, $window) {
 	var modalInstance;
 	return {
 		isEmpty: function(obj) {
@@ -120,6 +120,20 @@ angular.module('neoviewApp')
 	    },
 	    chkModal: function() {
 	    	return modalInstance ? true : false;
+	    },
+	    getSession(obj) {
+	    	return JSON.parse($sessionStorage.getObject(obj));
+	    },
+	    setSession(obj, data) {
+			$sessionStorage.putObject(obj, JSON.stringify(data));
+			return true;
+	    },
+	    removeSession(obj) {
+	    	$sessionStorage.remove(obj);
+	    },
+	    clearSession() {
+	    	$sessionStorage.remove('users');
+	    	$sessionStorage.remove('camStatus');
 	    }
 	}
 }]);
