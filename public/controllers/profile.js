@@ -1,6 +1,7 @@
 angular.module('neoviewApp')
-.controller('profileController', ['$scope', 'Restangular', '$sessionStorage', '$state', '$uibModal', '$rootScope', '$stateParams', '$window', function ($scope, Restangular, $sessionStorage, $state, $uibModal, $rootScope, $stateParams, $window) {
-	var sessionInfo = $sessionStorage.get('users');
+.controller('profileController', ['$scope', 'Restangular', 'commonService', '$state', '$uibModal', '$rootScope', '$stateParams', '$window', function ($scope, Restangular, commonService, $state, $uibModal, $rootScope, $stateParams, $window) {
+	var sessionInfo = commonService.getSession('users')
+	console.log("sessionInfo is ", sessionInfo);
 	$scope.cancelPswd = function() {
 		$state.reload();
 	};

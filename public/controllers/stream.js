@@ -120,6 +120,8 @@ angular.module('neoviewApp')
                 if(videoQueue[(playIndex)%queueLength].src && videoQueue[(playIndex)%queueLength].status != 'played' && checkUpcomingVideo(playIndex)) {
                     chkVideo();
                     playSrc= 'videos/' + sessionInfo.camera + '/' + videoQueue[playIndex%queueLength].src;
+                    openTab = false;
+                    backMsg = false;
                     if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status === 'playing') {
                         videoQueue[(playIndex+queueLength-1)%queueLength].status = 'played'
                     }
@@ -133,6 +135,8 @@ angular.module('neoviewApp')
             } else {
                 if(videoQueue[(playIndex)%queueLength].src && videoQueue[(playIndex)%queueLength].status != 'played') {
                     playSrc= 'videos/' + sessionInfo.camera + '/' + videoQueue[(playIndex)%queueLength].src;
+                    openTab = false;
+                    backMsg = false;
                     if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status === 'playing') {
                         videoQueue[(playIndex+queueLength-1)%queueLength].status = 'played'
                     }
@@ -152,6 +156,9 @@ angular.module('neoviewApp')
         }
         $video.attr('src', playSrc);
         $video[0].play();
+        if(playSrc != default_video) {
+            commonService.notification('Welcome back')
+        }
     };
 
     //Only pushIndex updates here
@@ -200,12 +207,13 @@ angular.module('neoviewApp')
     function StopBlinking() {
         if(blinkHandler) {
             clearTimeout(blinkHandler);
+            // if(playSrc != default_video && !backMsg) {
+            //     commonService.notification('Welcome back')
+            //     backMsg = true;
+            // }
         }
         $rootScope.title = "NeoviewApp";
-        if(playSrc != default_video && openTab && !backMsg) {
-            commonService.notification('Welcome back')
-            backMsg = true;
-        }
+        
     };
 
     //Toggling camera on/off stage
@@ -217,7 +225,6 @@ angular.module('neoviewApp')
             commonService.setSession('camStatus',camStatus.camInfo)
             if(camStatus.camInfo.status === 2 && camLocalStatus.status != 2) {
                 if(videoQueue[playIndex].status != 'playing') {  
-                    commonService.notification('Video getting ready for streaming. Please with a moment')
                     nextVideo();
                 } else {
                     playSrc = default_video;

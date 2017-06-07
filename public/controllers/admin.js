@@ -102,6 +102,9 @@ angular.module('neoviewApp')
 	$scope.editUser = function(userInfo) {
 		$state.go('app.adminUser', { id : userInfo.id });
 	};
+	$scope.backClick = function() {
+		$state.go("app.adminDashboard")
+	}
 	$scope.changeUser = function(role) {
 		if(role === 1) {
 			if(!$scope.cameras || $scope.cameras.length === 0) {

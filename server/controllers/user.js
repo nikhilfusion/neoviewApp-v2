@@ -286,6 +286,7 @@ module.exports = function(ws, io) {
 
   this.resetPswd = function(req, res) {
     var reqDt = req.body;
+    console.log("reqDt is ", reqDt);
     db.serialize(function() {
       db.all("SELECT password FROM users WHERE id= ?" , [parseInt(reqDt.userId)], function(err, user) {
         if(!err && user.length>0) {

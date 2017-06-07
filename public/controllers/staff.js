@@ -69,6 +69,10 @@ angular.module('neoviewApp')
 		}
 	};
 
+	$scope.backClick = function() {
+		$state.go("app.staffDashboard")
+	}
+
 	$scope.editUser = function(userInfo) {
 		$state.go('app.staffUser', { id : userInfo.id });
 	};

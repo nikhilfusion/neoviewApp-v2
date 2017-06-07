@@ -4,7 +4,7 @@
   <form name="loginForm" style="width: 500px;">
     <div class="container" style="width: 400px;">
       <label><b>Username</b></label>
-      <input type="text" placeholder="Enter Username" name="uname" ng-model="user.username" ng-disabled="!newFlg" ng-minlength="6" ng-pattern="/^[a-z]+$/" required>
+      <input type="text" placeholder="Enter Username" name="uname" ng-model="user.username" ng-disabled="!newFlg" ng-minlength="6" ng-pattern="/^[a-z]+$/" required novalidate>
       <div class="warning">Only lowercase alphabets, Min. 6 characters</div>
       <label><b>Email</b></label>
       <input type="text" ng-disabled="!newFlg" placeholder="Enter Email" name="email" ng-model="user.email" ng-pattern="/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/" required>
@@ -21,7 +21,7 @@
 
       <button type="submit" class="btn btn-primary" style="width:75px;" ng-click="register(user, newFlg)" ng-disabled="loginForm.$invalid">Save</button>
       <button class="btn btn-warning" ng-click="cancel()" style="width:75px;">Reset</button>
-      <button class="btn btn-success" ui-sref="home" style="width:75px;">Back</button></br>
+      <button class="btn btn-success" ng-click="backClick()" style="width:75px;">Back</button></br>
       <span ng-if="errorMsg" class="error-msg">{{errorMsg}}</span></br>
       <span ng-if="sucMsg" class="suc-msg">{{sucMsg}}</span></br>
     </div>
