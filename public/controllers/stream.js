@@ -3,7 +3,7 @@ angular.module('neoviewApp')
     function($scope, socket, $window, Restangular, commonService, $rootScope, $state, $timeout, $rootScope) {
     var pushIndex=0, playIndex=0, queueLength = 5, videoQueue = [], playSrc,timerID,count=0,
     default_video = 'videos/default.mp4',
-    openTab = false,backMsg = false,
+    openTab = false,backMsg = true,
     sessionInfo = commonService.getSession('users'),
     camLocalStatus,
     $video = $('#video'),
@@ -135,8 +135,6 @@ angular.module('neoviewApp')
             } else {
                 if(videoQueue[(playIndex)%queueLength].src && videoQueue[(playIndex)%queueLength].status != 'played') {
                     playSrc= 'videos/' + sessionInfo.camera + '/' + videoQueue[(playIndex)%queueLength].src;
-                    openTab = false;
-                    backMsg = false;
                     if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status === 'playing') {
                         videoQueue[(playIndex+queueLength-1)%queueLength].status = 'played'
                     }
@@ -156,8 +154,9 @@ angular.module('neoviewApp')
         }
         $video.attr('src', playSrc);
         $video[0].play();
-        if(playSrc != default_video) {
+        if(!backMsg) {
             commonService.notification('Welcome back')
+            backMsg = true;
         }
     };
 
@@ -207,10 +206,6 @@ angular.module('neoviewApp')
     function StopBlinking() {
         if(blinkHandler) {
             clearTimeout(blinkHandler);
-            // if(playSrc != default_video && !backMsg) {
-            //     commonService.notification('Welcome back')
-            //     backMsg = true;
-            // }
         }
         $rootScope.title = "NeoviewApp";
         
