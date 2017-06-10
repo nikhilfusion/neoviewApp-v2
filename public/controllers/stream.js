@@ -155,11 +155,14 @@ angular.module('neoviewApp')
             count++;
         }
         $video.attr('src', playSrc);
-        $video[0].play();
-        if(!backMsg) {
-            commonService.notification('Welcome back')
-            backMsg = true;
-        }
+        $video[0].play().then(function() {
+            if(!backMsg) {
+                commonService.notification('Welcome back')
+                backMsg = true;
+            }
+        }, function(err) {
+            console.log("err is ", err);
+        })
     };
 
     //Only pushIndex updates here
@@ -312,7 +315,7 @@ angular.module('neoviewApp')
     });
 
     function chkVideo() {
-        if(document.hidden) {
+        if(document.hidden && backMsg) {
             StartBlinking('Video is ready');
         }    
         if(commonService.chkModal()) {
