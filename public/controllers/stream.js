@@ -4,7 +4,7 @@ angular.module('neoviewApp')
     var pushIndex=0, playIndex=0, queueLength = 5, videoQueue = [], playSrc,timerID,count=0,
     default_video = 'videos/default.mp4',
     openTab = false,backMsg = true,
-    sessionInfo = commonService.getSession('users'),
+    userInfo = commonService.getSession('users'),
     camLocalStatus,
     $video = $('#video'),
     $canvas = $('#myCanvas'),
@@ -36,15 +36,15 @@ angular.module('neoviewApp')
     });
 
     $video.on('ended', nextVideo);
-    setLocalData(sessionInfo);
+    setLocalData(userInfo);
     camLocalStatus = commonService.getSession('camStatus');
-    if(!camLocalStatus && sessionInfo.role != 1) {
+    if(!camLocalStatus && userInfo.role != 1) {
         $state.go('login');
     }
-     if(sessionInfo.camera == 'null' || !sessionInfo.camera) {
+     if(userInfo.camera == 'null' || !userInfo.camera) {
         commonService.notification("No camera Selected");
     } else {
-        socket.emit('cameraConnect', {'camera' : sessionInfo.camera});
+        socket.emit('cameraConnect', {'camera' : userInfo.camera});
     }  
     angular.element(document).ready(function ()  {
         stopTimer();
@@ -61,7 +61,7 @@ angular.module('neoviewApp')
                 pushIndex = (pushIndex+1)%queueLength;
             })
             if(camLocalStatus.status === 2) {
-                playSrc = 'videos/' + sessionInfo.camera + '/' + videoQueue[playIndex].src;
+                playSrc = 'videos/' + userInfo.camera + '/' + videoQueue[playIndex].src;
                 videoQueue[playIndex].status = 'playing';
                 playIndex= (playIndex+1)%queueLength;
                 commonService.notification('Video getting ready for streaming. Please with a moment')
@@ -80,12 +80,12 @@ angular.module('neoviewApp')
             $video[0].play();
         }, timeOut);
             
-    });
+    });;
 
     //setting cameraInfo to localstorage
 
     function setLocalData(cookie) {
-        if(cookie.camera) {
+        if(cookie && cookie.camera) {
             Restangular.one('getCamStatus').get({},{}).then(function(camStatus) {
                 for(var i=0;i<camStatus.length;i++) {
                     if(camStatus[i].name === cookie.camera) {
@@ -94,6 +94,8 @@ angular.module('neoviewApp')
                     }
                 }
             });
+        } else {
+            $state.go('login')
         }
     }
 
@@ -119,7 +121,7 @@ angular.module('neoviewApp')
             if(playSrc === default_video){
                 if(videoQueue[(playIndex)%queueLength].src && videoQueue[(playIndex)%queueLength].status != 'played' && checkUpcomingVideo(playIndex)) {
                     chkVideo();
-                    playSrc= 'videos/' + sessionInfo.camera + '/' + videoQueue[playIndex%queueLength].src;
+                    playSrc= 'videos/' + userInfo.camera + '/' + videoQueue[playIndex%queueLength].src;
                     openTab = false;
                     backMsg = false;
                     if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status === 'playing') {
@@ -134,7 +136,7 @@ angular.module('neoviewApp')
                 
             } else {
                 if(videoQueue[(playIndex)%queueLength].src && videoQueue[(playIndex)%queueLength].status != 'played') {
-                    playSrc= 'videos/' + sessionInfo.camera + '/' + videoQueue[(playIndex)%queueLength].src;
+                    playSrc= 'videos/' + userInfo.camera + '/' + videoQueue[(playIndex)%queueLength].src;
                     if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status === 'playing') {
                         videoQueue[(playIndex+queueLength-1)%queueLength].status = 'played'
                     }
@@ -167,7 +169,7 @@ angular.module('neoviewApp')
             camInfo = filePath.split('videos/')[1],
             cam = camInfo.split('/')[0],
             fileName = camInfo.split('/')[1];  
-        if(cam === sessionInfo.camera && fileName) {
+        if(cam === userInfo.camera && fileName) {
             if(videoQueue.length >0) {
                 if(videoQueue[pushIndex] && videoQueue[pushIndex].status) {
                     if(videoQueue[pushIndex].status === 'playing') {
@@ -191,14 +193,14 @@ angular.module('neoviewApp')
                         videoQueue[pushIndex].status = 'Not Played';
                         pushIndex = (pushIndex+1)%queueLength;
                     })
-                }                
+                }            
             }
         }   
     });
 
     //If we discharge the patient this code will execute
     socket.on('DeleteCamera', function(cameraInfo) {
-        if(cameraInfo.camera === sessionInfo.camera) {
+        if(cameraInfo.camera === userInfo.camera) {
             $state.go('login');
         }
     });
@@ -216,7 +218,7 @@ angular.module('neoviewApp')
         commonService.closeModal();
         var camLocalStatus = commonService.getSession('camStatus')
         //need a test
-        if(camStatus.camInfo.name === sessionInfo.camera) {
+        if(camStatus.camInfo.name === userInfo.camera) {
             commonService.setSession('camStatus',camStatus.camInfo)
             if(camStatus.camInfo.status === 2 && camLocalStatus.status != 2) {
                 if(videoQueue[playIndex].status != 'playing') {  
@@ -233,17 +235,16 @@ angular.module('neoviewApp')
                 $video[0].play();    
             }
         }
-        commonService.setSession('camStatus', camStatus.camInfo)
     });
 
     //Its for discharge patient. Clear localstorage and setwith a new info
     socket.on('ChangeCamera', function(camInfo) {
-        if(camInfo.id === sessionInfo.id) {
+        if(camInfo.id === userInfo.id) {
             if(camInfo.camera == 'null' || !camInfo.camera) {
                 commonService.notification("Camera is not available. Try after some time");
             }    
             commonService.setSession('users', camInfo)
-            sessionInfo = camInfo;
+            userInfo = camInfo;
             setLocalData(camInfo);
             pushIndex=0; 
             playIndex=0;

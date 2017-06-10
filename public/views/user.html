@@ -19,7 +19,7 @@
         <option value="">No Camera</option>
       </select></br>
 
-      <button type="submit" class="btn btn-primary" style="width:75px;" ng-click="register(user, newFlg)" ng-disabled="loginForm.$invalid">Save</button>
+      <button type="submit" class="btn btn-primary" style="width:75px;" ng-click="register(user, newFlg, loginForm.$valid)">Save</button>
       <button class="btn btn-warning" ng-click="cancel()" style="width:75px;">Reset</button>
       <button class="btn btn-success" ng-click="backClick()" style="width:75px;">Back</button></br>
       <span ng-if="errorMsg" class="error-msg">{{errorMsg}}</span></br>

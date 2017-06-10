@@ -41,30 +41,34 @@ angular.module('neoviewApp')
 								  	break;
 	}
 
-	$scope.register = function (user, newFlg) {
+	$scope.register = function (user, newFlg, isvalid) {
 		$scope.sucMsg = "";
 		$scope.errorMsg = "";
-		if(newFlg) {
-			user.role = 1;
-			Restangular.all('user').post(user, {}).then(function(res) {
-				$scope.sucMsg="User created successfully";
-				$scope.user = {};
-				$state.go("app.staffDashboard");
-			}, function(err) {
-				$scope.errorMsg = err.data;
-			});
+		if(!isvalid) {
+			$scope.errorMsg = "Form is invalid"
 		} else {
-			if(user.camera != userCam) {
-				var user = user.plain(),
-					userType = 'staff',
-					userInfo = {};
-				userInfo.email = user.email;
-				userInfo.camera = user.camera;	
-				commonService.openNotificationModal(user,userInfo,userType);
-			} else {
-				Restangular.all('user').all($stateParams.id).customPUT(userInfo).then(function(userInfo) {
+			if(newFlg) {
+				user.role = 1;
+				Restangular.all('user').post(user, {}).then(function(res) {
+					$scope.sucMsg="User created successfully";
+					$scope.user = {};
 					$state.go("app.staffDashboard");
+				}, function(err) {
+					$scope.errorMsg = err.data;
 				});
+			} else {
+				if(user.camera != userCam) {
+					var user = user.plain(),
+						userType = 'staff',
+						userInfo = {};
+					userInfo.email = user.email;
+					userInfo.camera = user.camera;	
+					commonService.openNotificationModal(user,userInfo,userType);
+				} else {
+					Restangular.all('user').all($stateParams.id).customPUT(userInfo).then(function(userInfo) {
+						$state.go("app.staffDashboard");
+					});
+				}
 			}
 		}
 	};

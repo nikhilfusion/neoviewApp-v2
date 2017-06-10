@@ -62,42 +62,46 @@ angular.module('neoviewApp')
 	}
 
 
-	$scope.register = function (user, newFlg) {
+	$scope.register = function (user, newFlg, isvalid) {
 		$scope.sucMsg = "";
 		$scope.errorMsg = "";
-		if(newFlg) {
-			if(user.role === 0) {
-				user.camera = "";
-			}
-			Restangular.all('user').post(user, {}).then(function(res) {
-				$scope.sucMsg="User created successfully";
-				$scope.user = {};
-				if(res.role === 0) {
-					$state.go("app.adminDashboard");
-				} else {
-					$state.go("app.adminPatientList");
+		if(!isvalid) {
+			$scope.errorMsg = "Form is invalid"
+		}else {
+			if(newFlg) {
+				if(user.role === 0) {
+					user.camera = "";
 				}
-			}, function(err) {
-				$scope.errorMsg = err.data;
-			});
-		} else {
-			if(user.camera != userCam) {
-				var user = user.plain(),
-					userType = 'admin',
-					userInfo = {};
-				userInfo.email = user.email;
-				userInfo.camera = user.camera;
-				commonService.openNotificationModal(user,userInfo,userType);
-			} else {
-				Restangular.all('user').all($stateParams.id).customPUT(userInfo).then(function(userInfo) {
-					if(userInfo.role === 0) {
+				Restangular.all('user').post(user, {}).then(function(res) {
+					$scope.sucMsg="User created successfully";
+					$scope.user = {};
+					if(res.role === 0) {
 						$state.go("app.adminDashboard");
 					} else {
 						$state.go("app.adminPatientList");
 					}
+				}, function(err) {
+					$scope.errorMsg = err.data;
 				});
+			} else {
+				if(user.camera != userCam) {
+					var user = user.plain(),
+						userType = 'admin',
+						userInfo = {};
+					userInfo.email = user.email;
+					userInfo.camera = user.camera;
+					commonService.openNotificationModal(user,userInfo,userType);
+				} else {
+					Restangular.all('user').all($stateParams.id).customPUT(userInfo).then(function(userInfo) {
+						if(userInfo.role === 0) {
+							$state.go("app.adminDashboard");
+						} else {
+							$state.go("app.adminPatientList");
+						}
+					});
+				}
 			}
-		}
+		} 		
 	};
 	$scope.editUser = function(userInfo) {
 		$state.go('app.adminUser', { id : userInfo.id });
