@@ -94,8 +94,6 @@ angular.module('neoviewApp')
                     }
                 }
             });
-        } else {
-            $state.go('login')
         }
     }
 
