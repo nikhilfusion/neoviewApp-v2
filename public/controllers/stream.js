@@ -67,11 +67,11 @@ angular.module('neoviewApp')
                 commonService.notification('Video getting ready for streaming. Please with a moment')
             } else {
                 playSrc = default_video;
-                commonService.notification('Camera is not available. Try after some time')
+                commonService.notification('Video stream is not ready. Try after some time')
             }
         } else {
             playSrc = default_video;
-            commonService.notification('Camera is not available. Try after some time')
+            commonService.notification('Video stream is not ready. Try after some time')
         }
         var timeOut=3000;
         setTimeout(function(){
