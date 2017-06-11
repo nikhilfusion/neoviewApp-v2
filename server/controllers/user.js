@@ -148,7 +148,7 @@ module.exports = function(ws, io) {
 
   this.signup = function(req, res) {
     var reqDt = req.body;
-    if(reqDt.username && reqDt.email && reqDt.role) {
+    if(reqDt.username && reqDt.email && (reqDt.role || reqDt.role == 0)) {
       reqDt.old_pswd = randomstring.generate({
         length: 8,
         charset: 'alphanumeric',
