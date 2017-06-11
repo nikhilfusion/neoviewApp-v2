@@ -206,6 +206,7 @@ angular.module('neoviewApp')
 
     //If we discharge the patient this code will execute
     socket.on('DeleteCamera', function(cameraInfo) {
+        userInfo = commonService.getSession('users')
         if(cameraInfo.camera === userInfo.camera) {
             $state.go('login');
         }
@@ -221,6 +222,7 @@ angular.module('neoviewApp')
 
     //Toggling camera on/off stage
     socket.on('ChangeCamStatus', function(camStatus) {
+        userInfo = commonService.getSession('users')
         commonService.closeModal();
         var camLocalStatus = commonService.getSession('camStatus')
         //need a test
@@ -245,7 +247,8 @@ angular.module('neoviewApp')
 
     //Its for discharge patient. Clear localstorage and setwith a new info
     socket.on('ChangeCamera', function(camInfo) {
-        if(camInfo.id === userInfo.id) {
+        userInfo = commonService.getSession('users')
+        if(camInfo.id === userInfo.id && userInfo.role == 0) {
             if(camInfo.camera == 'null' || !camInfo.camera) {
                 commonService.notification("Camera is not available. Try after some time");
             }    
