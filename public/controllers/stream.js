@@ -153,14 +153,19 @@ angular.module('neoviewApp')
             count++;
         }
         $video.attr('src', playSrc);
-        $video[0].play().then(function() {
-            if(!backMsg) {
-                commonService.notification('Welcome back')
-                backMsg = true;
-            }
-        }, function(err) {
-            console.log("err is ", err);
-        })
+        if(playSrc != default_video) {
+            $video[0].play().then(function() {
+                if(!backMsg) {
+                    commonService.notification('Welcome back')
+                    backMsg = true;
+                }
+            }, function(err) {
+                console.log("err is ", err);
+            })    
+        } else {
+            $video[0].play();
+        }
+        
     };
 
     //Only pushIndex updates here
