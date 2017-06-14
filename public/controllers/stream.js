@@ -2,7 +2,7 @@ angular.module('neoviewApp')
 .controller('streamController', ['$scope', 'socket', '$window', 'Restangular', 'commonService', '$rootScope', '$state', '$timeout', '$rootScope', 
     function($scope, socket, $window, Restangular, commonService, $rootScope, $state, $timeout, $rootScope) {
     var pushIndex=0, playIndex=0, queueLength = 5, videoQueue = [], playSrc,timerID,count=0,
-    default_video = 'videos/default.mp4', playing = false;
+    default_video = 'videos/default.mp4', playing = false,
     openTab = false,backMsg = false,
     userInfo = commonService.getSession('users'),
     camLocalStatus,
