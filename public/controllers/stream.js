@@ -165,7 +165,10 @@ angular.module('neoviewApp')
             stopBlinking();
             playing = false;
         }
+        console.log("playing is ", playing);
+        console.log("backMsg is ", backMsg);
         if(playing && backMsg) {
+            console.log("document.hidden", document.hidden);
             if(document.hidden) {
                 StartBlinking('Video is ready');
             } else {
@@ -258,7 +261,7 @@ angular.module('neoviewApp')
     //Its for discharge patient. Clear localstorage and setwith a new info
     socket.on('ChangeCamera', function(camInfo) {
         userInfo = commonService.getSession('users')
-        if(camInfo.id === userInfo.id && userInfo.role == 0) {
+        if(camInfo.id === userInfo.id && userInfo.role == 1) {
             if(camInfo.camera == 'null' || !camInfo.camera) {
                 commonService.notification("Camera is not available. Try after some time");
             }    
@@ -326,13 +329,18 @@ angular.module('neoviewApp')
     })();
     
     vis(function(){
-        if(vis() && playing && backMsg) {
-           if(commonService.chkModal()) {
-                commonService.closeModal();
+        console.log("playing is ", playing);
+        console.log("backMsg is ", backMsg);
+        if(playing && backMsg) {
+            if(vis()){
+               if(commonService.chkModal()) {
+                    commonService.closeModal();
+                }
+                commonService.notification("Welcome back");
+                backMsg = false;  
+            } else {
+               StartBlinking('Video is ready');
             }
-            commonService.notification("Welcome back");
-            stopBlinking();
-            backMsg = false; 
         }
     });
 
