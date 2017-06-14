@@ -3,7 +3,7 @@ angular.module('neoviewApp')
     function($scope, socket, $window, Restangular, commonService, $rootScope, $state, $timeout, $rootScope) {
     var pushIndex=0, playIndex=0, queueLength = 5, videoQueue = [], playSrc,timerID,count=0,
     default_video = 'videos/default.mp4',
-    openTab = false,backMsg = true,
+    openTab = false,backMsg = false,
     userInfo = commonService.getSession('users'),
     camLocalStatus,
     $video = $('#video'),
@@ -118,10 +118,8 @@ angular.module('neoviewApp')
         if(videoQueue.length > 0 && camLocalStatus.status === 2) {
             if(playSrc === default_video){
                 if(videoQueue[(playIndex)%queueLength].src && videoQueue[(playIndex)%queueLength].status != 'played' && checkUpcomingVideo(playIndex)) {
-                    chkVideo();
                     playSrc= 'videos/' + userInfo.camera + '/' + videoQueue[playIndex%queueLength].src;
-                    openTab = false;
-                    backMsg = false;
+                    backMsg = true;
                     if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status === 'playing') {
                         videoQueue[(playIndex+queueLength-1)%queueLength].status = 'played'
                     }
@@ -155,15 +153,19 @@ angular.module('neoviewApp')
         $video.attr('src', playSrc);
         if(playSrc != default_video) {
             $video[0].play().then(function() {
-                if(!backMsg) {
+                openTab = false;
+                if(backMsg) {
                     commonService.notification('Welcome back')
-                    backMsg = true;
+                    backMsg = false;
                 }
+                chkBlinking();
             }, function(err) {
+                stopBlinking();
                 console.log("err is ", err);
             })    
         } else {
             $video[0].play();
+            stopBlinking();
         }
         
     };
@@ -212,7 +214,7 @@ angular.module('neoviewApp')
         }
     });
 
-    function StopBlinking() {
+    function stopBlinking() {
         if(blinkHandler) {
             clearTimeout(blinkHandler);
         }
@@ -238,7 +240,7 @@ angular.module('neoviewApp')
                 }    
             } else {
                 playSrc = default_video;
-                StopBlinking();
+                stopBlinking();
                 $video.attr('src', playSrc);
                 $video[0].play();    
             }
@@ -260,6 +262,7 @@ angular.module('neoviewApp')
             videoQueue = [];
             $video.attr('src', default_video);
             $video[0].play();
+            stopBlinking();
         }
     })
 
@@ -316,17 +319,17 @@ angular.module('neoviewApp')
     
     vis(function(){
         if(vis()) {
-           StopBlinking(); 
+           stopBlinking(); 
         }
     });
 
-    function chkVideo() {
-        if(document.hidden && backMsg) {
+    function chkBlinking() {
+        if(document.hidden) {
             StartBlinking('Video is ready');
         }    
-        if(commonService.chkModal()) {
-            commonService.closeModal();
-        }    
+        // if(commonService.chkModal()) {
+        //     commonService.closeModal();
+        // }    
     };    
     
 }]);
