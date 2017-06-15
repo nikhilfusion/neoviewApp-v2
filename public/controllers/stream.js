@@ -153,8 +153,21 @@ angular.module('neoviewApp')
         $video.attr('src', playSrc);
         if(playSrc != default_video) {
             $video[0].play().then(function() {
-                openTab = false;
-                playing = true;                
+                playing = true;
+                if(backMsg) {
+                    console.log("document.hidden", document.hidden);
+                    if(document.hidden) {
+                        StartBlinking('Video is ready');
+                    } else {
+                        if(commonService.chkModal()) {
+                            commonService.closeModal();
+                        }
+                        commonService.notification("Welcome back");
+                        stopBlinking();
+                        backMsg = false;
+                        openTab = false;
+                    }    
+                }              
             }, function(err) {
                 stopBlinking();
                 console.log("err is ", err);
@@ -164,21 +177,6 @@ angular.module('neoviewApp')
             $video[0].play();
             stopBlinking();
             playing = false;
-        }
-        console.log("playing is ", playing);
-        console.log("backMsg is ", backMsg);
-        if(playing && backMsg) {
-            console.log("document.hidden", document.hidden);
-            if(document.hidden) {
-                StartBlinking('Video is ready');
-            } else {
-                if(commonService.chkModal()) {
-                    commonService.closeModal();
-                }
-                commonService.notification("Welcome back");
-                stopBlinking();
-                backMsg = false;
-            }    
         }
     };
 
@@ -342,15 +340,5 @@ angular.module('neoviewApp')
                StartBlinking('Video is ready');
             }
         }
-    });
-
-    // function chkBlinking() {
-    //     if(document.hidden) {
-    //         StartBlinking('Video is ready');
-    //     }    
-    //     // if(commonService.chkModal()) {
-    //     //     commonService.closeModal();
-    //     // }    
-    // };    
-    
+    });    
 }]);
