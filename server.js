@@ -1,17 +1,20 @@
 var express = require('express'),
     app = express(),
-    http = require('http').Server(app),
+    fs = require('fs'),
+    privateKey  = fs.readFileSync('ssl/key.pem', 'utf8'),
+    certificate = fs.readFileSync('ssl/cert.pem', 'utf8'),
+    credentials = {key: privateKey, cert: certificate},
+    https = require('https').createServer(credentials, app),
     _ = require("underscore"),
-    io = require('socket.io')(http),
+    io = require('socket.io')(https),
     bodyParser = require('body-parser'),
     WebSocket = require('ws'),
     config = require('./server/config'),
-    ws = new WebSocket('ws://' + config.host + ':' + config.port + '/userwebsocket'),
+    ws = new WebSocket('wss://' + config.host + ':' + config.port + '/userwebsocket'),
     routes = require('./routes')(app, ws, io),
     port = process.env.PORT || 3000,
-    host = process.env.HOST || "127.0.0.1",
+    host = process.env.HOST || "https://127.0.0.1",
     chokidar = require('chokidar'),
-    fs = require('fs'),
     dir = 'videos/',
     watcher = chokidar.watch(dir, {ignored: /^\./, persistent: true});    
 app.use('/', express.static(__dirname));
@@ -30,7 +33,7 @@ io.on('connection', function(socket){
   });
 });
 
-http.listen(port, function() {
+https.listen(port, function() {
   console.log("app is running on port " + port);
 });
 
