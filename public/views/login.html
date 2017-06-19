@@ -8,6 +8,7 @@
 	    <div class="warning">Username is case sensitive</div>
 	    <label><b>Password</b></label>
 	    <input type="password" placeholder="Enter Password" name="psw" ng-model="user.password" required>
+	    <div class="warning">Password is case sensitive</div>
 	    <button type="submit" style="cursor:pointer;" ng-click="login(user)" ng-disabled="loginForm.$invalid">Login</button>
 	    <span ng-if="errorMsg" class="error-msg">{{errorMsg}}</span></br>
 	    <a style="cursor:pointer;text-decoration: none;" ui-sref="forgot">Forgot Password?</a>

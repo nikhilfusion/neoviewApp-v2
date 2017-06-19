@@ -82,7 +82,7 @@ angular.module('neoviewApp')
                 videoQueue[pushIndex].status = 'Not Played';
                 pushIndex = (pushIndex+1)%queueLength;
             })
-            if(camLocalStatus.status === 2) {
+            if(camLocalStatus.status == 2) {
                 playSrc = 'videos/' + userInfo.camera + '/' + videoQueue[playIndex].src;
                 videoQueue[playIndex].status = 'playing';
                 playIndex= (playIndex+1)%queueLength;
@@ -125,7 +125,7 @@ angular.module('neoviewApp')
         if(cookie && cookie.camera) {
             Restangular.one('getCamStatus').get({},{}).then(function(camStatus) {
                 for(var i=0;i<camStatus.length;i++) {
-                    if(camStatus[i].name === cookie.camera) {
+                    if(camStatus[i].name == cookie.camera) {
                         camLocalStatus = camStatus[i];
                         commonService.setSession('camStatus', camStatus[i])
                     }
@@ -138,7 +138,7 @@ angular.module('neoviewApp')
     function checkUpcomingVideo() {
         var i=0;
         while(i<3) {
-            if(!videoQueue[(playIndex+i+queueLength)%queueLength] || !videoQueue[(playIndex+i+queueLength)%queueLength].src || videoQueue[(playIndex+i+queueLength)%queueLength].status === 'played') {
+            if(!videoQueue[(playIndex+i+queueLength)%queueLength] || !videoQueue[(playIndex+i+queueLength)%queueLength].src || videoQueue[(playIndex+i+queueLength)%queueLength].status == 'played') {
                 return false
             }
             i++;
@@ -150,14 +150,15 @@ angular.module('neoviewApp')
 
     function nextVideo() {
         stopTimer();
+        playing = false;
         camLocalStatus = commonService.getSession('camStatus')
         //need a test fun
-        if(videoQueue.length > 0 && camLocalStatus.status === 2) {
-            if(playSrc === default_video){
+        if(videoQueue.length > 0 && camLocalStatus.status == 2) {
+            if(playSrc == default_video){
                 if(videoQueue[(playIndex)%queueLength] && videoQueue[(playIndex)%queueLength].src && videoQueue[(playIndex)%queueLength].status != 'played' && checkUpcomingVideo(playIndex)) {
                     playSrc= 'videos/' + userInfo.camera + '/' + videoQueue[playIndex%queueLength].src;
                     backMsg = true;
-                    if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status === 'playing') {
+                    if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status == 'playing') {
                         videoQueue[(playIndex+queueLength-1)%queueLength].status = 'played'
                     }
                     //play next index
@@ -169,7 +170,7 @@ angular.module('neoviewApp')
             } else {
                 if(videoQueue[(playIndex)%queueLength] && videoQueue[(playIndex)%queueLength].src && videoQueue[(playIndex)%queueLength].status != 'played') {
                     playSrc= 'videos/' + userInfo.camera + '/' + videoQueue[(playIndex)%queueLength].src;
-                    if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status === 'playing') {
+                    if(videoQueue[(playIndex+queueLength-1)%queueLength] && videoQueue[(playIndex+queueLength-1)%queueLength].status && videoQueue[(playIndex+queueLength-1)%queueLength].status == 'playing') {
                         videoQueue[(playIndex+queueLength-1)%queueLength].status = 'played'
                     }
                     //play next index
@@ -202,19 +203,15 @@ angular.module('neoviewApp')
                     }
                 }              
             }, function(err) {
-                playing = false;
                 stopBlinking();
                 count++;
                 openEducationTab();
-                playing = false;
             })    
         } else {
-            playing = false;
             count++;
             openEducationTab();
             $video[0].play();
             stopBlinking();
-            playing = false;
         }
     };
 
@@ -225,10 +222,10 @@ angular.module('neoviewApp')
             camInfo = filePath.split('videos/')[1],
             cam = camInfo.split('/')[0],
             fileName = camInfo.split('/')[1];  
-        if(cam === userInfo.camera && fileName) {
+        if(cam == userInfo.camera && fileName) {
             if(videoQueue.length >0) {
                 if(videoQueue[pushIndex] && videoQueue[pushIndex].status) {
-                    if(videoQueue[pushIndex].status === 'playing') {
+                    if(videoQueue[pushIndex].status == 'playing') {
                         videoQueue[(pushIndex+1)%queueLength].src = fileName;
                         videoQueue[(pushIndex+1)%queueLength].status = 'Not Played';
                     } else {
@@ -257,7 +254,7 @@ angular.module('neoviewApp')
     //If we discharge the patient this code will execute
     socket.on('DeleteCamera', function(cameraInfo) {
         userInfo = commonService.getSession('users')
-        if(cameraInfo.camera === userInfo.camera) {
+        if(cameraInfo.camera == userInfo.camera) {
             $state.go('login');
         }
     });
@@ -274,23 +271,22 @@ angular.module('neoviewApp')
         commonService.closeModal();
         var camLocalStatus = commonService.getSession('camStatus')
         //need a test
-        if(camStatus.camInfo.name === userInfo.camera) {
-            commonService.setSession('camStatus',camStatus.camInfo)
-            if(camStatus.camInfo.status === 2 && camLocalStatus.status != 2) {
+        if(camStatus.camInfo.name == userInfo.camera) {
+            commonService.setSession('camStatus',camStatus.camInfo);
+            playing = false;
+            if(camStatus.camInfo.status == 2 && camLocalStatus.status != 2) {
                 if(videoQueue[playIndex].status != 'playing') {  
                     nextVideo();
                 } else {
                     playSrc = default_video;
                     $video.attr('src', playSrc);
                     count++;
+                    stopBlinking();
                     openEducationTab();
                     $video[0].play();
-                    playing = false;
-                    stopBlinking();
                 }    
             } else {
                 playSrc = default_video;
-                playing = false;
                 stopBlinking();
                 $video.attr('src', playSrc);
                 count++;
@@ -303,7 +299,7 @@ angular.module('neoviewApp')
     //Its for discharge patient. Clear localstorage and setwith a new info
     socket.on('ChangeCamera', function(camInfo) {
         userInfo = commonService.getSession('users')
-        if(camInfo.id === userInfo.id && userInfo.role == 1) {
+        if(camInfo.id == userInfo.id && userInfo.role == 1) {
             if(camInfo.camera == 'null' || !camInfo.camera) {
                 commonService.notification("Camera is not available. Try after some time");
             }    
@@ -322,7 +318,7 @@ angular.module('neoviewApp')
 
     function openEducationTab() {
         let blogOpened = commonService.getSession('blogOpened');
-        if(count !=0 && count%2 == 0 && !blogOpened) {
+        if(count !=0 && count%2 == 0 && !blogOpened && !playing) {
             commonService.openBlog();
             setTimeout(function(){
                 commonService.closeModal(); 
@@ -372,5 +368,11 @@ angular.module('neoviewApp')
                 backMsg = false;
             }
         }
+    });
+
+    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
+        if(fromState.name == 'app.stream') {
+            $video[0].pause();;
+        } 
     });
 }]);
