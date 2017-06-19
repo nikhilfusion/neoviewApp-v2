@@ -269,6 +269,7 @@ angular.module('neoviewApp')
     socket.on('ChangeCamStatus', function(camStatus) {
         userInfo = commonService.getSession('users')
         commonService.closeModal();
+        backMsg = false;
         var camLocalStatus = commonService.getSession('camStatus')
         //need a test
         if(camStatus.camInfo.name == userInfo.camera) {
