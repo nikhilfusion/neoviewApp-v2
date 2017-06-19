@@ -307,11 +307,12 @@ angular.module('neoviewApp')
             commonService.setSession('users', camInfo)
             userInfo = camInfo;
             setLocalData(camInfo);
+            backMsg = false;
+            playing = false;
             pushIndex=0; 
             playIndex=0;
             videoQueue = [];
             $video.attr('src', default_video);
-            playing = false;
             $video[0].play();
             stopBlinking();
         }
