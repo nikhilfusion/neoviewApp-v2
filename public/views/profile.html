@@ -5,7 +5,7 @@
       <label><b>Current Password</b></label>
       <input type="password" placeholder="Current Password" ng-model="patient.password" name="curr_pswd" required>
       <label><b>New Password</b></label>
-      <input type="password" placeholder="New Password" ng-model="patient.new_password" ng-trim="false" ng-pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/" name="new_pswd" required>
+      <input type="password" placeholder="New Password" ng-model="patient.new_password" ng-pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/" name="new_pswd" required>
       <div class="warning" ng-if="pswdForm.new_pswd.$invalid">
         Password should contain at least 8 characters and should include an uppercase, lowercase, and digit character
       </div>
