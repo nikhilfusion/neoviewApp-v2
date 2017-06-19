@@ -270,11 +270,11 @@ angular.module('neoviewApp')
         userInfo = commonService.getSession('users')
         commonService.closeModal();
         backMsg = false;
+        playing = false;
         var camLocalStatus = commonService.getSession('camStatus')
         //need a test
         if(camStatus.camInfo.name == userInfo.camera) {
             commonService.setSession('camStatus',camStatus.camInfo);
-            playing = false;
             if(camStatus.camInfo.status == 2 && camLocalStatus.status != 2) {
                 if(videoQueue[playIndex].status != 'playing') {  
                     nextVideo();
