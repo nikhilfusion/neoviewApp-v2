@@ -263,7 +263,7 @@ angular.module('neoviewApp')
     });
 
     function stopBlinking() {
-        clearTimeout(blinkHandler);
+        //clearTimeout(blinkHandler);
         $rootScope.title = "NeoviewApp";
         $rootScope.$apply();
     };
@@ -332,27 +332,29 @@ angular.module('neoviewApp')
 
     var newTab = $rootScope.$on('newTab', function(){
         commonService.setSession('blogOpened', true);
-        $window.open($window.location.origin + '/default', '_blank');
+        $window.open('http://www.infantcentre.ie/our-research/research-studies/neoview', '_blank');
     })
     
     $scope.$on('$destroy', function () {
       newTab();
     });
 
-    function BlinkIteration() {
-        if(!blinkLogicState)
-        {
-            $rootScope.title = "Video is ready";
-        } else {
-            $rootScope.title = "NeoviewApp";
-        }
-        $rootScope.$apply();
-        blinkLogicState = !blinkLogicState;  
-        blinkHandler = setTimeout(BlinkIteration, 1000);
-    };
+    // function BlinkIteration() {
+    //     if(!blinkLogicState)
+    //     {
+    //         $rootScope.title = "Video is ready";
+    //     } else {
+    //         $rootScope.title = "NeoviewApp";
+    //     }
+    //     $rootScope.$apply();
+    //     blinkLogicState = !blinkLogicState;  
+    //     blinkHandler = setTimeout(BlinkIteration, 1000);
+    // };
 
     function startBlinking(title) {
-        BlinkIteration();
+        //BlinkIteration();
+        $rootScope.title = title;
+        $rootScope.$apply();
     };
 
 
