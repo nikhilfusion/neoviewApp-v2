@@ -50,7 +50,7 @@ angular.module('neoviewApp')
 			if(newFlg) {
 				user.role = 1;
 				Restangular.all('user').post(user, {}).then(function(res) {
-					$scope.sucMsg="User created successfully";
+					$scope.sucMsg="User created successful";
 					$scope.user = {};
 					$state.go("app.staffDashboard");
 				}, function(err) {

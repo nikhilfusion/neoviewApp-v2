@@ -73,7 +73,7 @@ angular.module('neoviewApp')
 					user.camera = "";
 				}
 				Restangular.all('user').post(user, {}).then(function(res) {
-					$scope.sucMsg="User created successfully";
+					$scope.sucMsg="User created successful";
 					$scope.user = {};
 					if(res.role === 0) {
 						$state.go("app.adminDashboard");

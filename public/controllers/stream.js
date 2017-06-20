@@ -86,7 +86,7 @@ angular.module('neoviewApp')
                 playSrc = 'videos/' + userInfo.camera + '/' + videoQueue[playIndex].src;
                 videoQueue[playIndex].status = 'playing';
                 playIndex= (playIndex+1)%queueLength;
-                commonService.notification('Video getting ready for streaming. Please with a moment')
+                commonService.notification('Video getting ready for streaming. Wait a moment')
             } else {
                 playSrc = default_video;
                 commonService.notification('Video stream is not ready. Try after some time')
