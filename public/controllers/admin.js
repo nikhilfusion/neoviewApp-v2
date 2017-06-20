@@ -69,7 +69,6 @@ angular.module('neoviewApp')
 		var valid = true;
 		if(isvalid)  {
 			angular.forEach(user, function(value, key) {
-  				debugger;
   				if(value.indexOf(' ') >= 0) {
   					valid = false;
 					$scope['loginForm'][key]['$invalid'] = true; 					
