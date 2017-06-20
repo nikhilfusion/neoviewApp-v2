@@ -295,14 +295,23 @@ ul.alert-dropdown {
 
 .suc-msg {
     color:green;
+    font-size: 12px;
 }
 .err-msg {
     color: red;
+    font-size: 12px;
 }
 .warning {
     top: 0px;
     margin-bottom: 10px;
     color: blue;
+    font-size: 12px;
+    margin-top: -10px;
+}
+.error {
+    top: 0px;
+    margin-bottom: 10px;
+    color: red;
     font-size: 12px;
     margin-top: -10px;
 }

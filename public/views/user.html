@@ -1,18 +1,20 @@
 <div id="page-wrapper">
   <h2 ng-if="newFlg">New User</h2>
   <h2 ng-if="!newFlg">Transfer Patient</h2>
-  <form name="loginForm" style="width: 500px;">
+  <form name="loginForm" style="width: 500px;" novalidate>
     <div class="container" style="width: 400px;">
       <label><b>Username</b></label>
-      <input type="text" ng-if="newFlg" placeholder="Enter Username" name="uname" ng-model="user.username" ng-minlength="6" ng-pattern="/^\[a-z]*$/" required novalidate>
-      <input type="text"  ng-if="!newFlg" placeholder="Enter Username" name="uname" ng-model="user.username" ng-minlength="6" required novalidate disabled>
-      <div class="warning">Only lowercase alphabets, Min. 6 characters</div>
+      <input type="text" placeholder="Enter Username" name="username" ng-model="user.username" ng-minlength="6" ng-pattern="/^[a-z]*$/" ng-trim="false" ng-disabled="!newFlg" required>
+      <div class="warning">Only lowercase alphabets, No space allowed, Min. 6 characters</div>
+      <div class="error" ng-if="submitted && loginForm.username.$invalid">Username is invalid</div>
       <label><b>Email</b></label>
-      <input type="text" ng-disabled="!newFlg" placeholder="Enter Email" name="email" ng-model="user.email" ng-pattern="/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/" required>
+      <input type="text" ng-disabled="!newFlg" placeholder="Enter Email" name="email" ng-model="user.email" ng-pattern="/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/" ng-trim="false" required>
+      <div class="error" ng-if="submitted && loginForm.email.$invalid">email is invalid</div>
       <label ng-if="userType === 2"><b>User Type</b></label>
       <select ng-if="userType === 2" name="type" ng-style="!newFlg && { 'background-color':'white'}" ng-model="user.role" ng-options="user.id as user.name for user in users" ng-disabled="!newFlg" ng-change="changeUser(user.role)" ng-style={} required>
         <option value="">Choose a user</option>
       </select></br>
+      <span class="err-msg" ng-if="submitted && loginForm.type.$error.required">User type is required</span>
       <label ng-if="userType === 0 || user.role === 1"><b>Camera</b></label>
       <select ng-if="userType === 0 || user.role === 1"  ng-model="user.camera" ng-options="camera as camera for camera in cameras">
         <option value="">No Camera</option>

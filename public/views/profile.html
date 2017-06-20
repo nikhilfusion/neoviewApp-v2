@@ -7,10 +7,10 @@
       <label><b>New Password</b></label>
       <input type="password" placeholder="New Password" ng-model="patient.new_password" ng-pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/" name="new_pswd" required>
       <div class="warning" ng-if="pswdForm.new_pswd.$invalid">
-        Password should contain at least 8 characters and should include an uppercase, lowercase, and digit character
+        Password should contain at least 8 characters and should include an uppercase, lowercase, digit character and no space.
       </div>
       <label><b>Confirm Password</b></label>
-      <input type="password" placeholder="Confirm Password" ng-model="patient.conf_password" name="conf_pswd" password-verify="patient.new_password" required>
+      <input type="password" placeholder="Confirm Password" ng-model="patient.conf_password" name="conf_pswd" password-verify="patient.new_password" ng-trim="false" required>
       <span ng-if="pswdForm.conf_pswd.$dirty && pswdForm.conf_pswd.$error.passwordVerify" style="color:red;">*Password Mismatch</span></br>	
       <button type="submit" class="btn btn-primary" style="width:75px;" ng-click="setPswd(patient)" ng-disabled="pswdForm.$invalid">Save</button>
       <button class="btn btn-warning" ng-click="cancelPswd()" style="width:75px;">Reset</button></br>

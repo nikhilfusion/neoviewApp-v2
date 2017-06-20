@@ -63,42 +63,53 @@ angular.module('neoviewApp')
 
 
 	$scope.register = function (user, newFlg, isvalid) {
+		$scope.submitted = true
 		$scope.sucMsg = "";
 		$scope.errorMsg = "";
-		if(!isvalid) {
-			$scope.errorMsg = "Form is invalid"
-		}else {
-			if(newFlg) {
-				if(user.role === 0) {
-					user.camera = "";
-				}
-				Restangular.all('user').post(user, {}).then(function(res) {
-					$scope.sucMsg="User created successful";
-					$scope.user = {};
-					if(res.role === 0) {
-						$state.go("app.adminDashboard");
-					} else {
-						$state.go("app.adminPatientList");
+		var valid = true;
+		if(isvalid)  {
+			angular.forEach(user, function(value, key) {
+  				debugger;
+  				if(value.indexOf(' ') >= 0) {
+  					valid = false;
+					$scope['loginForm'][key]['$invalid'] = true; 					
+  				} else {
+  					$scope['loginForm'][key]['$invalid'] = false; 					
+  				}
+			});
+			if(valid) {
+				if(newFlg) {
+					if(user.role === 0) {
+						user.camera = "";
 					}
-				}, function(err) {
-					$scope.errorMsg = err.data;
-				});
-			} else {
-				if(user.camera != userCam) {
-					var user = user.plain(),
-						userType = 'admin',
-						userInfo = {};
-					userInfo.email = user.email;
-					userInfo.camera = user.camera;
-					commonService.openNotificationModal(user,userInfo,userType);
-				} else {
-					Restangular.all('user').all($stateParams.id).customPUT(userInfo).then(function(userInfo) {
-						if(userInfo.role === 0) {
+					Restangular.all('user').post(user, {}).then(function(res) {
+						$scope.sucMsg="User created successful";
+						$scope.user = {};
+						if(res.role === 0) {
 							$state.go("app.adminDashboard");
 						} else {
 							$state.go("app.adminPatientList");
 						}
+					}, function(err) {
+						$scope.errorMsg = err.data;
 					});
+				} else {
+					if(user.camera != userCam) {
+						var user = user.plain(),
+							userType = 'admin',
+							userInfo = {};
+						userInfo.email = user.email;
+						userInfo.camera = user.camera;
+						commonService.openNotificationModal(user,userInfo,userType);
+					} else {
+						Restangular.all('user').all($stateParams.id).customPUT(userInfo).then(function(userInfo) {
+							if(userInfo.role === 0) {
+								$state.go("app.adminDashboard");
+							} else {
+								$state.go("app.adminPatientList");
+							}
+						});
+					}
 				}
 			}
 		} 		

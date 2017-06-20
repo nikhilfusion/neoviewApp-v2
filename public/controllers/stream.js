@@ -203,15 +203,21 @@ angular.module('neoviewApp')
                     }
                 }              
             }, function(err) {
+                if(commonService.chkModal()) {
+                    commonService.closeModal();
+                }
                 stopBlinking();
                 count++;
                 openEducationTab();
             })    
         } else {
+            if(commonService.chkModal()) {
+                commonService.closeModal();
+            }
+            stopBlinking();
             count++;
             openEducationTab();
             $video[0].play();
-            stopBlinking();
         }
     };
 
