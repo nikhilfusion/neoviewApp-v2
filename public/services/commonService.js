@@ -134,6 +134,7 @@ angular.module('neoviewApp')
 	    clearSession() {
 	    	$sessionStorage.remove('users');
 	    	$sessionStorage.remove('camStatus');
+	    	$sessionStorage.remove('blogOpened');
 	    }
 	}
 }]);

@@ -4,21 +4,19 @@
   <form name="loginForm" style="width: 500px;">
     <div class="container" style="width: 400px;">
       <label><b>Username</b></label>
-      <input type="text" placeholder="Enter Username" name="uname" ng-model="user.username" ng-disabled="!newFlg" ng-minlength="6" ng-pattern="/^[a-z]+$/" required novalidate>
+      <input type="text" ng-if="newFlg" placeholder="Enter Username" name="uname" ng-model="user.username" ng-minlength="6" ng-pattern="/^\[a-z]*$/" required novalidate>
+      <input type="text"  ng-if="!newFlg" placeholder="Enter Username" name="uname" ng-model="user.username" ng-minlength="6" required novalidate disabled>
       <div class="warning">Only lowercase alphabets, Min. 6 characters</div>
       <label><b>Email</b></label>
       <input type="text" ng-disabled="!newFlg" placeholder="Enter Email" name="email" ng-model="user.email" ng-pattern="/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/" required>
-
       <label ng-if="userType === 2"><b>User Type</b></label>
-      <select ng-if="userType === 2" ng-style="!newFlg && { 'background-color':'white'}" ng-model="user.role" ng-options="user.id as user.name for user in users" ng-disabled="!newFlg" ng-change="changeUser(user.role)" ng-style={} required>
+      <select ng-if="userType === 2" name="type" ng-style="!newFlg && { 'background-color':'white'}" ng-model="user.role" ng-options="user.id as user.name for user in users" ng-disabled="!newFlg" ng-change="changeUser(user.role)" ng-style={} required>
         <option value="">Choose a user</option>
       </select></br>
-      
       <label ng-if="userType === 0 || user.role === 1"><b>Camera</b></label>
       <select ng-if="userType === 0 || user.role === 1"  ng-model="user.camera" ng-options="camera as camera for camera in cameras">
         <option value="">No Camera</option>
       </select></br>
-
       <button type="submit" class="btn btn-primary" style="width:75px;" ng-click="register(user, newFlg, loginForm.$valid)">Save</button>
       <button class="btn btn-warning" ng-click="cancel()" style="width:75px;">Reset</button>
       <button class="btn btn-success" ng-click="backClick()" style="width:75px;">Back</button></br>

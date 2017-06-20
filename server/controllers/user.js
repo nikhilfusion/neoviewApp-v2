@@ -126,7 +126,7 @@ module.exports = function(ws, io) {
           resInfo['old_pswd'] = old_pswd;
           db.run("UPDATE users SET password = ? WHERE id = ?" , [new_password, parseInt(resInfo.id)]);
           sendMail(resInfo, "Neoview Reset Password");
-          res.send("Email sent successfully");
+          res.send("Email sent successful");
         } else {
           res.status(404).send("Invalid username or password");
         }
@@ -139,7 +139,7 @@ module.exports = function(ws, io) {
     db.all("SELECT * from users  WHERE id=?", [parseInt(reqDt.id)], function(err,rows){
       if(rows.length > 0) {
         db.run("UPDATE users SET conn_flg = ? WHERE id = ?" , [false, parseInt(rows[0].id)]);
-        res.send("logout successfully");
+        res.send("logout successful");
       } else {
         res.send(err);
       }
@@ -227,7 +227,7 @@ module.exports = function(ws, io) {
           io.sockets.emit('ChangeCamera', newDt);
           flg = false;
         }
-        res.send("User updated successfully")
+        res.send("User updated successful")
       } else {
         res.status(404).send("User not found");
       }
@@ -252,7 +252,7 @@ module.exports = function(ws, io) {
         db.all("DELETE FROM users where id=?", [parseInt(req.params.id)], function(err, userRes) {
           if(!err) {
             io.sockets.emit('dltUser', userInfo[0])
-            res.send("User deleted successfully");
+            res.send("User deleted successful");
           } else {
             res.status(404).send("User not found");
           }

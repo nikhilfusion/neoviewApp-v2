@@ -24,6 +24,8 @@ $npm install && bower install
 5.run the server by
 $node server.js
 
-open the app in browser: 127.0.0.1:8080
+open the app in browser: https://127.0.0.1:8080
+
+export NODE_TLS_REJECT_UNAUTHORIZED=0
 
 **********************************************
