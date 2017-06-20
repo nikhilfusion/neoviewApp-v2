@@ -14,7 +14,7 @@ angular.module('neoviewApp')
 		};	
 		Restangular.all('resetPassword').customPUT(pswdDt).then(function(userInfo) {
 			$scope.patient = {};
-			$scope.sucMsg = "Password reset Succesfully.";
+			$scope.sucMsg = "Password reset Succesful.";
 		}, function(err) {
 			$scope.errMsg = "Check your password and try again.";
 		});			
