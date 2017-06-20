@@ -48,12 +48,14 @@ angular.module('neoviewApp')
 		var valid = true;
 		if(isvalid)  {
 			angular.forEach(user, function(value, key) {
-  				if(value && value.indexOf(' ') >= 0) {
-  					valid = false;
-					$scope['loginForm'][key]['$invalid'] = true; 					
-  				} else {
-  					$scope['loginForm'][key]['$invalid'] = false; 					
-  				}
+  				if(typeof(value) != 'number') {
+	  				if(value && value.indexOf(' ') >= 0) {
+	  					valid = false;
+						$scope['loginForm'][key]['$invalid'] = true; 					
+	  				} else {
+	  					$scope['loginForm'][key]['$invalid'] = false; 					
+	  				}
+	  			}
 			});
 			if(valid) {
 				if(newFlg) {
