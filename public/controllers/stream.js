@@ -86,14 +86,14 @@ angular.module('neoviewApp')
                 playSrc = 'videos/' + userInfo.camera + '/' + videoQueue[playIndex].src;
                 videoQueue[playIndex].status = 'playing';
                 playIndex= (playIndex+1)%queueLength;
-                commonService.notification('Video getting ready for streaming. Wait a moment')
+                commonService.notification('Video is getting ready, please wait a moment')
             } else {
                 playSrc = default_video;
-                commonService.notification('Video stream is not ready. Try after some time')
+                commonService.notification('Video stream is not ready. Please try after some time')
             }
         } else {
             playSrc = default_video;
-            commonService.notification('Video stream is not ready. Try after some time')
+            commonService.notification('Video stream is not ready. Please try after some time')
         }
         setTimeout(function(){
             commonService.closeModal();
@@ -376,6 +376,7 @@ angular.module('neoviewApp')
                 backMsg = false;
             }
         }
+
     });
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
