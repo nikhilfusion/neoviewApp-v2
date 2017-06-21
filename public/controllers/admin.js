@@ -38,7 +38,7 @@ angular.module('neoviewApp')
 								  	  break;
 		case 'app.adminUser' :  $scope.newFlg = false;
 								Restangular.one('user', $stateParams.id).get({}, {}).then(function(userInfo) {
-								  	$scope.user = userInfo;
+								  	$scope.user = userInfo.plain();
 								  	$scope.user.camera = $scope.user.camera === null ? "" : $scope.user.camera;
 								  	userCam = userInfo.camera;
 								  	Restangular.one('getCamera').get({}, {}).then(function(cameras) {
@@ -47,8 +47,8 @@ angular.module('neoviewApp')
 										if($scope.user.camera) {
 											$scope.cameras.push($scope.user.camera);
 										}
-									});	
-								  },function (err) {
+									});
+								},function (err) {
 								});
 								break;
 		case "app.adminCreateUser": $scope.newFlg = true;
@@ -69,14 +69,14 @@ angular.module('neoviewApp')
 		var valid = true;
 		if(isvalid)  {
 			angular.forEach(user, function(value, key) {
-  				if(typeof(value) != 'number') {
-  					if(value && value.indexOf(' ') >= 0) {
-  						valid = false;
+  				if(typeof(value) != 'number' && $scope['loginForm'][key]) {
+	  				if(value && value.indexOf(' ') >= 0) {
+	  					valid = false;
 						$scope['loginForm'][key]['$invalid'] = true; 					
-  					} else {
-  						$scope['loginForm'][key]['$invalid'] = false; 					
-  					}
-  				}	
+	  				} else {
+	  					$scope['loginForm'][key]['$invalid'] = false;
+	  				}
+	  			}
 			});
 			if(valid) {
 				if(newFlg) {
@@ -96,8 +96,7 @@ angular.module('neoviewApp')
 					});
 				} else {
 					if(user.camera != userCam) {
-						var user = user.plain(),
-							userType = 'admin',
+						var userType = 'admin',
 							userInfo = {};
 						userInfo.email = user.email;
 						userInfo.camera = user.camera;
