@@ -43,12 +43,15 @@ angular.module('neoviewApp')
     $video.one('loadeddata', function () { drawImage($video[0]); });
 
     $video.on('error', function(error) {
-        playSrc = default_video;
+        playing = false;
+        if(commonService.chkModal()) {
+            commonService.closeModal();
+        }
         stopBlinking();
+        playSrc = default_video;
         count++;
         openEducationTab();
         $video.attr('src', default_video);
-        playing = false;
         $video[0].play();
     });
 
@@ -202,13 +205,6 @@ angular.module('neoviewApp')
                         backMsg = false;
                     }
                 }              
-            }, function(err) {
-                if(commonService.chkModal()) {
-                    commonService.closeModal();
-                }
-                stopBlinking();
-                count++;
-                openEducationTab();
             })    
         } else {
             if(commonService.chkModal()) {
@@ -281,25 +277,12 @@ angular.module('neoviewApp')
         //need a test
         if(camStatus.camInfo.name == userInfo.camera) {
             commonService.setSession('camStatus',camStatus.camInfo);
-            if(camStatus.camInfo.status == 2 && camLocalStatus.status != 2) {
-                if(videoQueue[playIndex].status != 'playing') {  
-                    nextVideo();
-                } else {
-                    playSrc = default_video;
-                    $video.attr('src', playSrc);
-                    count++;
-                    stopBlinking();
-                    openEducationTab();
-                    $video[0].play();
-                }    
-            } else {
-                playSrc = default_video;
-                stopBlinking();
-                $video.attr('src', playSrc);
-                count++;
-                openEducationTab();
-                $video[0].play();    
-            }
+            playSrc = default_video;
+            stopBlinking();
+            $video.attr('src', playSrc);
+            count++;
+            openEducationTab();
+            $video[0].play();
         }
     });
 
