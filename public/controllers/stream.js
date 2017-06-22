@@ -49,10 +49,10 @@ angular.module('neoviewApp')
         }
         stopBlinking();
         playSrc = default_video;
-        count++;
-        openEducationTab();
         $video.attr('src', default_video);
         $video[0].play();
+        count++;
+        openEducationTab();
     });
 
     // copy video frame to canvas every 30 milliseconds
@@ -67,7 +67,7 @@ angular.module('neoviewApp')
         $state.go('login');
     }
      if(userInfo.camera == 'null' || !userInfo.camera) {
-        commonService.notification("No camera Selected");
+        commonService.notification("No camera assigned to your account");
     } else {
         socket.emit('cameraConnect', {'camera' : userInfo.camera});
     }  
@@ -108,15 +108,15 @@ angular.module('neoviewApp')
                 }, function(err) {
                     playing = false;
                     count++;
-                    openEducationTab();
                     stopBlinking()
+                    openEducationTab();
                 })    
             } else {
                 playing = false;
                 count++;
-                openEducationTab();
                 $video[0].play();
                 stopBlinking();
+                openEducationTab();
             }    
         }, 3000);
             
@@ -211,9 +211,9 @@ angular.module('neoviewApp')
                 commonService.closeModal();
             }
             stopBlinking();
+            $video[0].play();
             count++;
             openEducationTab();
-            $video[0].play();
         }
     };
 
@@ -280,9 +280,9 @@ angular.module('neoviewApp')
             playSrc = default_video;
             stopBlinking();
             $video.attr('src', playSrc);
+            $video[0].play();
             count++;
             openEducationTab();
-            $video[0].play();
         }
     });
 
@@ -309,7 +309,7 @@ angular.module('neoviewApp')
 
     function openEducationTab() {
         let blogOpened = commonService.getSession('blogOpened');
-        if(count !=0 && count%2 == 0 && !blogOpened && !playing) {
+        if(count !=0 && count%2 == 0 && !blogOpened && !playing && playSrc == 'default_video') {
             commonService.openBlog();
             setTimeout(function(){
                 commonService.closeModal(); 
