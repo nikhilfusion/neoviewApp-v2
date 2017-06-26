@@ -312,7 +312,7 @@ angular.module('neoviewApp')
 
     function openEducationTab() {
         let blogOpened = commonService.getSession('blogOpened');
-        if(count !=0 && count%2 == 0 && !blogOpened && !playing && playSrc == 'default_video') {
+        if(count !=0 && count%2 == 0 && !blogOpened && !playing && playSrc == default_video) {
             commonService.openBlog();
             setTimeout(function(){
                 commonService.closeModal(); 
