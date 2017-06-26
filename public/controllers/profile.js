@@ -19,4 +19,15 @@ angular.module('neoviewApp')
 			$scope.errMsg = "Check your password and try again.";
 		});	
 	};
+	$scope.back = function() {
+		var userInfo = commonService.getSession('users');
+		switch(userInfo.role) {
+			case 0 : $state.go("app.staffDashboard");
+					 break;
+			case 1 : $state.go("app.stream");
+					 break;
+			case 2 : $state.go("app.adminDashboard");
+					 break;
+		}
+	}
 }]);
