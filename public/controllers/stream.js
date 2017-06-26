@@ -77,6 +77,9 @@ angular.module('neoviewApp')
     
     //when the page load 3 videos will load in to queue
     socket.on('videoSend', function(videoInfo) {
+        count =0;
+        playing = false;
+        backMsg = false;
         var videos = videoInfo.videos;
         if(videos.length > 0) {
             _.each(videos, function(video, index) {
