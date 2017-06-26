@@ -10,7 +10,7 @@ var sqlite3 = require('sqlite3').verbose(),
   bcrypt = require('bcryptjs'),
   salt = bcrypt.genSaltSync(10),
   db = new sqlite3.Database(dbFile),
-  randomstring = require('randomstring'),
+  randomString = require('randomstring'),
   dir = 'videos/'
   transporter = nodemailer.createTransport(smtpTransport ({
     service: 'gmail',
@@ -99,17 +99,17 @@ module.exports = function(ws, io) {
   this.login = function(req, res) {
     var reqInfo = req.body;
     db.serialize(function() {
-      db.all("SELECT * from users  WHERE username = ?", [reqInfo.username], function(err,rows){
+      db.all("SELECT * from users  WHERE email = ?", [reqInfo.email], function(err,rows){
         if(!err && rows.length > 0) {
           if(bcrypt.compareSync(reqInfo.password, rows[0].password)) {
             db.run("UPDATE users SET conn_flg = ? WHERE id = ?" , [true, parseInt(rows[0].id)]);
             delete rows[0].password;
             res.send(rows[0]);
           } else {
-            res.status(404).send("Invalid username or password");
+            res.status(404).send("Invalid email or password");
           }
         } else {
-          res.status(404).send("Invalid username or password");
+          res.status(404).send("Invalid email or password");
         }
       });
     });  
@@ -121,14 +121,14 @@ module.exports = function(ws, io) {
       db.all("SELECT * from users WHERE email = ?", [reqInfo.email], function(err,rows){
         if(rows.length > 0) {
           var resInfo = rows[0],
-            old_pswd = randomstring.generate(8),
+            old_pswd = random(),
             new_password = bcrypt.hashSync(old_pswd, salt);
           resInfo['old_pswd'] = old_pswd;
           db.run("UPDATE users SET password = ? WHERE id = ?" , [new_password, parseInt(resInfo.id)]);
           sendMail(resInfo, "Neoview Reset Password");
           res.send("Email sent successful");
         } else {
-          res.status(404).send("Invalid username or password");
+          res.status(404).send("Invalid email or password");
         }
       });
     });  
@@ -149,15 +149,11 @@ module.exports = function(ws, io) {
   this.signup = function(req, res) {
     var reqDt = req.body;
     if(reqDt.username && reqDt.email && (reqDt.role || reqDt.role == 0)) {
-      reqDt.old_pswd = randomstring.generate({
-        length: 8,
-        charset: 'alphanumeric',
-        capitalization: 'lowercase'
-      });
+      reqDt.old_pswd = random();
       reqDt.password = bcrypt.hashSync(reqDt.old_pswd, salt);
       db.serialize(function() {
         db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, email TEXT, role INTEGER, camera TEXT, conn_flg Boolean)");
-        db.all("SELECT id from users WHERE username=? or email=?", [reqDt.username, reqDt.email], function(err,rows){
+        db.all("SELECT id from users WHERE  email=?", [reqDt.email], function(err,rows){
           if(!err){
             if(rows.length === 0) {
               var newId = new Date().getTime();
@@ -309,7 +305,7 @@ module.exports = function(ws, io) {
 
   this.getCamStatus = function(req, res) {
     res.send(newCameraInfo);
-  }
+  };
 
   function sendMail(userInfo, subject) {
     var mailOptions = {
@@ -317,7 +313,7 @@ module.exports = function(ws, io) {
       to: userInfo.email,
       subject: subject,
       html: '<h2>This is Your Neoview Credentials</h2></br>'+
-            '<p>Username : ' + userInfo.username + '</p></br>' +
+            '<p>Email : ' + userInfo.email + '</p></br>' +
             '<p>Password : ' + userInfo.old_pswd + '</p></br>'     
       };
     transporter.sendMail(mailOptions, function(error, info, res){
@@ -326,4 +322,10 @@ module.exports = function(ws, io) {
       }
     });
   };
+
+  function random(){
+    return Math.random().toString(36).slice(-6)
+        + randomString.generate({length: 1,charset: 'numeric'})
+        + randomString.generate({length: 1,charset: 'alphabetic',capitalization:'uppercase'});
+  }
 }  

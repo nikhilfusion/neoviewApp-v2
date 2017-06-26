@@ -118,7 +118,7 @@ angular.module('neoviewApp')
 		$state.go('app.adminUser', { id : userInfo.id });
 	};
 	$scope.backClick = function() {
-		$state.go("app.adminDashboard")
+		$state.go("app.adminPatientList")
 	}
 	$scope.changeUser = function(role) {
 		if(role === 1) {
@@ -134,7 +134,7 @@ angular.module('neoviewApp')
 			heading: 'Confirm Action'
 		}
 		if(staffFlg) {
-			modalInfo['msg'] = "Are you sure you want to Delete"
+			modalInfo['msg'] = "Are you sure you want to delete"
 		} else {
 			modalInfo['msg'] = "Are you sure you want to discharge"
 		}

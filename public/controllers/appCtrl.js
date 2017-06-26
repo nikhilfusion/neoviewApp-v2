@@ -1,5 +1,5 @@
 angular.module('neoviewApp')
-.controller('appController', ['$scope', 'commonService', '$state', 'Restangular', 'socket', '$rootScope', function ($scope, commonService, $state, Restangular, socket, $rootScope) {
+.controller('appController', ['$scope', 'commonService', '$state', 'Restangular', 'socket', '$rootScope', '$stateParams', function ($scope, commonService, $state, Restangular, socket, $rootScope, $stateParams) {
 	$rootScope.title = "NeoviewApp";
 	var userInfo = commonService.getSession('users');
 	function logout() {
@@ -7,7 +7,6 @@ angular.module('neoviewApp')
 		$state.go('login');
 	};
 
-	$scope.curr_state = $state.current.name;
 	angular.element(document).ready(function ()  {
 		$("#side-menu li").click(function() {
     		$("#side-menu li").removeClass('active-li');
@@ -34,6 +33,9 @@ angular.module('neoviewApp')
 		if(userInfo && userInfo.id === userDtls.id) {
 			logout();
 		}
+	})
+	$scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
+    	$scope.curr_state = toState.name;
 	})
 }]);
 /*

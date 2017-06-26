@@ -1,5 +1,5 @@
 angular.module('neoviewApp')
-.service('commonService', ['$uibModal', '$sessionStorage', '$window', function($uibModal, $sessionStorage, $window) {
+.service('commonService', ['$uibModal', '$sessionStorage', '$window', '$state', function($uibModal, $sessionStorage, $window, $state) {
 	var modalInstance;
 	return {
 		isEmpty: function(obj) {
@@ -72,46 +72,52 @@ angular.module('neoviewApp')
 	        return modalInstance;
 	    },
 	    openBlog: function() {
-	    	if(modalInstance) {
-	    		modalInstance.close();
-	    	}
-	    	var modalInfo = {
-				type: 'newTab',
-				msg: "Camera is unavailable. Meanwhile, would you like to visit our education resource?",
-				heading: 'Notification'
-			};
-	    	modalInstance = $uibModal.open({
-	          	templateUrl: 'public/views/modal.html',
-	          	controller: 'modalController',
-	          	resolve : {
-	          		params : function() {
-	          			return modalInfo;
-	          		}
-	          	},
-	          	backdrop: false 
-	        });
-	        return modalInstance;
+	    	if($state.current.name == 'app.stream') {
+		    	if(modalInstance) {
+		    		modalInstance.close();
+		    	}
+		    	var modalInfo = {
+					type: 'newTab',
+					msg: "Camera is unavailable. Meanwhile, would you like to visit our education resource?",
+					heading: 'Notification'
+				};
+
+		    	modalInstance = $uibModal.open({
+		          	templateUrl: 'public/views/modal.html',
+		          	controller: 'modalController',
+		          	resolve : {
+		          		params : function() {
+		          			return modalInfo;
+		          		}
+		          	},
+		          	backdrop: false 
+		        });
+		        return modalInstance;
+		    }    
 	    },
-	    notification: function(msg) {
-	    	if(modalInstance) {
-	    		modalInstance.close();
+	    notification: function(msg, type) {
+	    	if($state.current.name == 'app.stream') {
+	    		if(modalInstance) {
+	    			modalInstance.close();
+		    	}
+		    	var modalInfo = {
+					type: 'notification',
+					msg: msg,
+					heading: 'Notification',
+					notifyType: type
+				};
+		    	modalInstance = $uibModal.open({
+		          	templateUrl: 'public/views/modal.html',
+		          	controller: 'modalController',
+		          	resolve : {
+		          		params : function() {
+		          			return modalInfo;
+		          		}
+		          	},
+		          	backdrop: false
+		        });
+		        return modalInstance;
 	    	}
-	    	var modalInfo = {
-				type: 'notification',
-				msg: msg,
-				heading: 'Notification'
-			};
-	    	modalInstance = $uibModal.open({
-	          	templateUrl: 'public/views/modal.html',
-	          	controller: 'modalController',
-	          	resolve : {
-	          		params : function() {
-	          			return modalInfo;
-	          		}
-	          	},
-	          	backdrop: false
-	        });
-	        return modalInstance;
 	    },
 	    closeModal: function() {
 	    	if(modalInstance) {
