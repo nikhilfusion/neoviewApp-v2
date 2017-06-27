@@ -80,49 +80,57 @@ angular.module('neoviewApp')
         count =0;
         playing = false;
         backMsg = false;
-        var videos = videoInfo.videos;
-        if(videos.length > 0) {
-            _.each(videos, function(video, index) {
-                videoQueue[pushIndex] = {};
-                videoQueue[pushIndex].src = video;
-                videoQueue[pushIndex].status = 'Not Played';
-                pushIndex = (pushIndex+1)%queueLength;
-            })
-            if(camLocalStatus.status == 2) {
-                playSrc = 'videos/' + userInfo.camera + '/' + videoQueue[playIndex].src;
-                videoQueue[playIndex].status = 'playing';
-                playIndex= (playIndex+1)%queueLength;
-                commonService.notification('Video is getting ready, please wait a moment.')
+        var sessionUser = commonService.getSession('users');
+        Restangular.one('user', sessionUser.id).get({}, {}).then(function(userInfo) {            
+            if(userInfo.camera) {
+                setLocalData(userInfo);
+                camLocalStatus = commonService.getSession('camStatus');
+                var videos = videoInfo.videos;
+                if(videos.length > 0) {
+                    _.each(videos, function(video, index) {
+                        videoQueue[pushIndex] = {};
+                        videoQueue[pushIndex].src = video;
+                        videoQueue[pushIndex].status = 'Not Played';
+                        pushIndex = (pushIndex+1)%queueLength;
+                    })
+                    if(camLocalStatus.status == 2) {
+                        playSrc = 'videos/' + userInfo.camera + '/' + videoQueue[playIndex].src;
+                        videoQueue[playIndex].status = 'playing';
+                        playIndex= (playIndex+1)%queueLength;
+                        commonService.notification('Video is getting ready, please wait a moment.')
+                    } else {
+                        playSrc = default_video;
+                        commonService.notification('Video stream not available. Please try again later.')
+                    }
+                } else {
+                    playSrc = default_video;
+                    commonService.notification('Video stream not available.  Please try again later.')
+                }
+                setTimeout(function(){
+                    commonService.closeModal();
+                    $video.attr('src', playSrc);
+                    if(playSrc != default_video) {
+                        $video[0].play().then(function() {
+                            count = 0;
+                            playing = true;
+                        }, function(err) {
+                            playing = false;
+                            count++;
+                            stopBlinking()
+                            openEducationTab();
+                        })    
+                    } else {
+                        playing = false;
+                        count++;
+                        $video[0].play();
+                        stopBlinking();
+                        openEducationTab();
+                    }    
+                }, 3000);
             } else {
-                playSrc = default_video;
-                commonService.notification('Video stream not available. Please try again later.')
+                commonService.notification('No camera assigned to your account', 'noCamNotify');
             }
-        } else {
-            playSrc = default_video;
-            commonService.notification('Video stream not available.  Please try again later.')
-        }
-        setTimeout(function(){
-            commonService.closeModal();
-            $video.attr('src', playSrc);
-            if(playSrc != default_video) {
-                $video[0].play().then(function() {
-                    count = 0;
-                    playing = true;
-                }, function(err) {
-                    playing = false;
-                    count++;
-                    stopBlinking()
-                    openEducationTab();
-                })    
-            } else {
-                playing = false;
-                count++;
-                $video[0].play();
-                stopBlinking();
-                openEducationTab();
-            }    
-        }, 3000);
-            
+        })    
     });;
 
     //setting cameraInfo to localstorage
@@ -157,7 +165,7 @@ angular.module('neoviewApp')
     function nextVideo() {
         stopTimer();
         playing = false;
-        camLocalStatus = commonService.getSession('camStatus')
+        camLocalStatus = commonService.getSession('camStatus');
         //need a test fun
         if(videoQueue.length > 0 && camLocalStatus.status == 2) {
             if(playSrc == default_video){
@@ -272,29 +280,32 @@ angular.module('neoviewApp')
 
     //Toggling camera on/off stage
     socket.on('ChangeCamStatus', function(camStatus) {
-        if(camStatus.camInfo.status != 2 && playSrc != default_video) {
-            commonService.notification('Video stream not available. Please try again later.');
-        }
-        userInfo = commonService.getSession('users')
-        backMsg = false;
-        playing = false;
-        var camLocalStatus = commonService.getSession('camStatus')
-        //need a test
+        userInfo = commonService.getSession('users');
         if(camStatus.camInfo.name == userInfo.camera) {
-            commonService.closeModal();
-            commonService.setSession('camStatus',camStatus.camInfo);
-            playSrc = default_video;
-            stopBlinking();
-            $video.attr('src', playSrc);
-            $video[0].play();
-            count++;
-            openEducationTab();
+            if(camStatus.camInfo.status != 2 && playSrc != default_video) {
+                commonService.notification('Video stream not available. Please try again later.');
+            }
+            userInfo = commonService.getSession('users')
+            backMsg = false;
+            playing = false;
+            var camLocalStatus = commonService.getSession('camStatus')
+            //need a test
+            if(camStatus.camInfo.name == userInfo.camera) {
+                commonService.closeModal();
+                commonService.setSession('camStatus',camStatus.camInfo);
+                playSrc = default_video;
+                stopBlinking();
+                $video.attr('src', playSrc);
+                $video[0].play();
+                count++;
+                openEducationTab();
+            }
         }
     });
 
     //Its for discharge patient. Clear localstorage and setwith a new info
     socket.on('ChangeCamera', function(camInfo) {
-        userInfo = commonService.getSession('users')
+        userInfo = commonService.getSession('users');
         if(camInfo.id == userInfo.id && userInfo.role == 1) {
             if(camInfo.camera == 'null' || !camInfo.camera) {
                 commonService.notification('Camera is not available. Please try again later.');
@@ -368,8 +379,11 @@ angular.module('neoviewApp')
 
     });
 
-    $rootScope.$on('noCamModal', function() {
-        commonService.openBlog();
+    var deleteFn = $rootScope.$on('noCamModal', function(evt, sessionInfo) {
+        userInfo = commonService.getSession('users');
+        if(userInfo.id == sessionInfo.id) {
+            commonService.openBlog();
+        }
     });
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
@@ -380,4 +394,9 @@ angular.module('neoviewApp')
             }
         } 
     });
+
+    $scope.$on('$destroy', function () {
+      deleteFn();
+    });
+
 }]);

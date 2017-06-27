@@ -1,9 +1,10 @@
 angular.module('neoviewApp')
-.controller('modalController', ['$scope', '$uibModalInstance', 'params', '$rootScope', 'Restangular', '$state', function ($scope, $uibModalInstance, params, $rootScope, Restangular, $state) {
+.controller('modalController', ['$scope', '$uibModalInstance', 'params', '$rootScope', 'Restangular', '$state', 'commonService', function ($scope, $uibModalInstance, params, $rootScope, Restangular, $state, commonService) {
 	$scope.modalInfo = params;
 	$scope.ok = function(modalInfo) {
 		if(modalInfo.notifyType === 'noCamNotify') {
-			$rootScope.$emit('noCamModal');
+			var sessionInfo = commonService.getSession('users');
+			$rootScope.$emit('noCamModal', sessionInfo);
 		}
 		if(modalInfo.type === 'confirm') {
 			$rootScope.$emit('DeleteUser', {'userId' : modalInfo.user.id});
