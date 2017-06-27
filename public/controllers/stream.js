@@ -280,8 +280,9 @@ angular.module('neoviewApp')
 
     //Toggling camera on/off stage
     socket.on('ChangeCamStatus', function(camStatus) {
+        console.log("State is ", $state.current.name);
         userInfo = commonService.getSession('users');
-        if(camStatus.camInfo.name == userInfo.camera) {
+        if(camStatus.camInfo.name == userInfo.camera && $state.current.name == 'app.stream') {
             if(camStatus.camInfo.status != 2 && playSrc != default_video) {
                 commonService.notification('Video stream not available. Please try again later.');
             }
@@ -306,7 +307,7 @@ angular.module('neoviewApp')
     //Its for discharge patient. Clear localstorage and setwith a new info
     socket.on('ChangeCamera', function(camInfo) {
         userInfo = commonService.getSession('users');
-        if(camInfo.id == userInfo.id && userInfo.role == 1) {
+        if(camInfo.id == userInfo.id && userInfo.role == 1 && $state.current.name == 'app.stream'){
             if(camInfo.camera == 'null' || !camInfo.camera) {
                 commonService.notification('Camera is not available. Please try again later.');
             }    
