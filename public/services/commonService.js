@@ -78,7 +78,7 @@ angular.module('neoviewApp')
 		    	}
 		    	var modalInfo = {
 					type: 'newTab',
-					msg: "Camera is unavailable. Meanwhile, would you like to visit our education resource?",
+					msg: "Stream is not ready. Meanwhile, would you like to visit our education resource?",
 					heading: 'Notification'
 				};
 
