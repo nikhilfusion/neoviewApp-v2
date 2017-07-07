@@ -128,7 +128,7 @@ angular.module('neoviewApp')
                         $video[0].play();
                         setDefaultVideo();
                     }    
-                }, 30000);
+                }, 5000);
             } else {
                 commonService.notification('No camera assigned to your account', 'noCamNotify');
             }
