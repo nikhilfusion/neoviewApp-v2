@@ -34,6 +34,12 @@ angular.module('neoviewApp')
         $window.clearInterval(timerID);
     }
 
+    function setDefaultVideo() {
+        stopBlinking();
+        count++;
+        openEducationTab();
+    }
+
     function drawImage(video) {
         //last 2 params are video width and height
         ctx.drawImage(video, 0, 0, 1450, 755);
@@ -47,12 +53,12 @@ angular.module('neoviewApp')
         if(commonService.chkModal()) {
             commonService.closeModal();
         }
-        stopBlinking();
-        playSrc = default_video;
-        $video.attr('src', default_video);
-        $video[0].play();
-        count++;
-        openEducationTab();
+        setDefaultVideo();
+        if(playSrc != default_video) {
+            playSrc = default_video;
+            $video.attr('src', default_video);
+            $video[0].play();
+        }
     });
 
     // copy video frame to canvas every 30 milliseconds
@@ -115,16 +121,12 @@ angular.module('neoviewApp')
                             playing = true;
                         }, function(err) {
                             playing = false;
-                            count++;
-                            stopBlinking()
-                            openEducationTab();
+                            setDefaultVideo();
                         })    
                     } else {
                         playing = false;
-                        count++;
                         $video[0].play();
-                        stopBlinking();
-                        openEducationTab();
+                        setDefaultVideo();
                     }    
                 }, 30000);
             } else {
@@ -221,10 +223,8 @@ angular.module('neoviewApp')
             if(commonService.chkModal()) {
                 commonService.closeModal();
             }
-            stopBlinking();
+            setDefaultVideo();
             $video[0].play();
-            count++;
-            openEducationTab();
         }
     };
 
@@ -267,7 +267,7 @@ angular.module('neoviewApp')
 
     //If we discharge the patient this code will execute
     socket.on('DeleteCamera', function(cameraInfo) {
-        userInfo = commonService.getSession('users')
+        userInfo = commonService.getSession('users');
         if(cameraInfo.camera == userInfo.camera) {
             $state.go('login');
         }
@@ -286,7 +286,7 @@ angular.module('neoviewApp')
             if(camStatus.camInfo.status != 2 && playSrc != default_video) {
                 commonService.notification('Video stream not available. Please try again later.');
             }
-            userInfo = commonService.getSession('users')
+            userInfo = commonService.getSession('users');
             backMsg = false;
             playing = false;
             var camLocalStatus = commonService.getSession('camStatus')
@@ -294,12 +294,12 @@ angular.module('neoviewApp')
             if(camStatus.camInfo.name == userInfo.camera) {
                 commonService.closeModal();
                 commonService.setSession('camStatus',camStatus.camInfo);
-                playSrc = default_video;
-                stopBlinking();
-                $video.attr('src', playSrc);
-                $video[0].play();
-                count++;
-                openEducationTab();
+                setDefaultVideo();
+                if(playSrc != default_video) {
+                    playSrc = default_video;
+                    $video.attr('src', default_video);
+                    $video[0].play();
+                }
             }
         }
     });
@@ -316,11 +316,14 @@ angular.module('neoviewApp')
             setLocalData(camInfo);
             backMsg = false;
             playing = false;
+            count=0;
             pushIndex=0; 
             playIndex=0;
             videoQueue = [];
-            $video.attr('src', default_video);
-            $video[0].play();
+            if(playSrc != default_video) {
+                $video.attr('src', default_video);
+                $video[0].play();
+            }
             stopBlinking();
         }
     })
