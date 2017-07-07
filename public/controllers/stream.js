@@ -126,7 +126,7 @@ angular.module('neoviewApp')
                         stopBlinking();
                         openEducationTab();
                     }    
-                }, 3000);
+                }, 30000);
             } else {
                 commonService.notification('No camera assigned to your account', 'noCamNotify');
             }
@@ -212,7 +212,7 @@ angular.module('neoviewApp')
                         commonService.notification('Welcome back');
                         setTimeout(function(){
                             commonService.closeModal(); 
-                        }, 6000);
+                        }, 30000);
                         backMsg = false;
                     }
                 }              
@@ -234,8 +234,9 @@ angular.module('neoviewApp')
         var filePath = fileInfo.path,
             camInfo = filePath.split('videos/')[1],
             cam = camInfo.split('/')[0],
-            fileName = camInfo.split('/')[1];  
-        if(cam == userInfo.camera && fileName) {
+            fileName = camInfo.split('/')[1],
+        userInfo = commonService.getSession('users');
+        if(userInfo.camera && cam == userInfo.camera && fileName) {
             if(videoQueue.length >0) {
                 if(videoQueue[pushIndex] && videoQueue[pushIndex].status) {
                     if(videoQueue[pushIndex].status == 'playing') {
@@ -280,7 +281,6 @@ angular.module('neoviewApp')
 
     //Toggling camera on/off stage
     socket.on('ChangeCamStatus', function(camStatus) {
-        console.log("State is ", $state.current.name);
         userInfo = commonService.getSession('users');
         if(camStatus.camInfo.name == userInfo.camera && $state.current.name == 'app.stream') {
             if(camStatus.camInfo.status != 2 && playSrc != default_video) {
@@ -331,7 +331,7 @@ angular.module('neoviewApp')
             commonService.openBlog();
             setTimeout(function(){
                 commonService.closeModal(); 
-            }, 6000);
+            }, 30000);
         }
     };
 
@@ -373,7 +373,7 @@ angular.module('neoviewApp')
                 commonService.notification('Welcome back');
                 setTimeout(function(){
                     commonService.closeModal(); 
-                }, 6000);
+                }, 30000);
                 backMsg = false;
             }
         }

@@ -8,7 +8,7 @@ angular.module('neoviewApp', [
     'ngCookies',
     'ngSessionStorage'
 ])
-.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'RestangularProvider', function($stateProvider, $urlRouterProvider, $locationProvider, RestangularProvider) {
+.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'RestangularProvider', '$qProvider', function($stateProvider, $urlRouterProvider, $locationProvider, RestangularProvider, $qProvider) {
     $stateProvider
     .state('home', {
         url: '/',
@@ -82,10 +82,19 @@ angular.module('neoviewApp', [
         enabled: true,
         requireBase: true
     });
+    $qProvider.errorOnUnhandledRejections(false);
 }])
 .factory('socket', ['socketFactory', function (socketFactory) {
     return socketFactory();
 }])
-.config(['$qProvider', function($qProvider){
-    $qProvider.errorOnUnhandledRejections(false);
-}]);
+.filter("emptyToEnd", function () {
+  return function (array, key) {
+    var present = array.filter(function (item) {
+      return item[key];
+    }),
+        empty = array.filter(function (item) {
+      return !item[key]
+    });
+    return present.concat(empty);
+  };
+});
