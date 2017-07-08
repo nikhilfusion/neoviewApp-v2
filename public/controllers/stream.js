@@ -29,7 +29,7 @@ angular.module('neoviewApp')
             return !document[stateKey];
         }
     })();
-
+    $scope.noCam = false;
     function stopTimer() {
         $window.clearInterval(timerID);
     }
@@ -74,8 +74,10 @@ angular.module('neoviewApp')
     }
      if(userInfo.camera == 'null' || !userInfo.camera) {
         commonService.notification('No camera assigned to your account', 'noCamNotify');
+        $scope.noCam = true; 
     } else {
         socket.emit('cameraConnect', {'camera' : userInfo.camera});
+        $scope.noCam = false;
     }  
     angular.element(document).ready(function ()  {
         stopTimer();
@@ -89,6 +91,7 @@ angular.module('neoviewApp')
         var sessionUser = commonService.getSession('users');
         Restangular.one('user', sessionUser.id).get({}, {}).then(function(userInfo) {            
             if(userInfo.camera) {
+                $scope.noCam = false;
                 setLocalData(userInfo);
                 camLocalStatus = commonService.getSession('camStatus');
                 var videos = videoInfo.videos;
@@ -131,6 +134,7 @@ angular.module('neoviewApp')
                 }, 5000);
             } else {
                 commonService.notification('No camera assigned to your account', 'noCamNotify');
+                $scope.noCam = true;
             }
         })    
     });;

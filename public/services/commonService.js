@@ -114,7 +114,7 @@ angular.module('neoviewApp')
 		          			return modalInfo;
 		          		}
 		          	},
-		          	backdrop: false
+		          	backdrop: type ? 'static' : false
 		        });
 		        return modalInstance;
 	    	}

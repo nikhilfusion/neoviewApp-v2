@@ -73,10 +73,6 @@ angular.module('neoviewApp', [
         templateUrl: 'public/views/profile.html',
         controller: 'profileController'
     })
-    .state('default', {
-        url: '/default',
-        templateUrl: 'public/views/default.html'
-    })
     $urlRouterProvider.otherwise('/');
     $locationProvider.html5Mode({
         enabled: true,
