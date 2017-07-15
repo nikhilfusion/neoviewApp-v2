@@ -40,17 +40,21 @@ https.listen(port, function() {
 function connected(cameraInfo, socket){
   var sliced = [];
   if(cameraInfo.camera) {
-    var dir_path = dir + cameraInfo.camera + '/',
-    files = fs.readdirSync(dir_path), 
-    filterTime = new Date(new Date().getTime() - (config.stream.filterTime * 1000)).getTime();
-    if(files.length > 0) {
-      var after_dlt = _.each(files, function(file) {
-        if(fs.statSync(dir_path + file).ctime.getTime() < filterTime) {
-          fs.unlink(dir_path + file);
-        } 
-      });
-      if(after_dlt.length >=3) {
-        sliced = after_dlt.slice(after_dlt.length-3, after_dlt.length);
+    var dir_path = dir + cameraInfo.camera + '/';
+    if (!fs.existsSync(dir_path)){
+      fs.mkdirSync(dir_path);
+    } else {
+      files = fs.readdirSync(dir_path),
+      filterTime = new Date(new Date().getTime() - (config.stream.filterTime * 1000)).getTime();
+      if(files.length > 0) {
+        var after_dlt = _.each(files, function(file) {
+          if(fs.statSync(dir_path + file).ctime.getTime() < filterTime) {
+            fs.unlink(dir_path + file);
+          }
+        });
+        if(after_dlt.length >=3) {
+          sliced = after_dlt.slice(after_dlt.length-3, after_dlt.length);
+        }
       }
     }
   }

@@ -3,9 +3,9 @@ angular.module('neoviewApp')
     function($scope, socket, $window, Restangular, commonService, $rootScope, $state, $timeout, $rootScope) {
     var pushIndex=0, playIndex=0, queueLength = 5, videoQueue = [], playSrc,timerID,
     default_video = 'videos/default.mp4', playing = false,
-    backMsg = false,count=0,
+    backMsg = false,def_vid_flg = false,
     userInfo = commonService.getSession('users'),
-    camLocalStatus,
+    camLocalStatus,onloadFlg = true,
     $video = $('#video'),
     $canvas = $('#myCanvas'),
     ctx = $canvas[0].getContext('2d'),
@@ -36,8 +36,8 @@ angular.module('neoviewApp')
 
     function setDefaultVideo() {
         stopBlinking();
-        count++;
         openEducationTab();
+        def_vid_flg = !def_vid_flg
     }
 
     function drawImage(video) {
@@ -85,62 +85,64 @@ angular.module('neoviewApp')
     
     //when the page load 3 videos will load in to queue
     socket.on('videoSend', function(videoInfo) {
-        count =0;
+        def_vid_flg =false;
         playing = false;
         backMsg = false;
         var sessionUser = commonService.getSession('users');
-        Restangular.one('user', sessionUser.id).get({}, {}).then(function(userInfo) {            
-            if(userInfo.camera) {
-                $scope.noCam = false;
-                setLocalData(userInfo);
-                camLocalStatus = commonService.getSession('camStatus');
-                var videos = videoInfo.videos;
-                if(videos.length > 0) {
-                    _.each(videos, function(video, index) {
-                        videoQueue[pushIndex] = {};
-                        videoQueue[pushIndex].src = video;
-                        videoQueue[pushIndex].status = 'Not Played';
-                        pushIndex = (pushIndex+1)%queueLength;
-                    })
-                    if(camLocalStatus.status == 2) {
-                        playSrc = 'videos/' + userInfo.camera + '/' + videoQueue[playIndex].src;
-                        videoQueue[playIndex].status = 'playing';
-                        playIndex= (playIndex+1)%queueLength;
-                        commonService.notification('Video is getting ready, please wait a moment.')
+        Restangular.one('user', sessionUser.id).get({}, {}).then(function(userInfo) {
+            if(onloadFlg) {
+                onloadFlg = false;
+                if(userInfo.camera) {
+                    $scope.noCam = false;
+                    setLocalData(userInfo);
+                    camLocalStatus = commonService.getSession('camStatus');
+                    var videos = videoInfo.videos;
+                    if(videos.length > 0) {
+                        _.each(videos, function(video, index) {
+                            videoQueue[pushIndex] = {};
+                            videoQueue[pushIndex].src = video;
+                            videoQueue[pushIndex].status = 'Not Played';
+                            pushIndex = (pushIndex+1)%queueLength;
+                        })
+                        if(camLocalStatus.status == 2) {
+                            playSrc = 'videos/' + userInfo.camera + '/' + videoQueue[playIndex].src;
+                            videoQueue[playIndex].status = 'playing';
+                            playIndex= (playIndex+1)%queueLength;
+                            commonService.notification('Video is getting ready, please wait a moment.')
+                        } else {
+                            playSrc = default_video;
+                            commonService.notification('Video stream not available. Please try again later.')
+                        }
                     } else {
                         playSrc = default_video;
-                        commonService.notification('Video stream not available. Please try again later.')
+                        commonService.notification('Video stream not available.  Please try again later.')
                     }
-                } else {
-                    playSrc = default_video;
-                    commonService.notification('Video stream not available.  Please try again later.')
-                }
-                setTimeout(function(){
-                    commonService.closeModal();
-                    $video.attr('src', playSrc);
-                    if(playSrc != default_video) {
-                        $video[0].play().then(function() {
-                            count = 0;
-                            playing = true;
-                        }, function(err) {
+                    setTimeout(function(){
+                        commonService.closeModal();
+                        $video.attr('src', playSrc);
+                        if(playSrc != default_video) {
+                            $video[0].play().then(function() {
+                                cdef_vid_flg = false;
+                                playing = true;
+                            }, function(err) {
+                                playing = false;
+                                setDefaultVideo();
+                            })
+                        } else {
                             playing = false;
+                            $video[0].play();
                             setDefaultVideo();
-                        })    
-                    } else {
-                        playing = false;
-                        $video[0].play();
-                        setDefaultVideo();
-                    }    
-                }, 5000);
-            } else {
-                commonService.notification('No camera assigned to your account', 'noCamNotify');
-                $scope.noCam = true;
+                        }
+                    }, 5000);
+                } else {
+                    commonService.notification('No camera assigned to your account', 'noCamNotify');
+                    $scope.noCam = true;
+                }
             }
-        })    
-    });;
-
+        });
+    });
+    
     //setting cameraInfo to localstorage
-
     function setLocalData(cookie) {
         if(cookie && cookie.camera) {
             Restangular.one('getCamStatus').get({},{}).then(function(camStatus) {
@@ -207,7 +209,7 @@ angular.module('neoviewApp')
         if(playSrc != default_video) {
             $video[0].play().then(function() {
                 playing = true;
-                count=0;
+                def_vid_flg = false;
                 if(backMsg) {
                     if(document.hidden) {
                        startBlinking('Video is ready'); 
@@ -283,10 +285,20 @@ angular.module('neoviewApp')
         $rootScope.$apply();
     };
 
+    function clearVideoQueue() {
+        def_vid_flg = false;
+        pushIndex=0; 
+        playIndex=0;
+        videoQueue = [];  
+    }
+
     //Toggling camera on/off stage
     socket.on('ChangeCamStatus', function(camStatus) {
         userInfo = commonService.getSession('users');
         if(camStatus.camInfo.name == userInfo.camera && $state.current.name == 'app.stream') {
+            if(camStatus.camInfo.status == 1) {
+                clearVideoQueue();
+            }    
             if(camStatus.camInfo.status != 2 && playSrc != default_video) {
                 commonService.notification('Video stream not available. Please try again later.');
             }
@@ -301,7 +313,7 @@ angular.module('neoviewApp')
                 setDefaultVideo();
                 if(playSrc != default_video) {
                     playSrc = default_video;
-                    $video.attr('src', default_video);
+                    $video.attr('src', playSrc);
                     $video[0].play();
                 }
             }
@@ -320,12 +332,10 @@ angular.module('neoviewApp')
             setLocalData(camInfo);
             backMsg = false;
             playing = false;
-            count=0;
-            pushIndex=0; 
-            playIndex=0;
-            videoQueue = [];
+            clearVideoQueue();
             if(playSrc != default_video) {
-                $video.attr('src', default_video);
+                playSrc = default_video;
+                $video.attr('src', playSrc);
                 $video[0].play();
             }
             stopBlinking();
@@ -334,7 +344,7 @@ angular.module('neoviewApp')
 
     function openEducationTab() {
         let blogOpened = commonService.getSession('blogOpened');
-        if(count !=0 && count%2 == 0 && !blogOpened && !playing && playSrc == default_video) {
+        if(def_vid_flg && !blogOpened && !playing && playSrc == default_video) {
             commonService.openBlog();
             setTimeout(function(){
                 commonService.closeModal(); 

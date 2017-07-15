@@ -232,12 +232,14 @@ module.exports = function(ws, io) {
 
   function deleteVideos(cameraName) {
     if(cameraName) {
-      var dir_path = dir + cameraName + '/',
-      files = fs.readdirSync(dir_path);
-      if(files.length > 0) {
-        _.each(files, function(file) {
-          fs.unlink(dir_path + file); 
-        });
+      var dir_path = dir + cameraName + '/';
+      if (fs.existsSync(dir_path)){
+        var files = fs.readdirSync(dir_path);
+        if(files.length > 0) {
+          _.each(files, function(file) {
+            fs.unlink(dir_path + file);
+          });
+        }
       }
     }
   }
