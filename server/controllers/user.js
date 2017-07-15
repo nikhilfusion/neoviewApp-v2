@@ -49,8 +49,7 @@ module.exports = function(ws, io) {
             //its on
           } else {
             io.sockets.emit('ChangeCamStatus', {'camInfo' : a1})
-            console.log(a1.name + " is off now");
-            //its off
+            console.log(a1.name + " is of status " + a1.status);
           }
         }
       })
@@ -311,7 +310,7 @@ module.exports = function(ws, io) {
 
   function sendMail(userInfo, subject) {
     var mailOptions = {
-      from: 'niktestplancess@gmail.com',
+      from: config.gmailUser,
       to: userInfo.email,
       subject: subject,
       html: '<h2>This is Your Neoview Credentials</h2></br>'+
@@ -327,7 +326,7 @@ module.exports = function(ws, io) {
 
   function random(){
     return Math.random().toString(36).slice(-6)
-        + randomString.generate({length: 1,charset: 'numeric'})
-        + randomString.generate({length: 1,charset: 'alphabetic',capitalization:'uppercase'});
+      + randomString.generate({length: 1,charset: 'numeric'})
+      + randomString.generate({length: 1,charset: 'alphabetic',capitalization:'uppercase'});
   }
 }  
