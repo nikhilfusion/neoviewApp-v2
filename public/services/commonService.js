@@ -78,7 +78,7 @@ angular.module('neoviewApp')
 		    	}
 		    	var modalInfo = {
 					type: 'newTab',
-					msg: "Stream is not ready. Meanwhile, would you like to visit our education resource?",
+					msg: "Video stream is not available. Meanwhile would you like to visit our education resource?",
 					heading: 'Notification'
 				};
 

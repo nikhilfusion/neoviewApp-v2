@@ -22,20 +22,23 @@ var sqlite3 = require('sqlite3').verbose(),
 
 module.exports = function(ws, io) {
   var newCameraInfo, oldCameraInfo;
-  ws.on('message', function (message) {
-    oldCameraInfo = newCameraInfo;
-    newCameraInfo = JSON.parse(message);
-    if(oldCameraInfo) {
-      test(newCameraInfo, oldCameraInfo);
-    } else {
-      for(i=0;i<newCameraInfo.length;i++) {
-        io.sockets.emit('ChangeCamStatus', {'camInfo' : newCameraInfo[i]});
+  function getCamInfo() {
+    ws.on('message', function (message) {
+      oldCameraInfo = newCameraInfo;
+      newCameraInfo = JSON.parse(message);
+      if(oldCameraInfo) {
+        newCameraInfo = "abc";
+        test(newCameraInfo, oldCameraInfo);
+      } else {
+        for(i=0;i<newCameraInfo.length;i++) {
+          io.sockets.emit('ChangeCamStatus', {'camInfo' : newCameraInfo[i]});
+        }
       }
-    }
-  });
+    });
+  }
   io.on('connection', function(socket){
   });
-
+  getCamInfo();
 
   function test(arr1, arr2) {
     var merge = _.values(_.extend(keyBy(arr1, 'name'), keyBy(arr2, 'name')))
@@ -305,6 +308,7 @@ module.exports = function(ws, io) {
   };
 
   this.getCamStatus = function(req, res) {
+    getCamInfo();
     res.send(newCameraInfo);
   };
 
