@@ -1,6 +1,6 @@
 angular.module('neoviewApp')
-.controller('streamController', ['$scope', 'socket', '$window', 'Restangular', 'commonService', '$rootScope', '$state', '$timeout', '$rootScope', 
-    function($scope, socket, $window, Restangular, commonService, $rootScope, $state, $timeout, $rootScope) {
+.controller('streamController', ['$scope', 'socket', '$window', 'Restangular', 'commonService', '$rootScope', '$state', '$rootScope',
+    function($scope, socket, $window, Restangular, commonService, $rootScope, $state, $rootScope) {
     var pushIndex=0, playIndex=0, queueLength = 5, videoQueue = [], playSrc,timerID,
     default_video = 'videos/default.mp4', playing = false,
     backMsg = false,def_vid_flg = false,
@@ -117,22 +117,22 @@ angular.module('neoviewApp')
                         playSrc = default_video;
                         commonService.notification('Video stream not available.  Please try again later.')
                     }
+                    $video.attr('src', playSrc);
+                    if(playSrc != default_video) {
+                        $video[0].play().then(function() {
+                            def_vid_flg = false;
+                            playing = true;
+                        }, function(err) {
+                            playing = false;
+                            setDefaultVideo();
+                        })
+                    } else {
+                        playing = false;
+                        $video[0].play();
+                        setDefaultVideo();
+                    }
                     setTimeout(function(){
                         commonService.closeModal();
-                        $video.attr('src', playSrc);
-                        if(playSrc != default_video) {
-                            $video[0].play().then(function() {
-                                cdef_vid_flg = false;
-                                playing = true;
-                            }, function(err) {
-                                playing = false;
-                                setDefaultVideo();
-                            })
-                        } else {
-                            playing = false;
-                            $video[0].play();
-                            setDefaultVideo();
-                        }
                     }, 5000);
                 } else {
                     commonService.notification('No camera assigned to your account', 'noCamNotify');

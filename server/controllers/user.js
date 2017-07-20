@@ -41,7 +41,6 @@ module.exports = function(ws, io) {
     newCameraInfo = JSON.parse(camInfo);
     if(isEmit) {
       if(oldCameraInfo) {
-        newCameraInfo = "abc";
         test(newCameraInfo, oldCameraInfo);
       } else {
         for(i=0;i<newCameraInfo.length;i++) {
