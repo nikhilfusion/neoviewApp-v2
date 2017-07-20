@@ -22,10 +22,24 @@ var sqlite3 = require('sqlite3').verbose(),
 
 module.exports = function(ws, io) {
   var newCameraInfo, oldCameraInfo;
+
+  ws.on('message', function (camInfo) {
+    setCamInfo(camInfo, true);
+  });
+
   function getCamInfo() {
-    ws.on('message', function (message) {
-      oldCameraInfo = newCameraInfo;
-      newCameraInfo = JSON.parse(message);
+    ws.on('message', function (camInfo) {
+      setCamInfo(camInfo);
+    });
+  };
+
+  io.on('connection', function(socket){
+  });
+
+  function setCamInfo(camInfo, isEmit) {
+    oldCameraInfo = newCameraInfo;
+    newCameraInfo = JSON.parse(camInfo);
+    if(isEmit) {
       if(oldCameraInfo) {
         newCameraInfo = "abc";
         test(newCameraInfo, oldCameraInfo);
@@ -34,11 +48,8 @@ module.exports = function(ws, io) {
           io.sockets.emit('ChangeCamStatus', {'camInfo' : newCameraInfo[i]});
         }
       }
-    });
-  }
-  io.on('connection', function(socket){
-  });
-  getCamInfo();
+    }
+  };
 
   function test(arr1, arr2) {
     var merge = _.values(_.extend(keyBy(arr1, 'name'), keyBy(arr2, 'name')))
@@ -186,7 +197,7 @@ module.exports = function(ws, io) {
         res.status(404).send("User not found")
       }
     });
-  }
+  };
 
   this.getUser = function(req, res) {
     db.all("SELECT * from users  WHERE id=?", [parseInt(req.params.id)], function(err, userInfo){
@@ -244,7 +255,7 @@ module.exports = function(ws, io) {
         }
       }
     }
-  }
+  };
 
   this.deleteUser = function(req, res) {
     db.all("SELECT * from users  WHERE id=?", [parseInt(req.params.id)], function(err, userInfo){
@@ -332,5 +343,5 @@ module.exports = function(ws, io) {
     return Math.random().toString(36).slice(-6)
       + randomString.generate({length: 1,charset: 'numeric'})
       + randomString.generate({length: 1,charset: 'alphabetic',capitalization:'uppercase'});
-  }
-}  
+  };
+};
