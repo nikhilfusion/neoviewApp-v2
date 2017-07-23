@@ -4,7 +4,7 @@
   <form name="loginForm" style="width: 500px;" novalidate>
     <div class="container" style="width: 400px;">
       <label><b>Username</b></label>
-      <input type="text" placeholder="Enter Username" name="username" ng-model="user.username" ng-minlength="6" ng-pattern="/^[a-z]*$/" ng-trim="false" ng-disabled="!newFlg" required>
+      <input type="text" placeholder="Enter Username" name="username" ng-model="user.username" ng-minlength="6" ng-pattern="/^[a-z]*$/" ng-trim="false" ng-disabled="!newFlg" focus="true"  required>
       <div class="warning" ng-if="newFlg">Only lowercase alphabets, No space allowed, Min. 6 characters</div>
       <div class="error" ng-if="submitted && loginForm.username.$invalid">Username is invalid</div>
       <label><b>Email</b></label>

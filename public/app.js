@@ -84,13 +84,15 @@ angular.module('neoviewApp', [
     return socketFactory();
 }])
 .filter("emptyToEnd", function () {
-  return function (array, key) {
-    var present = array.filter(function (item) {
-      return item[key];
-    }),
-        empty = array.filter(function (item) {
-      return !item[key]
-    });
-    return present.concat(empty);
-  };
+    return function (array, key) {
+        if(array && array.length>0) {
+            var present = array.filter(function (item) {
+                return item[key];
+            }),
+            empty = array.filter(function (item) {
+                return !item[key];
+            });
+            return present.concat(empty);
+        }
+    };
 });

@@ -219,7 +219,7 @@ angular.module('neoviewApp')
                         commonService.notification('Welcome back');
                         setTimeout(function(){
                             commonService.closeModal(); 
-                        }, 30000);
+                        }, 5000);
                         backMsg = false;
                     }
                 }              
@@ -325,6 +325,9 @@ angular.module('neoviewApp')
         if(camInfo.id == userInfo.id && userInfo.role == 1 && $state.current.name == 'app.stream'){
             if(camInfo.camera == 'null' || !camInfo.camera) {
                 commonService.notification('Camera is not available. Please try again later.');
+                setTimeout(function(){
+                    commonService.closeModal(); 
+                }, 5000);
             }    
             commonService.setSession('users', camInfo)
             userInfo = camInfo;
@@ -389,7 +392,7 @@ angular.module('neoviewApp')
                 commonService.notification('Welcome back');
                 setTimeout(function(){
                     commonService.closeModal(); 
-                }, 30000);
+                }, 5000);
                 backMsg = false;
             }
         }

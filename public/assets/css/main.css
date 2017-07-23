@@ -295,11 +295,11 @@ ul.alert-dropdown {
 
 .suc-msg {
     color:green;
-    font-size: 12px;
+    font-size: 16px;
 }
 .err-msg {
     color: red;
-    font-size: 12px;
+    font-size: 16px;
 }
 .warning {
     top: 0px;
