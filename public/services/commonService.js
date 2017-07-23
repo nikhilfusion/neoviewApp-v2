@@ -17,7 +17,7 @@ angular.module('neoviewApp')
 	    	var modalInfo = {
 				type: 'alert',
 				msg: "Do you wish to change the camera assigned to this parent’s account?",
-				heading: 'Notification',
+				heading: 'Confirm Action',
 				user: user,
 				formInfo: userInfo,
 				userType: userType
