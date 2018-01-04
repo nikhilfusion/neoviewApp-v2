@@ -315,3 +315,17 @@ ul.alert-dropdown {
     font-size: 12px;
     margin-top: -10px;
 }
+.btnMainDiv {
+    padding-top: 20px;
+    display: flex;
+}
+.btnSideDiv {
+    width: 30%;
+}
+.btnMidDiv {
+    width: 40%;
+    padding: 0 5%;
+}
+.btnTransfer {
+    width: 100%;
+}

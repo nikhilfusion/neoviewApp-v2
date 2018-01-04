@@ -4,11 +4,11 @@
   <form name="loginForm" style="width: 500px;" novalidate>
     <div class="container" style="width: 400px;">
       <label><b>Username</b></label>
-      <input type="text" placeholder="Enter Username" name="username" ng-model="user.username" ng-minlength="6" ng-pattern="/^[a-z]*$/" ng-trim="false" ng-disabled="!newFlg" focus="true"  required>
+      <input type="text" placeholder="Enter Username" name="username" ng-model="user.username" ng-minlength="6" ng-pattern="/^[a-z]*$/" ng-trim="false" ng-disabled="!newFlg" focus="true"  required />
       <div class="warning" ng-if="newFlg">Only lowercase alphabets, No space allowed, Min. 6 characters</div>
       <div class="error" ng-if="submitted && loginForm.username.$invalid">Username is invalid</div>
       <label><b>Email</b></label>
-      <input type="text" ng-disabled="!newFlg" placeholder="Enter Email" name="email" ng-model="user.email" ng-pattern="/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/" ng-trim="false" required>
+      <input type="text" ng-disabled="!newFlg" placeholder="Enter Email" name="email" ng-model="user.email" ng-pattern="/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/" ng-trim="false" required />
       <div class="error" ng-if="submitted && loginForm.email.$invalid">email is invalid</div>
       <label ng-if="userType === 2"><b>User Type</b></label>
       <select ng-if="userType === 2 && newFlg" name="type" ng-model="user.role" ng-options="user.id as user.name for user in users" ng-change="changeUser(user.role)" required>
@@ -20,9 +20,17 @@
       <select ng-if="userType === 0 || user.role === 1"  ng-model="user.camera" ng-options="camera as camera for camera in cameras">
         <option value="">No Camera</option>
       </select></br>
-      <button type="submit" class="btn btn-primary" style="width:75px;" ng-click="register(user, newFlg, loginForm.$valid)">Save</button>
-      <button class="btn btn-warning" ng-click="cancel()" style="width:75px;">Reset</button>
-      <button class="btn btn-success" ng-click="backClick()" style="width:75px;">Back</button></br>
+      <div class="btnMainDiv">
+        <div class="btnSideDiv">
+          <button type="submit" class="btn btn-primary btnTransfer" ng-click="register(user, newFlg, loginForm.$valid)">Save</button>
+        </div>
+        <div class="btnMidDiv">
+          <button class="btn btn-warning btnTransfer" ng-click="cancel()">Reset</button>
+        </div>
+        <div class="btnSideDiv">
+          <button class="btn btn-success btnTransfer" ng-click="backClick()">Back</button>
+        <div>
+      </div>
       <span ng-if="errorMsg" class="error-msg">{{errorMsg}}</span></br>
       <span ng-if="sucMsg" class="suc-msg">{{sucMsg}}</span></br>
     </div>

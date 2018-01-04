@@ -5,17 +5,24 @@
       <label><b>Current Password</b></label>
       <input type="password" placeholder="Current Password" ng-model="patient.password" name="curr_pswd" focus="true" required>
       <label><b>New Password</b></label>
-      <input type="password" placeholder="New Password" ng-model="patient.new_password" ng-pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/" name="new_pswd" required>
+      <input type="password" placeholder="New Password" ng-model="patient.new_password" ng-pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/" name="new_pswd" id="new_pswd" required>
       <div class="warning" ng-if="pswdForm.new_pswd.$invalid">
         Password should contain at least 8 characters and should include an uppercase, lowercase, digit character and no space.
       </div>
       <label><b>Confirm Password</b></label>
-      <input type="password" placeholder="Confirm Password" ng-model="patient.conf_password" name="conf_pswd" password-verify="patient.new_password" ng-trim="false" required>
-      <span ng-if="pswdForm.conf_pswd.$dirty && pswdForm.conf_pswd.$error.passwordVerify" style="color:red;">*Password Mismatch</span></br>	
-      <button type="submit" class="btn btn-success" style="width:75px;" ng-click="setPswd(patient)" ng-disabled="pswdForm.$invalid">Save</button>
-      <button class="btn btn-warning" ng-click="cancelPswd()" style="width:75px;">Reset</button>
-      <button class="btn btn-primary" ng-click="back()" style="width:75px;">Back</button>
-      </br>
+      <input type="password" placeholder="Confirm Password" ng-model="patient.conf_password" name="conf_pswd" id="conf_pswd" pw-check="new_pswd" ng-trim="false" required>
+      <span ng-if="pswdForm.conf_pswd.$dirty && pswdForm.conf_pswd.$error.pwmatch" style="color:red;">*Password Mismatch</span></br>
+      <div class="btnMainDiv">
+        <div class="btnSideDiv">
+          <button type="submit" class="btn btn-primary btnTransfer" ng-click="setPswd(patient)" ng-disabled="pswdForm.$invalid">Save</button>
+        </div>
+        <div class="btnMidDiv">
+          <button class="btn btn-warning btnTransfer" ng-click="cancelPswd()">Reset</button>
+        </div>
+        <div class="btnSideDiv">
+          <button class="btn btn-success btnTransfer" ng-click="back()">Back</button>
+        </div>
+      </div>
       <span ng-if="sucMsg || errMsg" ng-class="{'suc-msg' : sucMsg, 'err-msg' : errMsg}">{{sucMsg || errMsg}}</span></br>
     </div>
   </form>

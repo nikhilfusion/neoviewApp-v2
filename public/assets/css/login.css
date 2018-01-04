@@ -1,64 +1,98 @@
+.mainContainer {
+  padding:20px;
+}
+a:link{
+  text-decoration: none!important;
+}
+a:hover { 
+  background-color: yellow;
+}
 #login-div {
-    padding: 10px;
-    border-radius: 10px;
-    /*border:1px solid #000;*/
-    background: #f3f3f3;
-    -webkit-box-shadow: 14px 14px 40px 0px rgba(0,0,0,0.75);
-   -moz-box-shadow: 14px 14px 40px 0px rgba(0,0,0,0.75);
-   box-shadow: 14px 14px 40px 0px rgba(0,0,0,0.75);
+  padding: 10px;
+  border-radius: 10px;
+  /*border:1px solid #000;*/
+  background: #f3f3f3;
+  -webkit-box-shadow: 14px 14px 40px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 14px 14px 40px 0px rgba(0,0,0,0.75);
+  box-shadow: 14px 14px 40px 0px rgba(0,0,0,0.75);
 }
 input[type=text], input[type=password], select  {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 14px 20px;
-    margin-top: 20px !important;
-    border: none;
-    cursor: pointer;
-    width: 100%;
+.homeHeader {
+  text-align: center;
+}
+.homeDiv {
+  width: 10%;
+  height:20px;
+  text-align: center;
+  padding:15px;
+  margin: auto;
+}
+.homeLogin {
+  width: 100%;
+  background-color: grey;
+}
+.submitBtn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin-top: 20px !important;
+  border: none;
+  cursor: pointer;
+  width: 100%;
 }
 
 .cancelbtn {
-    width: auto;
-    padding: 10px 18px;
-    background-color: #f44336;
+  width: auto;
+  padding: 10px 18px;
+  background-color: #f44336;
 }
 
 .imgcontainer {
-    text-align: center;
-    margin: 24px 0 12px 0;
+  text-align: center;
+  margin: 24px 0 12px 0;
 }
 
 img.avatar {
-    width: 40%;
-    border-radius: 50%;
+  width: 40%;
+  border-radius: 50%;
 }
 
 .container {
-    padding: 16px;
+  padding: 16px;
 }
 
 span.psw {
-    float: right;
-    padding-top: 16px;
+  float: right;
+  padding-top: 16px;
 }
 
 .error-msg {
-    font-size: 14px;
-    color: #f00;
+  font-size: 14px;
+  color: #f00;
 };
 .suc-msg {
-    font-size: 14px;
-    color: green;
+  font-size: 14px;
+  color: green;
 };
+.btn-success {
+  cursor: pointer;
+}
+.btn-success.disabled {
+  opacity: 0.65; 
+  cursor: not-allowed;
+}
+.loginLink {
+  cursor:pointer;
+  text-decoration: none;
+}
 
 /* Change styles for span and cancel button on extra small screens */
 @media screen and (max-width: 300px) {
