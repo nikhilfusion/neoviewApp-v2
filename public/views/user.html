@@ -1,7 +1,7 @@
 <div id="page-wrapper">
   <h2 ng-if="newFlg">New User</h2>
   <h2 ng-if="!newFlg">Transfer Patient</h2>
-  <form name="loginForm" style="width: 500px;" novalidate>
+  <form name="loginForm" class="userForm" novalidate>
     <div class="container" style="width: 400px;">
       <label><b>Username</b></label>
       <input type="text" placeholder="Enter Username" name="username" ng-model="user.username" ng-minlength="6" ng-pattern="/^[a-z]*$/" ng-trim="false" ng-disabled="!newFlg" focus="true"  required />

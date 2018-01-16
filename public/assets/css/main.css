@@ -332,3 +332,10 @@ ul.alert-dropdown {
 .btn100 {
   width:100px;
 }
+.btn-user {
+  width:100px;
+  margin-top:0px !important;
+}
+.userForm {
+  width: 500px;
+}
