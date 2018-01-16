@@ -7,38 +7,38 @@ angular.module('neoviewApp')
 	}
 	switch($state.current.name) {
 		case 'app.staffDashboard' : $scope.patient = true;
-									$scope.noUser = false;
-									$scope.title = "Parent List";
-									Restangular.one('users/').get({'userType' : 1}, {}).then(function(users) {
-										$scope.users = users.plain();
-								  	}, function(err) {
-								  		$scope.noUser = true;
-								  	})
-								  break;
+			$scope.noUser = false;
+			$scope.title = "Parent List";
+			Restangular.one('users/').get({'userType' : 1}, {}).then(function(users) {
+				$scope.users = users.plain();
+		  	}, function(err) {
+		  		$scope.noUser = true;
+		  	})
+		  break;
 		case 'app.staffUser' :  $scope.newFlg = false;
-								Restangular.one('user', $stateParams.id).get({}, {}).then(function(userInfo) {
-								  	$scope.user = userInfo.plain();
-								  	$scope.user.camera = $scope.user.camera === null ? "" : $scope.user.camera;
-								  	userCam = userInfo.camera;
-								  	Restangular.one('getCamera').get({}, {}).then(function(cameras) {
-										$scope.cameras = [];
-										$scope.cameras = cameras.plain();
-										if($scope.user.camera) {
-											$scope.cameras.push($scope.user.camera);
-										}
-									});	
-								  },function (err) {
-								});
-								break;
+			Restangular.one('user', $stateParams.id).get({}, {}).then(function(userInfo) {
+		  	$scope.user = userInfo.plain();
+		  	$scope.user.camera = $scope.user.camera === null ? "" : $scope.user.camera;
+		  	userCam = userInfo.camera;
+		  	Restangular.one('getCamera').get({}, {}).then(function(cameras) {
+					$scope.cameras = [];
+					$scope.cameras = cameras.plain();
+					if($scope.user.camera) {
+						$scope.cameras.push($scope.user.camera);
+					}
+				});	
+			  },function (err) {
+			});
+			break;
 		case "app.staffCreateUser": $scope.newFlg = true;
-									Restangular.one('getCamera').get({}, {}).then(function(cameras) {
-										if(cameras.plain().length > 0) {
-											$scope.cameras = cameras.plain();
-										} else {
-											commonService.changeUserModal();
-										}
-									});			 
-								  	break;
+			Restangular.one('getCamera').get({}, {}).then(function(cameras) {
+				if(cameras.plain().length > 0) {
+					$scope.cameras = cameras.plain();
+				} else {
+					commonService.changeUserModal();
+				}
+			});			 
+		break;
 	}
 
 	$scope.register = function (user, newFlg, isvalid) {
@@ -48,14 +48,14 @@ angular.module('neoviewApp')
 		var valid = true;
 		if(isvalid)  {
 			angular.forEach(user, function(value, key) {
-  				if(typeof(value) != 'number' && $scope['loginForm'][key]) {
-	  				if(value && value.indexOf(' ') >= 0) {
-	  					valid = false;
-						$scope['loginForm'][key]['$invalid'] = true; 					
-	  				} else {
-	  					$scope['loginForm'][key]['$invalid'] = false;
-	  				}
-	  			}
+				if(typeof(value) != 'number' && $scope['loginForm'][key]) {
+  				if(value && value.indexOf(' ') >= 0) {
+  					valid = false;
+					$scope['loginForm'][key]['$invalid'] = true; 					
+  				} else {
+  					$scope['loginForm'][key]['$invalid'] = false;
+  				}
+  			}
 			});
 			if(valid) {
 				if(newFlg) {

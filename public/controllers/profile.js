@@ -23,11 +23,11 @@ angular.module('neoviewApp')
 		var userInfo = commonService.getSession('users');
 		switch(userInfo.role) {
 			case 0 : $state.go("app.staffDashboard");
-					 break;
+				break;
 			case 1 : $state.go("app.stream");
-					 break;
+				break;
 			case 2 : $state.go("app.adminDashboard");
-					 break;
+				break;
 		}
 	}
 }]);

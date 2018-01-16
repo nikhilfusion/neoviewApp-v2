@@ -21,11 +21,13 @@ $git clone git@github.com:nikhilfusion/neoviewApp-v2.git
 $cd neoviewApp-v2
 $npm install && bower install
 
-5.run the server by
-$node server.js
+5. To allow self signed https run
+$export NODE_TLS_REJECT_UNAUTHORIZED=0
+
+
+6.run the server by
+$pm2 start server.js
 
 open the app in browser: https://127.0.0.1:8080
-
-export NODE_TLS_REJECT_UNAUTHORIZED=0
 
 **********************************************
