@@ -1,7 +1,7 @@
 *************** Neoview *****************
 
 
-App for streaming videos and show to the user
+App for streaming videos
 
 Setup: 
 
