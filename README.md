@@ -15,7 +15,7 @@ Setup:
 
 3. create a file neoview.db, in the home folder for sqlite db
 
-4.clone the app by
+4.clone the app do the basic installation
 $git clone git@github.com:nikhilfusion/neoviewApp-v2.git
 
 $cd neoviewApp-v2
