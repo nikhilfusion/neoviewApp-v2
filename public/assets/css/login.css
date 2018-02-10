@@ -16,7 +16,7 @@ a:hover {
   -moz-box-shadow: 14px 14px 40px 0px rgba(0,0,0,0.75);
   box-shadow: 14px 14px 40px 0px rgba(0,0,0,0.75);
 }
-input[type=text], input[type=password], select  {
+input[type=text], input[type=password], input[type=email], select  {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -24,7 +24,11 @@ input[type=text], input[type=password], select  {
   border: 1px solid #ccc;
   box-sizing: border-box;
 }
-
+.selectBox {
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  height: 46px;
+}
 .homeHeader {
   text-align: center;
 }

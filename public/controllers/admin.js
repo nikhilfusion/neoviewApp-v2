@@ -1,5 +1,5 @@
 angular.module('neoviewApp')
-.controller('adminController', ['$scope', '$state', 'Restangular', '$stateParams', '$rootScope', 'commonService', function ($scope, $state, Restangular, $stateParams, $rootScope, commonService) {
+.controller('adminController', ['$scope', '$state', 'Restangular', '$stateParams', '$rootScope', 'commonService', 'growl', function ($scope, $state, Restangular, $stateParams, $rootScope, commonService, growl) {
 
 	var userInfo = commonService.getSession('users');
 	if(!userInfo || (userInfo && userInfo.role != 2)) {
@@ -87,8 +87,10 @@ angular.module('neoviewApp')
 						$scope.sucMsg="User created successful";
 						$scope.user = {};
 						if(res.role === 0) {
+							growl.success('Staff added successfully');
 							$state.go("app.adminDashboard");
 						} else {
+							growl.success('Patient added successfully');
 							$state.go("app.adminPatientList");
 						}
 					}, function(err) {
@@ -104,8 +106,10 @@ angular.module('neoviewApp')
 					} else {
 						Restangular.all('user').all($stateParams.id).customPUT(userInfo).then(function(userInfo) {
 							if(userInfo.role === 0) {
+								growl.success('Staff updated successfully');
 								$state.go("app.adminDashboard");
 							} else {
+								growl.success('Patient updated successfully');
 								$state.go("app.adminPatientList");
 							}
 						});

@@ -1,5 +1,5 @@
 angular.module('neoviewApp')
-.controller('staffController', ['$scope', '$state', 'Restangular', '$stateParams', '$uibModal', '$rootScope', 'commonService', function ($scope, $state, Restangular, $stateParams, $uibModal, $rootScope, commonService) {
+.controller('staffController', ['$scope', '$state', 'Restangular', '$stateParams', '$uibModal', '$rootScope', 'commonService', 'growl', function ($scope, $state, Restangular, $stateParams, $uibModal, $rootScope, commonService, growl) {
 	var userCam = "",
 		userInfo = commonService.getSession('users');
 	if(!userInfo || (userInfo && userInfo.role != 0)) {
@@ -63,6 +63,7 @@ angular.module('neoviewApp')
 					Restangular.all('user').post(user, {}).then(function(res) {
 						$scope.sucMsg="User created successful";
 						$scope.user = {};
+						growl.success('Patient added successfully');
 						$state.go("app.staffDashboard");
 					}, function(err) {
 						$scope.errorMsg = err.data;
@@ -76,6 +77,7 @@ angular.module('neoviewApp')
 						commonService.openNotificationModal(user,userInfo,userType);
 					} else {
 						Restangular.all('user').all($stateParams.id).customPUT(userInfo).then(function(userInfo) {
+							growl.success('Patient updated successfully');
 							$state.go("app.staffDashboard");
 						});
 					}

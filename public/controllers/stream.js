@@ -350,7 +350,7 @@ angular.module('neoviewApp')
         commonService.openBlog();
         setTimeout(function(){
           commonService.closeModal(); 
-        }, 30000);
+        }, 5000);
       }
     };
 

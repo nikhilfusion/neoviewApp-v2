@@ -333,7 +333,7 @@ module.exports = function(ws, io) {
       };
     transporter.sendMail(mailOptions, function(error, info, res){
       if(error){
-        res.send(error);
+        return false;
       }
     });
   };

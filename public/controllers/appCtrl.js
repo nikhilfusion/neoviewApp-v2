@@ -15,7 +15,7 @@ angular.module('neoviewApp')
 
 	$scope.logout = function() {
 		var user = {
-			"id" : userInfo.id
+			id: userInfo.id
 		};
 		Restangular.all('logout').post(user, {}).then(function(res) {
 			logout();

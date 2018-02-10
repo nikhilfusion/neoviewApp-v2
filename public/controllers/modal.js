@@ -1,13 +1,19 @@
 angular.module('neoviewApp')
-.controller('modalController', ['$scope', '$uibModalInstance', 'params', '$rootScope', 'Restangular', '$state', 'commonService', function ($scope, $uibModalInstance, params, $rootScope, Restangular, $state, commonService) {
+.controller('modalController', ['$scope', '$uibModalInstance', 'params', '$rootScope', 'Restangular', '$state', 'commonService', 'growl', function ($scope, $uibModalInstance, params, $rootScope, Restangular, $state, commonService, growl) {
 	$scope.modalInfo = params;
 	$scope.ok = function(modalInfo) {
+		debugger;
 		if(modalInfo.notifyType === 'noCamNotify') {
 			var sessionInfo = commonService.getSession('users');
 			$rootScope.$emit('noCamModal', sessionInfo);
 		}
 		if(modalInfo.type === 'confirm') {
 			$rootScope.$emit('DeleteUser', {'userId' : modalInfo.user.id});
+			if(modalInfo.user.role) {
+				growl.success('Patient discharged successfully');
+			} else {
+				growl.success('Staff deleted successfully');
+			}
 		} else if(modalInfo.type === 'alert') {
 			Restangular.all('user').all(modalInfo.user.id).customPUT(modalInfo.formInfo).then(function(userInfo) {
 				if(modalInfo.userType === 'admin') {

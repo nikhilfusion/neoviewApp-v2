@@ -46,7 +46,7 @@ angular.module('neoviewApp')
 	          			return modalInfo;
 	          		}
 	          	},
-	          	backdrop: 'static'
+	          	backdrop: true
 	        });
 	        return modalInstance
 	    },
@@ -67,7 +67,7 @@ angular.module('neoviewApp')
 	          			return modalInfo;
 	          		}
 	          	},
-	          	backdrop: true 
+	          	backdrop: false 
 	        });
 	        return modalInstance;
 	    },
@@ -90,7 +90,7 @@ angular.module('neoviewApp')
 		          			return modalInfo;
 		          		}
 		          	},
-		          	backdrop: false 
+		          	backdrop: true 
 		        });
 		        return modalInstance;
 		    }    

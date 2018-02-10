@@ -53,6 +53,7 @@ function connected(cameraInfo, socket){
       filterTime = new Date(new Date().getTime() - (config.stream.filterTime * 1000)).getTime();
       if(files.length > 0) {
         var after_dlt = _.each(files, function(file) {
+          // remove old files
           if(fs.statSync(dir_path + file).ctime.getTime() < filterTime) {
             fs.unlink(dir_path + file);
           }

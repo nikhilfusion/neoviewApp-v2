@@ -6,7 +6,8 @@ angular.module('neoviewApp', [
     'btford.socket-io',
     'restangular',
     'ngCookies',
-    'ngSessionStorage'
+    'ngSessionStorage',
+    'angular-growl'
 ])
 .config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'RestangularProvider', '$qProvider', function($stateProvider, $urlRouterProvider, $locationProvider, RestangularProvider, $qProvider) {
     $stateProvider
