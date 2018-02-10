@@ -6,27 +6,36 @@ angular.module('neoviewApp')
 		$state.go('login');
 	}
 
-	$scope.users = [
+	$scope.roles = [
+		{
+			id : 1,
+			name : "Parent"
+		},
 		{
 			id : 0,
 			name : "Staff"
-		}, {
-			id : 1,
-			name : "Parent"
 		}
 	];
 	var userCam = "";
 
+	// $scope.filteredUsers = [],
+	// $scope.currentPage = 1,
+  	// $scope.numPerPage = 1,
+  	// $scope.maxSize = 1;
+    
 	switch($state.current.name) {
 		case 'app.adminDashboard' : $scope.noUser = false;
 			$scope.staffList = true;
 			$scope.title = "Nurse List";
 			Restangular.one('users').get({'userType' : 0}, {}).then(function(users) {
 				$scope.users = users.plain();
-		  	}, function(err) {
-		  		$scope.noUser = true;
-	 	  	});
-		  	break;
+				var begin = (($scope.currentPage - 1) * $scope.numPerPage),
+				end = begin + $scope.numPerPage;
+				$scope.filteredUsers = $scope.users.slice(begin, end);
+		  }, function(err) {
+		  	$scope.noUser = true;
+	 	  });
+		break;
 		case 'app.adminPatientList' : $scope.patient = true;
 		  $scope.noUser = false;
 		  $scope.title = "Patient List";
@@ -61,7 +70,10 @@ angular.module('neoviewApp')
 		  break;
 	}
 
-
+	// $scope.numPages = function () {
+    // 	return Math.ceil($scope.users.length / $scope.numPerPage);
+  	// };
+  
 	$scope.register = function (user, newFlg, isvalid) {
 		$scope.submitted = true
 		$scope.sucMsg = "";
@@ -156,6 +168,12 @@ angular.module('neoviewApp')
 	});
 
 	$scope.$on('$destroy', function () {
-      deleteFn();
-    });
+    deleteFn();
+	});
+	
+	// $scope.$watch('currentPage + numPerPage', function() {
+	// 	var begin = (($scope.currentPage - 1) * $scope.numPerPage),
+	// 			end = begin + $scope.numPerPage;
+	// 	$scope.filteredUsers = $scope.users.slice(begin, end);
+	// });
 }]);

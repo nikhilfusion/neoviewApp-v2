@@ -2,7 +2,6 @@ angular.module('neoviewApp')
 .controller('modalController', ['$scope', '$uibModalInstance', 'params', '$rootScope', 'Restangular', '$state', 'commonService', 'growl', function ($scope, $uibModalInstance, params, $rootScope, Restangular, $state, commonService, growl) {
 	$scope.modalInfo = params;
 	$scope.ok = function(modalInfo) {
-		debugger;
 		if(modalInfo.notifyType === 'noCamNotify') {
 			var sessionInfo = commonService.getSession('users');
 			$rootScope.$emit('noCamModal', sessionInfo);

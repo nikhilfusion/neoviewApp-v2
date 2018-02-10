@@ -1,10 +1,10 @@
 <div class="mainContainer" style="padding:20px;"></div>
 <form name="loginForm">
 	<h3 ng-if="loginFlg" style="text-align:center;">Login</h3>
-	<h3 ng-if="!loginFlg" style="text-align:center;">Fogot Password</h3>
+	<h3 ng-if="!loginFlg" style="text-align:center;">Forgot Password</h3>
   	<div class="col-md-4 col-xs-12 col-md-offset-4" id="login-div" ng-if="loginFlg">
 	    <label><b>Email</b></label>
-	    <input type="text" placeholder="user@test.com" name="email" ng-model="user.email" focus="true" required>
+	    <input type="email" placeholder="user@test.com" name="email" ng-model="user.email" focus="true" required>
 	    <label><b>Password</b></label>
 	    <input type="password" placeholder="Enter Password" name="psw" ng-model="user.password" required>
 	    <div class="warning">Password is case sensitive</div>

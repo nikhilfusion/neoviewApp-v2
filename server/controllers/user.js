@@ -176,7 +176,7 @@ module.exports = function(ws, io) {
               res.send(reqDt);
             }  
             else if(rows.length > 0) {
-              res.status(403).send("User already exists");
+              res.status(403).send("Email already exists");
             }
           } else {
             res.send(err);

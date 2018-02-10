@@ -10,7 +10,7 @@
 	      <th></th>
 	    </tr>
 	  </thead>
-	  <tbody ng-repeat="user in (users|orderBy:'camera'|emptyToEnd:'camera')">
+	  <tbody ng-repeat="user in (users|orderBy:['camera','-id']|emptyToEnd:'camera')">
 	    <tr>
 	      <th scope="row">{{$index+1}}</th>
 	      <td>{{user.username}}</td>
@@ -24,4 +24,8 @@
 	  </tbody>
 	</table>
 	<h5 ng-if="noUser">No User Found.Please Add.</h5>
+	<div data-pagination="" data-num-pages="numPages()" 
+    data-current-page="currentPage" data-max-size="maxSize"  
+		data-boundary-links="true">
+	</div>
 </div>
