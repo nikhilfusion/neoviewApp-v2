@@ -74,7 +74,10 @@ angular.module('neoviewApp')
     }
     if(userInfo.camera == 'null' || !userInfo.camera) {
       commonService.notification('No camera assigned to your account', 'noCamNotify');
-      $scope.noCam = true; 
+      $scope.noCam = true;
+      setTimeout(function(){
+        commonService.closeModal(); 
+      }, 5000);
     } else {
       socket.emit('cameraConnect', {'camera' : userInfo.camera});
       $scope.noCam = false;
@@ -116,6 +119,9 @@ angular.module('neoviewApp')
               playSrc = default_video;
               commonService.notification('Video stream not available.  Please try again later.')
             }
+            setTimeout(function(){
+              commonService.closeModal(); 
+            }, 5000);
             $video.attr('src', playSrc);
             if(playSrc != default_video) {
               $video[0].play().then(function() {
@@ -299,7 +305,10 @@ angular.module('neoviewApp')
               clearVideoQueue();
           }    
           if(camStatus.camInfo.status != 2 && playSrc != default_video) {
-              commonService.notification('Video stream not available. Please try again later.');
+            commonService.notification('Video stream not available. Please try again later.');
+            setTimeout(function(){
+              commonService.closeModal(); 
+            }, 5000);
           }
           userInfo = commonService.getSession('users');
           backMsg = false;
