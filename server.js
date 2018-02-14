@@ -20,6 +20,9 @@ var express = require('express'),
     chokidar = require('chokidar'),
     dir = 'videos/',
     watcher = chokidar.watch(dir, {ignored: /^\./, persistent: true});
+process.on('uncaughtException', function (err) {
+  console.log(err);
+})
 app.use('/', express.static(__dirname));
 app.get('/*', function(req, res){
   res.sendFile(__dirname + '/public/index.html');

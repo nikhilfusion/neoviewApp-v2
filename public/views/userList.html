@@ -28,4 +28,6 @@
     data-current-page="currentPage" data-max-size="maxSize"  
 		data-boundary-links="true">
 	</div>
+		<ul uib-pagination total-items="numPages" ng-model="currentPage" ng-change="pageChanged()"></ul>
+
 </div>
