@@ -10,7 +10,7 @@
 	      <th></th>
 	    </tr>
 	  </thead>
-	  <tbody ng-repeat="user in (users|orderBy:['camera','-id']|emptyToEnd:'camera')">
+		<tbody ng-repeat="user in (users.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage)) |orderBy:'camera'|emptyToEnd:'camera')">
 	    <tr>
 	      <th scope="row">{{$index+1}}</th>
 	      <td>{{user.username}}</td>
@@ -28,6 +28,6 @@
     data-current-page="currentPage" data-max-size="maxSize"  
 		data-boundary-links="true">
 	</div>
-		<ul uib-pagination total-items="numPages" ng-model="currentPage" ng-change="pageChanged()"></ul>
+	<ul uib-pagination total-items="totalItems" ng-model="currentPage" items-per-page="itemsPerPage"></ul>
 
 </div>

@@ -2,15 +2,21 @@ angular.module('neoviewApp')
 .controller('staffController', ['$scope', '$state', 'Restangular', '$stateParams', '$uibModal', '$rootScope', 'commonService', 'growl', function ($scope, $state, Restangular, $stateParams, $uibModal, $rootScope, commonService, growl) {
 	var userCam = "",
 		userInfo = commonService.getSession('users');
+	$scope.currentPage = 1;
+	$scope.itemsPerPage = 1;
+			
+	$scope.setPage = function (pageNo) {
+		$scope.currentPage = pageNo;
+	};
 	if(!userInfo || (userInfo && userInfo.role != 0)) {
 		$state.go('login');
 	}
 	switch($state.current.name) {
 		case 'app.staffDashboard' : $scope.patient = true;
 			$scope.noUser = false;
-			$scope.title = "Parent List";
 			Restangular.one('users/').get({'userType' : 1}, {}).then(function(users) {
 				$scope.users = users.plain();
+				$scope.totalItems = $scope.users.length;
 		  	}, function(err) {
 		  		$scope.noUser = true;
 		  	})

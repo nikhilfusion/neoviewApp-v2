@@ -189,7 +189,7 @@ module.exports = function(ws, io) {
   };
 
   this.getAllUsers = function(req, res) {
-    db.all("SELECT * from users where role=?", [req.query.userType], function(err, users){
+    db.all("SELECT * from users where role=? ORDER BY id DESC", [req.query.userType], function(err, users){
       if(!err && users.length > 0) {
         res.send(users);
       } else {
