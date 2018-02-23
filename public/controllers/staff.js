@@ -3,7 +3,7 @@ angular.module('neoviewApp')
 	var userCam = "",
 		userInfo = commonService.getSession('users');
 	$scope.currentPage = 1;
-	$scope.itemsPerPage = 1;
+	$scope.itemsPerPage = 10;
 			
 	$scope.setPage = function (pageNo) {
 		$scope.currentPage = pageNo;
