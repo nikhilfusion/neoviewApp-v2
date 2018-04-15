@@ -11,7 +11,10 @@ var sqlite3 = require('sqlite3').verbose(),
   salt = bcrypt.genSaltSync(10),
   db = new sqlite3.Database(dbFile),
   randomString = require('randomstring'),
-  dir = 'videos/'
+  dir = 'videos/',
+  accountSid = config.accountSId,
+  authToken = config.authToken,
+  client = require('twilio')(accountSid, authToken),
   transporter = nodemailer.createTransport(smtpTransport ({
     service: 'gmail',
     auth: {
@@ -107,16 +110,44 @@ module.exports = function(ws, io) {
     });
     return result;
   };
+
+  function sendSms(mobileNumber, msg) {
+    return new Promise(function(resolve, reject) {
+      client.messages.create({
+        to: mobileNumber,
+        from: config.twilioMobileNumber,
+        body: msg
+      })
+      .then(function(message) {
+        return resolve(message);
+      })
+      .catch(function(err) {
+        return reject(err);
+      });
+    });
+  };
   
   this.login = function(req, res) {
     var reqInfo = req.body;
     db.serialize(function() {
       db.all("SELECT * from users  WHERE email = ?", [reqInfo.email], function(err,rows){
         if(!err && rows.length > 0) {
+          var loggedUser = rows[0], otp, oneDay = 24 * 60 * 60 * 1000;
           if(bcrypt.compareSync(reqInfo.password, rows[0].password)) {
-            db.run("UPDATE users SET conn_flg = ? WHERE id = ?" , [true, parseInt(rows[0].id)]);
-            delete rows[0].password;
-            res.send(rows[0]);
+            if((new Date().getTime() - loggedUser.otpCreated) < oneDay) {
+              otp = loggedUser.otp;
+              db.run("UPDATE users SET conn_flg = ? WHERE id = ?" , [true, Number(rows[0].id)]);
+            } else {
+              var otp = Math.floor(1000 + Math.random() * 9000);
+              db.run("UPDATE users SET conn_flg = ?, otp = ?, otpCreated = ? WHERE id = ?" , [true, otp, (new Date().getTime()), Number(rows[0].id)]);
+            }
+            delete loggedUser.password;
+            sendSms(loggedUser.mobile, otp)
+            .then(function(res, err) {
+              res.send(loggedUser);
+            }, function(err) {
+              res.status(500).send("Something went wrong");
+            });
           } else {
             res.status(404).send("Invalid email or password");
           }
@@ -133,10 +164,10 @@ module.exports = function(ws, io) {
       db.all("SELECT * from users WHERE email = ?", [reqInfo.email], function(err,rows){
         if(rows.length > 0) {
           var resInfo = rows[0],
-            old_pswd = random(),
-            new_password = bcrypt.hashSync(old_pswd, salt);
-          resInfo['old_pswd'] = old_pswd;
-          db.run("UPDATE users SET password = ? WHERE id = ?" , [new_password, parseInt(resInfo.id)]);
+            decry_pswd = random(),
+            new_password = bcrypt.hashSync(decry_pswd, salt);
+          resInfo['decry_pswd'] = decry_pswd;
+          db.run("UPDATE users SET password = ? WHERE id = ?" , [new_password, Number(resInfo.id)]);
           sendMail(resInfo, "Neoview Reset Password");
           res.send("Email sent successful");
         } else {
@@ -148,9 +179,9 @@ module.exports = function(ws, io) {
   
   this.logout = function(req, res) {
     var reqDt = req.body;
-    db.all("SELECT * from users  WHERE id=?", [parseInt(reqDt.id)], function(err,rows){
+    db.all("SELECT * from users  WHERE id=?", [Number(reqDt.id)], function(err,rows){
       if(rows.length > 0) {
-        db.run("UPDATE users SET conn_flg = ? WHERE id = ?" , [false, parseInt(rows[0].id)]);
+        db.run("UPDATE users SET conn_flg = ? WHERE id = ?" , [false, Number(rows[0].id)]);
         res.send("logout successful");
       } else {
         res.send(err);
@@ -161,15 +192,15 @@ module.exports = function(ws, io) {
   this.signup = function(req, res) {
     var reqDt = req.body;
     if(reqDt.username && reqDt.email && (reqDt.role || reqDt.role == 0)) {
-      reqDt.old_pswd = random();
-      reqDt.password = bcrypt.hashSync(reqDt.old_pswd, salt);
+      reqDt.decry_pswd = random();
+      reqDt.password = bcrypt.hashSync(reqDt.decry_pswd, salt);
       db.serialize(function() {
-        db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, email TEXT, role INTEGER, camera TEXT, conn_flg Boolean)");
+        db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, email TEXT, role INTEGER, camera TEXT, mobile TEXT, otp INTEGER, otpCreated DATETIME, conn_flg BOOLEAN)");
         db.all("SELECT id from users WHERE  email=?", [reqDt.email], function(err,rows){
           if(!err){
             if(rows.length === 0) {
               var newId = new Date().getTime();
-              var stmt = db.prepare("INSERT INTO users VALUES(?,?,?,?,?,?,?)", [newId, reqDt.username, reqDt.password, reqDt.email, reqDt.role, reqDt.camera, false]);
+              var stmt = db.prepare("INSERT INTO users VALUES(?,?,?,?,?,?,?,?,?,?)", [newId, reqDt.username, reqDt.password, reqDt.email, reqDt.role, reqDt.camera, reqDt.mobile, '', new Date(), false]);
               stmt.run();
               stmt.finalize();
               sendMail(reqDt, "Neoview Credentials");
@@ -199,7 +230,7 @@ module.exports = function(ws, io) {
   };
 
   this.getUser = function(req, res) {
-    db.all("SELECT * from users  WHERE id=?", [parseInt(req.params.id)], function(err, userInfo){
+    db.all("SELECT * from users  WHERE id=?", [Number(req.params.id)], function(err, userInfo){
       if(!err && userInfo.length > 0) {
         res.send(userInfo[0]);
       } else {
@@ -210,7 +241,7 @@ module.exports = function(ws, io) {
 
   this.editUser = function(req, res){
     var reqDt = req.body, flg=false;
-    db.all("SELECT * from users  WHERE id=?", [parseInt(req.params.id)], function(err, userInfo){
+    db.all("SELECT * from users  WHERE id=?", [Number(req.params.id)], function(err, userInfo){
       if(!err && userInfo.length > 0) {
         var newDt = {};
         for (var property in userInfo[0]) {
@@ -229,7 +260,7 @@ module.exports = function(ws, io) {
           }
           flg = true;
         }
-        db.run("UPDATE users SET username = ?, password = ?, role = ?, camera = ? WHERE id = ?" , [newDt.username, newDt.password, parseInt(newDt.role), newDt.camera, parseInt(newDt.id)]);
+        db.run("UPDATE users SET username = ?, password = ?, role = ?, camera = ? WHERE id = ?" , [newDt.username, newDt.password, Number(newDt.role), newDt.camera, Number(newDt.id)]);
         if(flg) {
           delete newDt.password;
           io.sockets.emit('ChangeCamera', newDt);
@@ -257,9 +288,9 @@ module.exports = function(ws, io) {
   };
 
   this.deleteUser = function(req, res) {
-    db.all("SELECT * from users  WHERE id=?", [parseInt(req.params.id)], function(err, userInfo){
+    db.all("SELECT * from users  WHERE id=?", [Number(req.params.id)], function(err, userInfo){
       if(!err) {
-        db.all("DELETE FROM users where id=?", [parseInt(req.params.id)], function(err, userRes) {
+        db.all("DELETE FROM users where id=?", [Number(req.params.id)], function(err, userRes) {
           if(!err) {
             io.sockets.emit('dltUser', userInfo[0])
             res.send("User deleted successful");
@@ -301,11 +332,11 @@ module.exports = function(ws, io) {
   this.resetPswd = function(req, res) {
     var reqDt = req.body;
     db.serialize(function() {
-      db.all("SELECT password FROM users WHERE id= ?" , [parseInt(reqDt.userId)], function(err, user) {
+      db.all("SELECT password FROM users WHERE id= ?" , [Number(reqDt.userId)], function(err, user) {
         if(!err && user.length>0) {
           if(bcrypt.compareSync(reqDt.currPswd, user[0].password)) {
             var hash_pswd = bcrypt.hashSync(reqDt.newPswd, salt);
-            db.run("UPDATE users SET password = ? WHERE id = ?" , [hash_pswd, parseInt(reqDt.userId)]);
+            db.run("UPDATE users SET password = ? WHERE id = ?" , [hash_pswd, Number(reqDt.userId)]);
               res.send("Password reset successful.");
           } else {
             res.status(404).send("User not found!");
@@ -322,6 +353,37 @@ module.exports = function(ws, io) {
     res.send(newCameraInfo);
   };
 
+  this.otpVerifie = function(req, res) {
+    var otpDt = req.body;
+    db.all("SELECT * from users  WHERE id=?", [Number(otpDt.userId)], function(err, userInfo){
+      if(Number(userInfo[0].otp) === Number(otpDt.otp)) {
+        res.send(userInfo[0]);
+      } else {
+        res.status(404).send("Missmatched OTP");
+      }
+    });
+  }
+
+  this.resendOTP = function(req, res) {
+    var reqInfo = req.body;
+    db.all("SELECT * from users  WHERE id = ?", [reqInfo.userId], function(err,rows){
+      var userInfo = rows[0], otp, oneDay = 24 * 60 * 60 * 1000;
+      if((new Date().getTime() - userInfo.otpCreated) < oneDay) {
+        otp = userInfo.otp;
+      } else {
+        var otp = Math.floor(1000 + Math.random() * 9000);
+        db.run("UPDATE users SET otp = ?, otpCreated = ? WHERE id = ?" , [otp, (new Date().getTime()), reqInfo.userId]);
+      }
+      sendSms(userInfo.mobile, otp)
+      .then(function(res, err) {
+        res.send('OTP Send Successfully');
+      }, function(err) {
+        res.send(err);
+      });
+    })
+
+  }
+
   function sendMail(userInfo, subject) {
     var mailOptions = {
       from: config.gmailUser,
@@ -329,7 +391,7 @@ module.exports = function(ws, io) {
       subject: subject,
       html: '<h2>This is Your Neoview Credentials</h2></br>'+
             '<p>Email : ' + userInfo.email + '</p></br>' +
-            '<p>Password : ' + userInfo.old_pswd + '</p></br>'     
+            '<p>Password : ' + userInfo.decry_pswd + '</p></br>'     
       };
     transporter.sendMail(mailOptions, function(error, info, res){
       if(error){

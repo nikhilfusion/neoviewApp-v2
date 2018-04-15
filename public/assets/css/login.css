@@ -7,7 +7,7 @@ a:link{
 a:hover { 
   background-color: yellow;
 }
-#login-div {
+.login-div {
   padding: 10px;
   border-radius: 10px;
   /*border:1px solid #000;*/
@@ -96,6 +96,10 @@ span.psw {
 .loginLink {
   cursor:pointer;
   text-decoration: none;
+  float: right;
+}
+.intl-tel-input {
+  width: 100%;
 }
 
 /* Change styles for span and cancel button on extra small screens */

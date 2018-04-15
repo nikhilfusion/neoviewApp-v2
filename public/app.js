@@ -1,4 +1,5 @@
 angular.module('neoviewApp', [
+    'ngIntlTelInput',
     'ui.router',
     'ui.bootstrap',
     'ngAnimate',
@@ -7,9 +8,10 @@ angular.module('neoviewApp', [
     'restangular',
     'ngCookies',
     'ngSessionStorage',
-    'angular-growl'
+    'angular-growl',
 ])
-.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'RestangularProvider', '$qProvider', function($stateProvider, $urlRouterProvider, $locationProvider, RestangularProvider, $qProvider) {
+.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'RestangularProvider', '$qProvider', 'ngIntlTelInputProvider', 
+function($stateProvider, $urlRouterProvider, $locationProvider, RestangularProvider, $qProvider, ngIntlTelInputProvider) {
     $stateProvider
     .state('home', {
       url: '/',
@@ -80,6 +82,7 @@ angular.module('neoviewApp', [
       requireBase: true
     });
     $qProvider.errorOnUnhandledRejections(false);
+    ngIntlTelInputProvider.set({initialCountry: 'ie'});
 }])
 .factory('socket', ['socketFactory', function (socketFactory) {
     return socketFactory();

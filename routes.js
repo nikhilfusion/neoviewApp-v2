@@ -15,4 +15,6 @@ module.exports = function(app, ws, io){
   app.get('/getCamera', user.getCamera);
   app.get('/getCamStatus', user.getCamStatus);
   app.put('/resetPassword', user.resetPswd);
+  app.post('/otpVerifie', user.otpVerifie);
+  app.post('/resendOTP', user.resendOTP);
 };
