@@ -12,5 +12,5 @@ module.exports = {
     gmailPswd: "nikhil123",
     accountSId: "ACbfb290aa2787537050c97adae0de5d9b",
     authToken: "0437bf7e13d4b638b30a3a35f5455e6c",
-    twilioMobileNumber: "+353768886506"
+    twilioMobileNumber: "+16283000928"
 };

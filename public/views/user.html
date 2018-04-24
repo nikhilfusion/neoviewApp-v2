@@ -11,18 +11,17 @@
       <input type="email" ng-disabled="!newFlg" placeholder="Enter Email" name="email" ng-model="user.email" ng-trim="false" required />
       <div class="error" ng-if="submitted && loginForm.email.$error.email && loginForm.email.$error.required">email is invalid</div>
       <div><b>Mobile</b></div>
-      <input type="text" name="mobile" required ng-model="user.mobile" ng-intl-tel-input data-initial-country="ie">
-      <span class="err-msg" ng-if="submitted && loginForm.user.mobile.required">Mobile Number is required</span>
-      <span class="err-msg" ng-if="submitted && user.mobile && loginForm.user.mobile.$invalid">Invalid Mobile Number</span>
-      <div class="error" ng-if="submitted && loginForm.mobile.$error.email && loginForm.mobile.$error.required">mobile number is invalid</div>
+      <input type="text" name="mobile" ng-model="user.mobile" ng-intl-tel-input data-initial-country="ie" required>
+      <span class="err-msg" ng-if="submitted && loginForm.mobile.$error.required">Mobile Number is required</span>
+      <span class="err-msg" ng-if="submitted && loginForm.mobile.$invalid">Invalid Mobile Number</span>
       <div ng-if="userType === 2"><b>User Type</b></div>
       <select ng-if="userType === 2 && newFlg" name="type" ng-model="user.role" ng-options="role.id as role.name for role in roles" ng-change="changeUser(user.role)" class="selectBox" ng-disabled="!newFlg" required>
         <option value="">Choose a user</option>
       </select>
       <input type="text" ng-if="userType === 2 && !newFlg" value="Parent" disabled="!newFlg"/>
       <span class="err-msg" ng-if="submitted && loginForm.type.$error.required">User type is required</span>
-      <div ng-if="userType === 0 || user.role === 1"><b>Camera</b></div>
-      <select ng-if="userType === 0 || user.role === 1"  ng-model="user.camera" class="selectBox" ng-options="camera as camera for camera in cameras">
+      <div ng-if="userType && userType !== 2"><b>Camera</b></div>
+      <select ng-if="userType && userType !== 2"  ng-model="user.camera" class="selectBox" ng-options="camera as camera for camera in cameras">
         <option value="">No Camera</option>
       </select>
       <div class="btnMainDiv">

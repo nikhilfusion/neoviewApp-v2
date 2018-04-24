@@ -86,9 +86,7 @@ module.exports = function(ws, io) {
     if(chkAddCam.length > 0 && chkAddCam[0].name) {
       console.log("chkAddCam", chkAddCam);
       io.sockets.emit('ChangeCamStatus', {'camInfo' : chkAddCam[0]})
-    }
-    //chk for added camera
-    //console.log("2nd", diff(arr2, merge));
+    };
   };
   
   function diff(result1, result2) {
@@ -111,18 +109,19 @@ module.exports = function(ws, io) {
     return result;
   };
 
-  function sendSms(mobileNumber, msg) {
+  function sendSms(mobileNumber, otp) {
+    const msg = 'Use code ' + otp + ' to verify your account on Neoview. Team Neoview!';
     return new Promise(function(resolve, reject) {
       client.messages.create({
         to: mobileNumber,
         from: config.twilioMobileNumber,
         body: msg
-      })
-      .then(function(message) {
-        return resolve(message);
-      })
-      .catch(function(err) {
-        return reject(err);
+      }, function(err, message) {
+        if (err) {
+            return reject(err);
+        } else {
+            return resolve(message);
+        }
       });
     });
   };
@@ -134,20 +133,25 @@ module.exports = function(ws, io) {
         if(!err && rows.length > 0) {
           var loggedUser = rows[0], otp, oneDay = 24 * 60 * 60 * 1000;
           if(bcrypt.compareSync(reqInfo.password, rows[0].password)) {
-            if((new Date().getTime() - loggedUser.otpCreated) < oneDay) {
+            if(loggedUser.otp && loggedUser.otpCreated && ((new Date().getTime() - loggedUser.otpCreated) < oneDay)) {
               otp = loggedUser.otp;
               db.run("UPDATE users SET conn_flg = ? WHERE id = ?" , [true, Number(rows[0].id)]);
             } else {
-              var otp = Math.floor(1000 + Math.random() * 9000);
+              otp = Math.floor(1000 + Math.random() * 9000);
               db.run("UPDATE users SET conn_flg = ?, otp = ?, otpCreated = ? WHERE id = ?" , [true, otp, (new Date().getTime()), Number(rows[0].id)]);
             }
             delete loggedUser.password;
-            sendSms(loggedUser.mobile, otp)
-            .then(function(res, err) {
+            if(loggedUser.role === 2) {
               res.send(loggedUser);
-            }, function(err) {
-              res.status(500).send("Something went wrong");
-            });
+            } else {
+              sendSms(loggedUser.mobile, otp)
+              .then(function(smsRes) {
+                res.send(loggedUser);
+              })
+              .catch(function(err) {
+                res.status(500).send("Something went wrong");
+              });
+            }
           } else {
             res.status(404).send("Invalid email or password");
           }
@@ -375,7 +379,7 @@ module.exports = function(ws, io) {
         db.run("UPDATE users SET otp = ?, otpCreated = ? WHERE id = ?" , [otp, (new Date().getTime()), reqInfo.userId]);
       }
       sendSms(userInfo.mobile, otp)
-      .then(function(res, err) {
+      .then(function(smsRes) {
         res.send('OTP Send Successfully');
       }, function(err) {
         res.send(err);
