@@ -141,6 +141,7 @@ module.exports = function(ws, io) {
               db.run("UPDATE users SET conn_flg = ?, otp = ?, otpCreated = ? WHERE id = ?" , [true, otp, (new Date().getTime()), Number(rows[0].id)]);
             }
             delete loggedUser.password;
+            delete loggedUser.otp;
             if(loggedUser.role === 2) {
               res.send(loggedUser);
             } else {
@@ -210,11 +211,11 @@ module.exports = function(ws, io) {
               sendMail(reqDt, "Neoview Credentials");
               res.send(reqDt);
             }  
-            else if(rows.length > 0) {
+            else {
               res.status(403).send("Email already exists");
             }
           } else {
-            res.send(err);
+            res.status(500).send(err);
           }  
         });
       });
