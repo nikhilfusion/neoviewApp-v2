@@ -12,5 +12,5 @@ module.exports = {
     gmailPswd: "neoview1234@#$",
     accountSId: "ACbfb290aa2787537050c97adae0de5d9b",
     authToken: "3a9e6cea81cd5e40264910695ac069da",
-    twilioMobileNumber: "+16283000928"
+    twilioMobileNumber: "Neoview"
 };
