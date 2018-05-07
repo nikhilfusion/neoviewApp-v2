@@ -150,6 +150,7 @@ module.exports = function(ws, io) {
                 res.send(loggedUser);
               })
               .catch(function(err) {
+                console.log(err);
                 res.status(500).send("Something went wrong");
               });
             }

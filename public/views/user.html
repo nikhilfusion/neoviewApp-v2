@@ -20,8 +20,8 @@
       </select>
       <input type="text" ng-if="userType === 2 && !newFlg" value="Parent" disabled="!newFlg"/>
       <span class="err-msg" ng-if="submitted && loginForm.type.$error.required">User type is required</span>
-      <div ng-if="userType && userType !== 2"><b>Camera</b></div>
-      <select ng-if="userType && userType !== 2"  ng-model="user.camera" class="selectBox" ng-options="camera as camera for camera in cameras">
+      <div ng-if="userType === 0 || (userType === 2 && user.role === 1)"><b>Camera</b></div>
+      <select ng-if="userType === 0 || (userType === 2 && user.role === 1)"  ng-model="user.camera" class="selectBox" ng-options="camera as camera for camera in cameras">
         <option value="">No Camera</option>
       </select>
       <div class="btnMainDiv">
