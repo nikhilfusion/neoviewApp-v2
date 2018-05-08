@@ -358,7 +358,7 @@ module.exports = function(ws, io) {
   this.otpVerifie = function(req, res) {
     var otpDt = req.body;
     db.all("SELECT * from users  WHERE id=?", [Number(otpDt.userId)], function(err, userInfo){
-      if(Number(userInfo[0].otp) === Number(otpDt.otp) && ((new Date().getTime() - userInfo.otpCreated) < oneDay)) {
+      if(Number(userInfo[0].otp) === Number(otpDt.otp) && ((new Date().getTime() - userInfo[0].otpCreated) < oneDay)) {
         res.send(userInfo[0]);
       } else {
         res.status(404).send("Missmatched OTP");
