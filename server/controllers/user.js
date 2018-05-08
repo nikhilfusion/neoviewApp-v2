@@ -15,6 +15,7 @@ var sqlite3 = require('sqlite3').verbose(),
   accountSid = config.accountSId,
   authToken = config.authToken,
   client = require('twilio')(accountSid, authToken),
+  oneDay = 24 * 60 * 60 * 1000,
   transporter = nodemailer.createTransport(smtpTransport ({
     service: 'gmail',
     auth: {
@@ -131,15 +132,10 @@ module.exports = function(ws, io) {
     db.serialize(function() {
       db.all("SELECT * from users  WHERE email = ?", [reqInfo.email], function(err,rows){
         if(!err && rows.length > 0) {
-          var loggedUser = rows[0], otp, oneDay = 24 * 60 * 60 * 1000;
+          var loggedUser = rows[0], otp;
           if(bcrypt.compareSync(reqInfo.password, rows[0].password)) {
-            if(loggedUser.otp && loggedUser.otpCreated && ((new Date().getTime() - loggedUser.otpCreated) < oneDay)) {
-              otp = loggedUser.otp;
-              db.run("UPDATE users SET conn_flg = ? WHERE id = ?" , [true, Number(rows[0].id)]);
-            } else {
-              otp = Math.floor(1000 + Math.random() * 9000);
-              db.run("UPDATE users SET conn_flg = ?, otp = ?, otpCreated = ? WHERE id = ?" , [true, otp, (new Date().getTime()), Number(rows[0].id)]);
-            }
+            otp = Math.floor(1000 + Math.random() * 9000);
+            db.run("UPDATE users SET conn_flg = ?, otp = ?, otpCreated = ? WHERE id = ?" , [true, otp, (new Date().getTime()), Number(rows[0].id)]);
             delete loggedUser.password;
             delete loggedUser.otp;
             if(loggedUser.role === 2) {
@@ -362,7 +358,7 @@ module.exports = function(ws, io) {
   this.otpVerifie = function(req, res) {
     var otpDt = req.body;
     db.all("SELECT * from users  WHERE id=?", [Number(otpDt.userId)], function(err, userInfo){
-      if(Number(userInfo[0].otp) === Number(otpDt.otp)) {
+      if(Number(userInfo[0].otp) === Number(otpDt.otp) && ((new Date().getTime() - userInfo.otpCreated) < oneDay)) {
         res.send(userInfo[0]);
       } else {
         res.status(404).send("Missmatched OTP");
@@ -373,7 +369,7 @@ module.exports = function(ws, io) {
   this.resendOTP = function(req, res) {
     var reqInfo = req.body;
     db.all("SELECT * from users  WHERE id = ?", [reqInfo.userId], function(err,rows){
-      var userInfo = rows[0], otp, oneDay = 24 * 60 * 60 * 1000;
+      var userInfo = rows[0], otp;
       if((new Date().getTime() - userInfo.otpCreated) < oneDay) {
         otp = userInfo.otp;
       } else {
