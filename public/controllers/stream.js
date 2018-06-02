@@ -226,7 +226,6 @@ angular.module('neoviewApp')
               if(commonService.chkModal()) {
                 commonService.closeModal();
               }
-              $video[0].muted = false;
               commonService.notification('Welcome back');
               setTimeout(function(){
                 commonService.closeModal(); 
@@ -384,13 +383,13 @@ angular.module('neoviewApp')
 
     vis(function(){
       if(vis()) {
+        $video[0].muted = false;
         stopBlinking();
         if(backMsg && playing) {
           if(commonService.chkModal()) {
             commonService.closeModal();
           }
           commonService.notification('Welcome back');
-          $video[0].muted = false;
           setTimeout(function(){
             commonService.closeModal(); 
           }, 5000);
