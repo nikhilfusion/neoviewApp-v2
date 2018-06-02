@@ -226,6 +226,7 @@ angular.module('neoviewApp')
               if(commonService.chkModal()) {
                 commonService.closeModal();
               }
+              $video[0].muted = false;
               commonService.notification('Welcome back');
               setTimeout(function(){
                 commonService.closeModal(); 
@@ -389,11 +390,14 @@ angular.module('neoviewApp')
             commonService.closeModal();
           }
           commonService.notification('Welcome back');
+          $video[0].muted = false;
           setTimeout(function(){
             commonService.closeModal(); 
           }, 5000);
           backMsg = false;
         }
+      } else {
+        $video[0].muted = true;
       }
     });
 
@@ -406,7 +410,6 @@ angular.module('neoviewApp')
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
       if(fromState.name == 'app.stream') {
-        $video[0].pause();
         if(commonService.chkModal()) {
           commonService.closeModal();
         }
