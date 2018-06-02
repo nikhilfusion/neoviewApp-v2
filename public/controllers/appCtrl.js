@@ -1,6 +1,6 @@
 angular.module('neoviewApp')
 .controller('appController', ['$scope', 'commonService', '$state', 'Restangular', 'socket', '$rootScope', '$stateParams', function ($scope, commonService, $state, Restangular, socket, $rootScope, $stateParams) {
-	$rootScope.title = "NeoviewApp";
+	$rootScope.title = "NeoViewApp";
 	var userInfo = commonService.getSession('users');
 	function logout() {
 		commonService.clearSession();

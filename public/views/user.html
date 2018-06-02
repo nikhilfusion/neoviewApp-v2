@@ -12,8 +12,8 @@
       <div class="error" ng-if="submitted && loginForm.email.$error.email && loginForm.email.$error.required">email is invalid</div>
       <div><b>Mobile</b></div>
       <input type="text" name="mobile" ng-model="user.mobile" ng-intl-tel-input data-initial-country="ie" required>
-      <span class="err-msg" ng-if="submitted && loginForm.mobile.$error.required">Mobile Number is required</span>
-      <span class="err-msg" ng-if="submitted && loginForm.mobile.$invalid">Invalid Mobile Number</span>
+      <span class="err-msg" ng-if="submitted && loginForm.mobile.$error.required">Mobile Number is required.</span>
+      <span class="err-msg" ng-if="submitted && !loginForm.mobile.$error.required && loginForm.mobile.$invalid">Invalid Mobile Number</span>
       <div ng-if="userType === 2"><b>User Type</b></div>
       <select ng-if="userType === 2 && newFlg" name="type" ng-model="user.role" ng-options="role.id as role.name for role in roles" ng-change="changeUser(user.role)" class="selectBox" ng-disabled="!newFlg" required>
         <option value="">Choose a user</option>

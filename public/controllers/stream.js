@@ -117,7 +117,11 @@ angular.module('neoviewApp')
               }
             } else {
               playSrc = default_video;
-              commonService.notification('Video stream not available.  Please try again later.')
+              if(camLocalStatus.status == 2) {
+                commonService.notification('Please wait. Camera is getting ready to stream.')
+              } else {
+                commonService.notification('Video stream not available.  Please try again later.')
+              }
             }
             setTimeout(function(){
               commonService.closeModal(); 
@@ -286,7 +290,7 @@ angular.module('neoviewApp')
 
     function stopBlinking() {
         //clearTimeout(blinkHandler);
-        $rootScope.title = 'NeoviewApp';
+        $rootScope.title = 'NeoViewApp';
         $rootScope.$apply();
     };
 
@@ -372,24 +376,10 @@ angular.module('neoviewApp')
       newTab();
     });
 
-    // function BlinkIteration() {
-    //     if(!blinkLogicState)
-    //     {
-    //         $rootScope.title = 'Video is ready';
-    //     } else {
-    //         $rootScope.title = 'NeoviewApp';
-    //     }
-    //     $rootScope.$apply();
-    //     blinkLogicState = !blinkLogicState;  
-    //     blinkHandler = setTimeout(BlinkIteration, 1000);
-    // };
-
     function startBlinking(title) {
-      //BlinkIteration();
       $rootScope.title = title;
       $rootScope.$apply();
     };
-
 
     vis(function(){
       if(vis()) {

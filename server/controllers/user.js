@@ -111,7 +111,7 @@ module.exports = function(ws, io) {
   };
 
   function sendSms(mobileNumber, otp) {
-    const msg = 'Use code ' + otp + ' to verify your account on Neoview. Team Neoview!';
+    const msg = 'Please use code ' + otp + ' to complete your login to NeoView.  Team NeoView'
     return new Promise(function(resolve, reject) {
       client.messages.create({
         to: mobileNumber,
@@ -170,7 +170,7 @@ module.exports = function(ws, io) {
             new_password = bcrypt.hashSync(decry_pswd, salt);
           resInfo['decry_pswd'] = decry_pswd;
           db.run("UPDATE users SET password = ? WHERE id = ?" , [new_password, Number(resInfo.id)]);
-          sendMail(resInfo, "Neoview Reset Password");
+          sendMail(resInfo, "NeoView Reset Password");
           res.send("Email sent successful");
         } else {
           res.status(404).send("Invalid email or password");
@@ -205,7 +205,7 @@ module.exports = function(ws, io) {
               var stmt = db.prepare("INSERT INTO users VALUES(?,?,?,?,?,?,?,?,?,?)", [newId, reqDt.username, reqDt.password, reqDt.email, reqDt.role, reqDt.camera, reqDt.mobile, '', new Date(), false]);
               stmt.run();
               stmt.finalize();
-              sendMail(reqDt, "Neoview Credentials");
+              sendMail(reqDt, "NeoView Credentials");
               res.send(reqDt);
             }  
             else {
@@ -391,7 +391,7 @@ module.exports = function(ws, io) {
       from: config.gmailUser,
       to: userInfo.email,
       subject: subject,
-      html: '<h2>This is Your Neoview Credentials</h2></br>'+
+      html: '<h2>This is Your NeoView Credentials</h2></br>'+
             '<p>Email : ' + userInfo.email + '</p></br>' +
             '<p>Password : ' + userInfo.decry_pswd + '</p></br>'     
       };
