@@ -15,11 +15,18 @@ angular.module('neoviewApp')
 		$scope.errMsg = "";
 		Restangular.all('login').post(user, {}).then(function(res) {
 			$scope.userInfo = res.plain();
-			if($scope.userInfo.role === 2) {
-				commonService.setSession('users', $scope.userInfo);
-				$state.go("app.adminDashboard");
-			} else {
-				$scope.isOTPCalled = true;
+			switch($scope.userInfo.role) {
+				case 0 :
+					commonService.setSession('users', $scope.userInfo);
+					$state.go("app.adminPatientList");
+					break;
+				case 1:
+					$scope.isOTPCalled = true;
+					break;
+				default:
+					commonService.setSession('users', $scope.userInfo);
+					$state.go("app.adminDashboard");
+					break;
 			}
 		}, function(err) {
 			$scope.errMsg = err.data;

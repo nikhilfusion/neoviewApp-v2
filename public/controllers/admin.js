@@ -2,7 +2,7 @@ angular.module('neoviewApp')
 .controller('adminController', ['$scope', '$state', 'Restangular', '$stateParams', '$rootScope', 'commonService', 'growl', function ($scope, $state, Restangular, $stateParams, $rootScope, commonService, growl) {
 
 	var userInfo = commonService.getSession('users');
-	if(!userInfo || (userInfo && userInfo.role != 2)) {
+	if(!userInfo || userInfo.role == 1) {
 		$state.go('login');
 	}
 

@@ -138,9 +138,7 @@ module.exports = function(ws, io) {
             db.run("UPDATE users SET conn_flg = ?, otp = ?, otpCreated = ? WHERE id = ?" , [true, otp, (new Date().getTime()), Number(rows[0].id)]);
             delete loggedUser.password;
             delete loggedUser.otp;
-            if(loggedUser.role === 2) {
-              res.send(loggedUser);
-            } else {
+            if(loggedUser.role === 1) {
               sendSms(loggedUser.mobile, otp)
               .then(function(smsRes) {
                 res.send(loggedUser);
@@ -149,6 +147,8 @@ module.exports = function(ws, io) {
                 console.log(err);
                 res.status(500).send("Something went wrong");
               });
+            } else {
+              res.send(loggedUser);
             }
           } else {
             res.status(404).send("Invalid email or password");
