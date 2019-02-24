@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "mkdir videos && cd videos && mkdir camera-1 camera-2 camera-3 camera-4 camera-5 camera-6"
+ },
   "author": "Nikhil T Nair",
   "license": "ISC",
   "dependencies": {

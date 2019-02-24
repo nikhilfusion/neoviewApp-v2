@@ -59,8 +59,21 @@ angular.module('neoviewApp').controller('loginController', [
             console.log('err is ', err);
           }
         );
-    };
-    $scope.forgot = function(user) {
+ }
+// $scope.nikhil = function() {
+// Restangular.all('user')
+//  .post({username: 'admin', email: 'neoviewIreland@gmail.com', role: 2}, {})
+//  .then(function(res) {
+//    console.log('created successfully');
+//  },
+//  function(err) {
+//    console.log('err is ', err);
+//  })
+// }
+// $scope.nikhil();
+
+
+$scope.forgot = function(user) {
       if (user.email) {
         $scope.errMsg = false;
         $scope.SucMsg = false;
