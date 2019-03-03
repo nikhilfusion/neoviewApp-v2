@@ -394,7 +394,7 @@ angular.module('neoviewApp').controller('streamController', [
         camStatus.camInfo.name == userInfo.camera &&
         $state.current.name == 'app.stream'
       ) {
-        $scope.noCam = true;
+        $scope.noCam = false;
         if (camStatus.camInfo.status == 1) {
           clearVideoQueue();
         } else if (camStatus.camInfo.status != 2 && playSrc != default_video) {
@@ -525,8 +525,8 @@ angular.module('neoviewApp').controller('streamController', [
       deleteFn();
     });
 
-    setInterval(function() {
-      window.location.reload(true);
-    }, 60 * 60 * 1000);
+    //setInterval(function() {
+    //  window.location.reload(true);
+    //}, 60 * 60 * 1000);
   }
 ]);
