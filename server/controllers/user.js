@@ -30,6 +30,7 @@ module.exports = function(ws, io) {
   var newCameraInfo, oldCameraInfo;
 
   ws.on('message', function(camInfo) {
+    console.log('message on line 33 ', camInfo);
     setCamInfo(camInfo, true);
   });
 
@@ -44,6 +45,9 @@ module.exports = function(ws, io) {
   function setCamInfo(camInfo, isEmit) {
     oldCameraInfo = newCameraInfo;
     newCameraInfo = JSON.parse(camInfo);
+    console.log('setCameraInfo line 50 oldCameraInfo ', oldCameraInfo);
+    console.log('newCameraInfo is ', newCameraInfo);
+    console.log('isEmit is ', isEmit);
     if (isEmit) {
       if (oldCameraInfo) {
         test(newCameraInfo, oldCameraInfo);
@@ -85,12 +89,13 @@ module.exports = function(ws, io) {
             '',
             userInfo[0].id
           ]);
+	  console.log("delete camera line 94 ", deleteCam);
           io.sockets.emit('DeleteCamera', { camera: deletedCam });
         }
       });
     }
     var chkAddCam = diff(arr2, merge);
-
+    console.log('chkAddCam line 100 is ', chkAddCam);
     if (chkAddCam.length > 0 && chkAddCam[0].name) {
       console.log('chkAddCam', chkAddCam);
       io.sockets.emit('ChangeCamStatus', { camInfo: chkAddCam[0] });
@@ -326,12 +331,13 @@ module.exports = function(ws, io) {
           flg = true;
         }
         db.run(
-          'UPDATE users SET username = ?, password = ?, role = ?, camera = ? WHERE id = ?',
+          'UPDATE users SET username = ?, password = ?, role = ?, camera = ?, mobile = ? WHERE id = ?',
           [
             newDt.username,
             newDt.password,
             Number(newDt.role),
             newDt.camera,
+	    newDt.mobile,
             Number(newDt.id)
           ]
         );
@@ -352,6 +358,7 @@ module.exports = function(ws, io) {
       var dir_path = dir + cameraName + '/';
       if (fs.existsSync(dir_path)) {
         var files = fs.readdirSync(dir_path);
+	console.log('deleteVideos on line 363 ', files);
         if (files.length > 0) {
           _.each(files, function(file) {
             fs.unlink(dir_path + file);
@@ -444,6 +451,7 @@ module.exports = function(ws, io) {
 
   this.getCamStatus = function(req, res) {
     getCamInfo();
+    console.log('getCamstatus line 456 is ', newCameraInfo);
     res.send(newCameraInfo);
   };
 
@@ -459,7 +467,7 @@ module.exports = function(ws, io) {
       ) {
         res.send(userInfo[0]);
       } else {
-        res.status(404).send('Missmatched OTP');
+        res.status(404).send('Mismatch OTP');
       }
     });
   };

@@ -79,6 +79,7 @@ angular.module('neoviewApp').controller('streamController', [
     });
 
     $video.on('error', function(error) {
+      console.log('error is ', error);
       playing = false;
       if (commonService.chkModal()) {
         commonService.closeModal();
@@ -87,7 +88,12 @@ angular.module('neoviewApp').controller('streamController', [
       if (playSrc != default_video) {
         playSrc = default_video;
         $video.attr('src', default_video);
+<<<<<<< HEAD
         $video[0].play();
+=======
+        $video[0].muted = muted;
+	$video[0].play();
+>>>>>>> cf89353... added consoles and messages
       }
     });
 
@@ -127,9 +133,18 @@ angular.module('neoviewApp').controller('streamController', [
       playing = false;
       backMsg = false;
       var sessionUser = commonService.getSession('users');
+      console.log('videoSend is ', videoInfo);
+      console.log('sessionUSer is ', sessionUser);
       Restangular.one('user', sessionUser.id)
         .get({}, {})
         .then(function(userInfo) {
+<<<<<<< HEAD
+=======
+	  setTimeout(function() {
+            commonService.closeModal();
+          },500);
+
+>>>>>>> cf89353... added consoles and messages
           if (onloadFlg) {
             onloadFlg = false;
             if (userInfo.camera) {
@@ -170,6 +185,10 @@ angular.module('neoviewApp').controller('streamController', [
                   );
                 }
               }
+<<<<<<< HEAD
+=======
+	      $video[0].muted = muted;
+>>>>>>> cf89353... added consoles and messages
               $video.attr('src', playSrc);
               if (playSrc != default_video) {
                 $video[0].play().then(
@@ -181,6 +200,7 @@ angular.module('neoviewApp').controller('streamController', [
                     playing = false;
                     setDefaultVideo();
                   }
+<<<<<<< HEAD
                 );
               } else {
                 playing = false;
@@ -190,6 +210,40 @@ angular.module('neoviewApp').controller('streamController', [
               setTimeout(function() {
                 commonService.closeModal();
               }, 5000);
+=======
+                },
+                function(err) {
+                  console.log('err while playing initial', err);
+		  playing = false;
+                  setDefaultVideo();
+		  setTimeout(function(){
+		    //$video[0].pause();
+		    //$video[0].play();
+		    $window.location.reload();
+		  }, 3000)
+		}
+              );
+
+	      //if (playSrc != default_video) {
+                //$video[0].play()
+                  //.then(function() {
+                  //  def_vid_flg = false;
+                  //  playing = true;
+                  //}, function(err) {
+                   //playing = false;
+                  //setDefaultVideo();
+                 //});
+              //} else {
+                //playing = false;
+                //$video[0].play()
+		//.then(function(){
+		  //setDefaultVideo();
+		//});
+              //}
+              //setTimeout(function() {
+                //commonService.closeModal();
+              //}, 5000);
+>>>>>>> cf89353... added consoles and messages
             } else {
               commonService.notification(
                 'No camera assigned to your account',
@@ -207,6 +261,7 @@ angular.module('neoviewApp').controller('streamController', [
         Restangular.one('getCamStatus')
           .get({}, {})
           .then(function(camStatus) {
+	    console.log('setLocalData camStatus is ', camStatus);
             for (var i = 0; i < camStatus.length; i++) {
               if (camStatus[i].name == cookie.camera) {
                 camLocalStatus = camStatus[i];
@@ -240,6 +295,7 @@ angular.module('neoviewApp').controller('streamController', [
       stopTimer();
       playing = false;
       camLocalStatus = commonService.getSession('camStatus');
+      console.log('nextVideo camLocalStatus is ', camLocalStatus);
       //need a test fun
       if (videoQueue.length > 0 && camLocalStatus.status == 2) {
         if (playSrc == default_video) {
@@ -301,6 +357,10 @@ angular.module('neoviewApp').controller('streamController', [
         playSrc = default_video;
       }
       $video.attr('src', playSrc);
+<<<<<<< HEAD
+=======
+      $video[0].muted = muted;
+>>>>>>> cf89353... added consoles and messages
       if (playSrc != default_video) {
         $video[0].play().then(function() {
           playing = true;
@@ -337,6 +397,7 @@ angular.module('neoviewApp').controller('streamController', [
         cam = camInfo.split('/')[0],
         fileName = camInfo.split('/')[1],
         userInfo = commonService.getSession('users');
+	console.log('Newfile userInfo is ', userInfo);
       if (userInfo.camera && cam == userInfo.camera && fileName) {
         if (videoQueue.length > 0) {
           if (videoQueue[pushIndex] && videoQueue[pushIndex].status) {
@@ -369,6 +430,7 @@ angular.module('neoviewApp').controller('streamController', [
     //If we discharge the patient this code will execute
     socket.on('DeleteCamera', function(cameraInfo) {
       userInfo = commonService.getSession('users');
+      console.log('Delete Camera is ', userInfo);
       if (cameraInfo.camera == userInfo.camera) {
         $state.go('login');
       }
@@ -394,6 +456,9 @@ angular.module('neoviewApp').controller('streamController', [
         camStatus.camInfo.name == userInfo.camera &&
         $state.current.name == 'app.stream'
       ) {
+      console.log('change Camstatus is userInfo ', userInfo);
+      console.log('change camStatus is camStatus ', camStatus);
+
         $scope.noCam = false;
         if (camStatus.camInfo.status == 1) {
           clearVideoQueue();
@@ -417,7 +482,15 @@ angular.module('neoviewApp').controller('streamController', [
           if (playSrc != default_video) {
             playSrc = default_video;
             $video.attr('src', playSrc);
+<<<<<<< HEAD
             $video[0].play();
+=======
+	    $video[0].muted = muted;
+            $video[0].play().then(function(){
+	    }, function(err){
+	      $window.location.reload();
+	    })
+>>>>>>> cf89353... added consoles and messages
           }
         }
       }
@@ -426,6 +499,8 @@ angular.module('neoviewApp').controller('streamController', [
     //Its for discharge patient. Clear localstorage and setwith a new info
     socket.on('ChangeCamera', function(camInfo) {
       userInfo = commonService.getSession('users');
+      console.log('change camera userInfo', userInfo);
+      console.log('change camera camInfo ', camInfo);
       if (
         camInfo.id == userInfo.id &&
         userInfo.role == 1 &&
@@ -448,7 +523,15 @@ angular.module('neoviewApp').controller('streamController', [
         if (playSrc != default_video) {
           playSrc = default_video;
           $video.attr('src', playSrc);
+<<<<<<< HEAD
           $video[0].play();
+=======
+	  $video[0].muted = muted;
+          $video[0].play().then(function(){
+	  }, function(err){
+	    $window.$location.reload();
+	  })
+>>>>>>> cf89353... added consoles and messages
         }
         stopBlinking();
       }
@@ -483,7 +566,13 @@ angular.module('neoviewApp').controller('streamController', [
 
     vis(function() {
       if (vis()) {
+<<<<<<< HEAD
         $video[0].muted = false;
+=======
+	if(playSrc == default_video) {
+	  $video[0].muted = false;
+	}
+>>>>>>> cf89353... added consoles and messages
         stopBlinking();
         if (backMsg && playing) {
           if (commonService.chkModal()) {
@@ -524,9 +613,5 @@ angular.module('neoviewApp').controller('streamController', [
     $scope.$on('$destroy', function() {
       deleteFn();
     });
-
-    //setInterval(function() {
-    //  window.location.reload(true);
-    //}, 60 * 60 * 1000);
   }
 ]);

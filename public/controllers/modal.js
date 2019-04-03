@@ -15,7 +15,8 @@ angular.module('neoviewApp')
 			}
 		} else if(modalInfo.type === 'alert') {
 			Restangular.all('user').all(modalInfo.user.id).customPUT(modalInfo.formInfo).then(function(userInfo) {
-				if(modalInfo.userType === 'admin') {
+				if(modalInfo.userType === 'admin') {				
+					growl.success('Patient Transferred Successfully');
 					if(modalInfo.user.role === 0) {
 						$state.go("app.adminDashboard");
 					} else {

@@ -60,18 +60,17 @@ angular.module('neoviewApp').controller('loginController', [
           }
         );
  }
-// $scope.nikhil = function() {
-// Restangular.all('user')
-//  .post({username: 'admin', email: 'neoviewIreland@gmail.com', role: 2}, {})
-//  .then(function(res) {
-//    console.log('created successfully');
-//  },
-//  function(err) {
-//    console.log('err is ', err);
-//  })
-// }
-// $scope.nikhil();
 
+$scope.registerAdmin = function() {
+  Restangular.all('user')
+    .post({username: 'admin', email: 'neoviewIreland@gmail.com', role: 2}, {})
+    .then(function(res) {
+      console.log('created successfully');
+    },
+    function(err) {
+      console.log('err is ', err);
+    })
+}
 
 $scope.forgot = function(user) {
       if (user.email) {

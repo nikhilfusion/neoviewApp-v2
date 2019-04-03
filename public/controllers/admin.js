@@ -110,16 +110,25 @@ angular.module('neoviewApp')
 						userInfo.email = user.email;
 						userInfo.camera = user.camera;
 						commonService.openNotificationModal(user,userInfo,userType);
-					} else {
-						Restangular.all('user').all($stateParams.id).customPUT(userInfo).then(function(userInfo) {
-							if(userInfo.role === 0) {
-								growl.success('Staff updated successfully');
-								$state.go("app.adminDashboard");
-							} else {
-								growl.success('Patient updated successfully');
-								$state.go("app.adminPatientList");
-							}
-						});
+					} else if($scope.user.mobile != user.mobile){
+                                                 Restangular.all('user').all($stateParams.id).customPUT(user).then(function(userInfo) {
+                                                        growl.success('Patient updated successfully');
+							 if(user.role === 0) {
+                                                                growl.success('Staff updated successfully');
+                                                                $state.go("app.adminDashboard");
+                                                        } else {
+                                                                growl.success('Patient updated successfully');
+                                                                $state.go("app.adminPatientList");
+                                                        }
+                                                }, function(err) {
+                                                  growl.error('Something went wrong.Please try again')
+                                                });
+                                        } else {
+						if(user.role === 0) {
+							$state.go("app.adminDashboard");
+						} else {
+							$state.go("app.adminPatientList");
+						}
 					}
 				}
 			}

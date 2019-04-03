@@ -12,9 +12,31 @@
       </div>
       <div>      
         <div><b>Email</b></div>
+<<<<<<< HEAD
         <input type="email" ng-disabled="!newFlg" placeholder="Enter Email" name="email" ng-model="user.email" ng-trim="false" required />
  	<span class="err-msg" ng-if="submitted && loginForm.email.$error.required">Username is required</span>
         <span class="err-msg" ng-if="submitted && !loginForm.email.$error.required && loginForm.email.4invalid">email is invalid</span>
+=======
+        <input
+          type="email"
+          ng-disabled="!newFlg"
+          placeholder="Enter Email"
+          name="email"
+          ng-model="user.email"
+          ng-trim="false"
+          required
+        />
+        <span
+          class="err-msg"
+          ng-if="submitted && loginForm.email.$error.required"
+          >email is required</span
+        >
+        <span
+          class="err-msg"
+          ng-if="submitted && !loginForm.email.$error.required && loginForm.email.$invalid"
+          >email is invalid</span
+        >
+>>>>>>> cf89353... added consoles and messages
       </div>
       <div>      
         <div ng-if="userType === 2"><b>User Type</b></div>
@@ -26,10 +48,21 @@
           <span class="err-msg" ng-if="submitted && loginForm.type.$error.required">User type is required</span>
 	</div>
       </div>
+<<<<<<< HEAD
       <div ng-if="userType === 0 || (userType === 2 && user.role === 1)">          
 	<div>	
 	  <div><b>Camera</b></div>
       	  <select ng-model="user.camera" class="selectBox" ng-options="camera as camera for camera in cameras">
+=======
+      <div ng-if="userType === 0 || (userType === 2 && user.role === 1)">
+        <div>
+          <div><b>Camera</b></div>
+          <select
+            ng-model="user.camera"
+            class="selectBox"
+	  >
+	    <option ng-repeat="camera in cameras" value={{camera}}>{{camera}}</option>
+>>>>>>> cf89353... added consoles and messages
             <option value="">No Camera</option>
       	  </select>
 	</div>

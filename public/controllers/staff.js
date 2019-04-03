@@ -81,11 +81,13 @@ angular.module('neoviewApp')
 						userInfo.email = user.email;
 						userInfo.camera = user.camera;	
 						commonService.openNotificationModal(user,userInfo,userType);
-					} else {
-						Restangular.all('user').all($stateParams.id).customPUT(userInfo).then(function(userInfo) {
-							growl.success('Patient updated successfully');
-							$state.go("app.staffDashboard");
-						});
+					} else if($scope.user.mobile != user.mobile){
+						 Restangular.all('user').all($stateParams.id).customPUT(user).then(function(userInfo) {
+                                                        growl.success('Patient updated successfully');
+                                                        $state.go("app.staffDashboard");
+                                                });
+					} else{
+					  $state.go("app.staffDashboard")
 					}
 				}
 			}
