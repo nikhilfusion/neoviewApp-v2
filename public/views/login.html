@@ -1,0 +1,31 @@
+<div class="mainContainer" style="padding:20px;"></div>
+<form name="loginForm">
+	<h3 ng-if="loginFlg && !isOTPCalled" style="text-align:center;">Login</h3>
+	<h3 ng-if="loginFlg && isOTPCalled" style="text-align:center;">Enter Verification Code</h3>
+	<h3 ng-if="!loginFlg" style="text-align:center;">Forgot Password</h3>
+  	<div class="col-md-4 col-xs-12 col-md-offset-4" class="login-div" ng-if="loginFlg && !isOTPCalled">
+	    <label><b>Email</b></label>
+	    <input type="email" placeholder="user@test.com" name="email" ng-model="user.email" focus="true" required>
+	    <label><b>Password</b></label>
+	    <input type="password" placeholder="Enter Password" name="psw" ng-model="user.password" required>
+		<div class="warning">Password is case sensitive</div>
+	    <button type="submit" class="btn-success" ng-class="{'disabled': loginForm.$invalid}" ng-click="login(user)" ng-disabled="loginForm.$invalid">Continue</button>
+		<a class="loginLink" ui-sref="forgot">Forgot Password?</a>
+		<span ng-if="errMsg" class="error-msg">{{errMsg}}</span></br>
+	</div>
+	<div class="col-md-4 col-xs-12 col-md-offset-4" class="login-div" ng-if="loginFlg && isOTPCalled">
+		<label><b>OTP</b></label>
+		<input type="text" placeholder="Enter OTP" name="otp" ng-model="otp" ng-pattern="/^[0-9]{4}$/" required>
+		<button type="submit" class="btn-success" ng-click="sendOTP(otp)" ng-disabled="loginForm.otp.$invalid" ng-class="{'disabled': loginForm.otp.$invalid}">Login</button>
+		<a ng-click="resendOTP()" class="loginLink" style="float: right">Resend OTP</a>
+		<span ng-if="errMsg" class="error-msg">{{errMsg}}</span></br>
+	</div>
+	<div class="col-md-4 col-xs-12 col-md-offset-4" class="login-div" ng-if="!loginFlg">
+    <label><b>Email</b></label>
+    <input type="text" placeholder="Enter Email" name="email" ng-model="user.email" focus="true" ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" required>
+	<button type="submit" class="btn-success" ng-click="forgot(user)" ng-disabled="loginForm.$invalid" ng-class="{'disabled': loginForm.$invalid}">Submit</button>
+	<a class="loginLink" ui-sref="login">login</a>
+	<span ng-if="errMsg || SucMsg" ng-class="{'suc-msg' : SucMsg, 'err-msg' : errMsg}">{{errMsg || SucMsg}}</span></br>
+  </div>
+  <!--<button ng-click="registerAdmin()">Register</button> -->
+</form>

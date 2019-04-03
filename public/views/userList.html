@@ -1,0 +1,35 @@
+<div id="page-wrapper" style="width:60%;">
+	<table class="table" ng-if="!noUser">
+	  <thead>
+	    <tr>
+	      <th>#</th>
+	      <th>User Name</th>
+	      <th>Email</th>
+	      <th ng-if="!staffList">Mobile</th>
+	      <th ng-if="patient">Camera</th>
+	      <th ng-if="patient">Status</th>
+	      <th></th>
+	    </tr>
+	  </thead>
+		<tbody ng-repeat="user in (users.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage)) |orderBy:'camera'|emptyToEnd:'camera')">
+	    <tr>
+	      <th scope="row">{{$index+1}}</th>
+	      <td>{{user.username}}</td>
+	      <td>{{user.email}}</td>
+	      <td ng-if="!staffList">{{user.mobile}}</td>
+	      <td ng-if="patient">{{user.camera}}</td>
+	      <td ng-if="patient">{{user.conn_flg ? 'loggedIn' : 'loggedOut' }}</td>
+	      <td ng-if="!staffList"><button class="btn btn-success btn-user" ng-click="editUser(user)">Transfer</button></td>
+	      <td ng-if="!staffList"><button class="btn btn-danger btn-user" ng-click="dltUser(user, staffList)">Discharge</button></td>
+	      <td ng-if="staffList"><button class="btn btn-danger btn-user" ng-click="dltUser(user, staffList)">Delete</button></td>
+	    </tr>
+	  </tbody>
+	</table>
+	<h5 ng-if="noUser">No User Found.Please Add.</h5>
+	<div data-pagination="" data-num-pages="numPages()" 
+    data-current-page="currentPage" data-max-size="maxSize"  
+		data-boundary-links="true">
+	</div>
+	<ul uib-pagination total-items="totalItems" ng-model="currentPage" items-per-page="itemsPerPage"></ul>
+
+</div>

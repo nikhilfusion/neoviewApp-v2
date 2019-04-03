@@ -1,0 +1,31 @@
+<div id="page-wrapper" style="width:60%;">
+  <h2>Reset Password</h2>
+  <form name="pswdForm" style="width: 500px;" novalidate>
+    <div class="container" style="width: 400px;">
+      <label><b>Current Password</b></label>
+      <input type="password" placeholder="Current Password" ng-model="patient.password" name="curr_pswd" focus="true" required>
+      <label><b>New Password</b></label>
+      <input type="password" placeholder="New Password" ng-model="patient.new_password" ng-pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/" name="new_pswd" id="new_pswd" required>
+      <div class="warning" ng-if="pswdForm.new_pswd.$invalid">
+        Password should contain at least 8 characters and should include an uppercase, lowercase, number only and no space.
+      </div>
+      <label><b>Confirm Password</b></label>
+      <input type="password" placeholder="Confirm Password" ng-model="patient.conf_password" name="conf_pswd" id="conf_pswd" pw-check="new_pswd" ng-trim="false" required>
+      <span ng-if="pswdForm.conf_pswd.$dirty && pswdForm.conf_pswd.$error.pwmatch" style="color:red;">*Password Mismatch</span></br>
+      <div class="btnMainDiv">
+        <div class="btnSideDiv">
+          <button type="submit" class="btn btn-primary btnTransfer" ng-click="setPswd(patient)" ng-disabled="pswdForm.$invalid">Save</button>
+        </div>
+        <div class="btnMidDiv">
+          <button class="btn btn-warning btnTransfer" ng-click="cancelPswd()">Reset</button>
+        </div>
+        <div class="btnSideDiv">
+          <button class="btn btn-success btnTransfer" ng-click="back()">Back</button>
+        </div>
+      </div>
+      <div>
+        <span ng-if="sucMsg || errMsg" ng-class="{'suc-msg' : sucMsg, 'err-msg' : errMsg}">{{sucMsg || errMsg}}</span></br>
+      </div>
+    </div>
+  </form>
+</div>

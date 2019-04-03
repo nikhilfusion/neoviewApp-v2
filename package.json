@@ -1,0 +1,31 @@
+{
+  "name": "neoview",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "mkdir videos && cd videos && mkdir camera-1 camera-2 camera-3 camera-4 camera-5 camera-6"
+ },
+  "author": "Nikhil T Nair",
+  "license": "ISC",
+  "dependencies": {
+    "angular-growl-v2": "^0.7.5",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.15.2",
+    "chokidar": "^1.6.1",
+    "express": "^4.14.0",
+    "lodash": "^4.17.4",
+    "lodash.keyby": "^4.6.0",
+    "method-override": "^2.3.7",
+    "nodemailer": "^3.0.0",
+    "nodemailer-smtp-transport": "^2.7.2",
+    "randomstring": "^1.1.5",
+    "socket.io": "^1.7.2",
+    "sqlite3": "^3.1.8",
+    "twilio": "^3.15.0",
+    "underscore": "^1.8.3",
+    "websocket": "^1.0.24",
+    "ws": "^1.1.1"
+  }
+}
