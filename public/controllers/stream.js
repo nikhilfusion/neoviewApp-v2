@@ -91,7 +91,9 @@ angular.module('neoviewApp').controller('streamController', [
     $video.on('error', function(error) {
       console.log('error is ', error);
       playing = false;
-      closeNotificationModal();
+      if (commonService.chkModal()) {
+        commonService.closeModal();
+      }
       setDefaultVideo();
       if (playSrc != default_video) {
         playSrc = default_video;
