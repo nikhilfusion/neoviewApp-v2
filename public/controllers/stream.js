@@ -33,6 +33,7 @@ angular.module('neoviewApp').controller('streamController', [
       $video = $('#video'),
       $canvas = $('#myCanvas'),
       ctx = $canvas[0].getContext('2d'),
+      timeOutTime = 20 * 1000,
       // blinkHandler,
       // blinkTitle,
       // blinkLogicState = false,
@@ -62,6 +63,15 @@ angular.module('neoviewApp').controller('streamController', [
       $window.clearInterval(timerID);
     }
 
+    function closeNotificationModal() {
+      var notificationTimer = setTimeout(function() {
+        if (commonService.chkModal()) {
+          commonService.closeModal();
+        }
+        clearTimeout(notificationTimer);
+      }, timeOutTime);
+    }
+
     function setDefaultVideo() {
       stopBlinking();
       openEducationTab();
@@ -81,9 +91,7 @@ angular.module('neoviewApp').controller('streamController', [
     $video.on('error', function(error) {
       console.log('error is ', error);
       playing = false;
-      if (commonService.chkModal()) {
-        commonService.closeModal();
-      }
+      closeNotificationModal();
       setDefaultVideo();
       if (playSrc != default_video) {
         playSrc = default_video;
@@ -111,9 +119,7 @@ angular.module('neoviewApp').controller('streamController', [
         'noCamNotify'
       );
       $scope.noCam = true;
-      setTimeout(function() {
-        commonService.closeModal();
-      }, 5000);
+      closeNotificationModal();
     } else {
       socket.emit('cameraConnect', { camera: userInfo.camera });
       $scope.noCam = false;
@@ -133,9 +139,7 @@ angular.module('neoviewApp').controller('streamController', [
       Restangular.one('user', sessionUser.id)
         .get({}, {})
         .then(function(userInfo) {
-          setTimeout(function() {
-            commonService.closeModal();
-          }, 500);
+          closeNotificationModal();
           if (onloadFlg) {
             onloadFlg = false;
             if (userInfo.camera) {
@@ -194,9 +198,7 @@ angular.module('neoviewApp').controller('streamController', [
                 $video[0].play();
                 setDefaultVideo();
               }
-              setTimeout(function() {
-                commonService.closeModal();
-              }, 5000);
+              closeNotificationModal();
             } else {
               commonService.notification(
                 'No camera assigned to your account',
@@ -323,17 +325,13 @@ angular.module('neoviewApp').controller('streamController', [
                 commonService.closeModal();
               }
               commonService.notification('Welcome back');
-              setTimeout(function() {
-                commonService.closeModal();
-              }, 5000);
+              closeNotificationModal();
               backMsg = false;
             }
           }
         });
       } else {
-        if (commonService.chkModal()) {
-          commonService.closeModal();
-        }
+        closeNotificationModal();
         setDefaultVideo();
         $video[0].play();
       }
@@ -410,35 +408,29 @@ angular.module('neoviewApp').controller('streamController', [
         console.log('change camStatus is camStatus ', camStatus);
 
         $scope.noCam = false;
-        if (camStatus.camInfo.status == 1) {
-          clearVideoQueue();
-        } else if (camStatus.camInfo.status != 2 && playSrc != default_video) {
+        clearVideoQueue();
+        if (camStatus.camInfo.status != 2 && playSrc != default_video) {
           commonService.notification(
             'Video stream not available. Please try again later.'
           );
-          setTimeout(function() {
-            commonService.closeModal();
-          }, 5000);
+          closeNotificationModal();
         }
         userInfo = commonService.getSession('users');
         backMsg = false;
         playing = false;
-        var camLocalStatus = commonService.getSession('camStatus');
+        // var camLocalStatus = commonService.getSession('camStatus');
         //need a test
         if (camStatus.camInfo.name == userInfo.camera) {
-          commonService.closeModal();
+          // commonService.closeModal();
           commonService.setSession('camStatus', camStatus.camInfo);
           setDefaultVideo();
           if (playSrc != default_video) {
             playSrc = default_video;
             $video.attr('src', playSrc);
             $video[0].muted = muted;
-            $video[0].play().then(
-              function() {},
-              function(err) {
-                $window.location.reload();
-              }
-            );
+            $video[0].play().then(function(err) {
+              $window.location.reload();
+            });
           }
         }
       }
@@ -458,9 +450,7 @@ angular.module('neoviewApp').controller('streamController', [
           commonService.notification(
             'Camera is not available. Please try again later.'
           );
-          setTimeout(function() {
-            commonService.closeModal();
-          }, 5000);
+          closeNotificationModal();
         }
         commonService.setSession('users', camInfo);
         userInfo = camInfo;
@@ -487,9 +477,7 @@ angular.module('neoviewApp').controller('streamController', [
       let blogOpened = commonService.getSession('blogOpened');
       if (def_vid_flg && !blogOpened && !playing && playSrc == default_video) {
         commonService.openBlog();
-        setTimeout(function() {
-          commonService.closeModal();
-        }, 5000);
+        closeNotificationModal();
       }
     }
 
@@ -521,9 +509,7 @@ angular.module('neoviewApp').controller('streamController', [
             commonService.closeModal();
           }
           commonService.notification('Welcome back');
-          setTimeout(function() {
-            commonService.closeModal();
-          }, 5000);
+          closeNotificationModal();
           backMsg = false;
         }
       } else {

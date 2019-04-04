@@ -89,7 +89,7 @@ module.exports = function(ws, io) {
             '',
             userInfo[0].id
           ]);
-	  console.log("delete camera line 94 ", deleteCam);
+          console.log('delete camera line 94 ', deleteCam);
           io.sockets.emit('DeleteCamera', { camera: deletedCam });
         }
       });
@@ -337,7 +337,7 @@ module.exports = function(ws, io) {
             newDt.password,
             Number(newDt.role),
             newDt.camera,
-	    newDt.mobile,
+            newDt.mobile,
             Number(newDt.id)
           ]
         );
@@ -358,7 +358,7 @@ module.exports = function(ws, io) {
       var dir_path = dir + cameraName + '/';
       if (fs.existsSync(dir_path)) {
         var files = fs.readdirSync(dir_path);
-	console.log('deleteVideos on line 363 ', files);
+        console.log('deleteVideos on line 363 ', files);
         if (files.length > 0) {
           _.each(files, function(file) {
             fs.unlink(dir_path + file);
