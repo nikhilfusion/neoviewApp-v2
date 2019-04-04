@@ -1,22 +1,39 @@
 <div id="page-wrapper">
   <h2 ng-if="newFlg">New User</h2>
   <h2 ng-if="!newFlg">Transfer Patient</h2>
-  <form name="loginForm" class="userForm" novalidate>   
+  <form name="loginForm" class="userForm" novalidate>
     <div class="container" style="width: 400px;">
       <div>
         <div><b>Username</b></div>
-        <input type="text" placeholder="Enter Username" name="username" ng-model="user.username" ng-minlength="6" ng-pattern="/^[a-z]*$/" ng-trim="false" ng-disabled="!newFlg" focus="true"  required />
-        <div class="warning" ng-if="newFlg">Only lowercase alphabets, No space allowed, Min. 6 characters</div>
-	<span class="err-msg" ng-if="submitted && loginForm.username.$error.required">Username is required</span>
-        <span class="err-msg" ng-if="submitted && !loginForm.username.$error.required && loginForm.username.$invalid">Username is invalid</span>
+        <input
+          type="text"
+          placeholder="Enter Username"
+          name="username"
+          ng-model="user.username"
+          ng-minlength="6"
+          ng-pattern="/^[a-z]*$/"
+          ng-trim="false"
+          ng-disabled="!newFlg"
+          focus="true"
+          required
+        />
+        <div class="warning" ng-if="newFlg">
+          Only lowercase alphabets, No space allowed, Min. 6 characters
+        </div>
+        <span
+          class="err-msg"
+          ng-if="submitted && loginForm.username.$error.required"
+          >Username is required</span
+        >
+        <span
+          class="err-msg"
+          ng-if="submitted && !loginForm.username.$error.required && loginForm.username.$invalid"
+          >Username is invalid</span
+        >
       </div>
-      <div>      
+      <div>
         <div><b>Email</b></div>
-<<<<<<< HEAD
-        <input type="email" ng-disabled="!newFlg" placeholder="Enter Email" name="email" ng-model="user.email" ng-trim="false" required />
- 	<span class="err-msg" ng-if="submitted && loginForm.email.$error.required">Username is required</span>
-        <span class="err-msg" ng-if="submitted && !loginForm.email.$error.required && loginForm.email.4invalid">email is invalid</span>
-=======
+
         <input
           type="email"
           ng-disabled="!newFlg"
@@ -36,41 +53,66 @@
           ng-if="submitted && !loginForm.email.$error.required && loginForm.email.$invalid"
           >email is invalid</span
         >
->>>>>>> cf89353... added consoles and messages
       </div>
-      <div>      
+      <div>
         <div ng-if="userType === 2"><b>User Type</b></div>
-        <select ng-if="userType === 2 && newFlg" name="type" ng-model="user.role" ng-options="role.id as role.name for role in roles" ng-change="changeUser(user.role)" class="selectBox" ng-disabled="!newFlg" required>
+        <select
+          ng-if="userType === 2 && newFlg"
+          name="type"
+          ng-model="user.role"
+          ng-options="role.id as role.name for role in roles"
+          ng-change="changeUser(user.role)"
+          class="selectBox"
+          ng-disabled="!newFlg"
+          required
+        >
           <option value="">Choose a user</option>
         </select>
-	<div>        
-	  <input type="text" ng-if="userType === 2 && !newFlg" value="Parent" disabled="!newFlg"/>
-          <span class="err-msg" ng-if="submitted && loginForm.type.$error.required">User type is required</span>
-	</div>
+        <div>
+          <input
+            type="text"
+            ng-if="userType === 2 && !newFlg"
+            value="Parent"
+            disabled="!newFlg"
+          />
+          <span
+            class="err-msg"
+            ng-if="submitted && loginForm.type.$error.required"
+            >User type is required</span
+          >
+        </div>
       </div>
-<<<<<<< HEAD
-      <div ng-if="userType === 0 || (userType === 2 && user.role === 1)">          
-	<div>	
-	  <div><b>Camera</b></div>
-      	  <select ng-model="user.camera" class="selectBox" ng-options="camera as camera for camera in cameras">
-=======
+
       <div ng-if="userType === 0 || (userType === 2 && user.role === 1)">
         <div>
           <div><b>Camera</b></div>
-          <select
-            ng-model="user.camera"
-            class="selectBox"
-	  >
-	    <option ng-repeat="camera in cameras" value={{camera}}>{{camera}}</option>
->>>>>>> cf89353... added consoles and messages
+          <select ng-model="user.camera" class="selectBox">
+            <option ng-repeat="camera in cameras" value="{{ camera }}">{{
+              camera
+            }}</option>
             <option value="">No Camera</option>
-      	  </select>
-	</div>
-      	<div>
+          </select>
+        </div>
+        <div>
           <div><b>Mobile</b></div>
-          <input type="text" name="mobile" ng-model="user.mobile" ng-intl-tel-input data-initial-country="ie" required>
-          <span class="err-msg" ng-if="submitted && loginForm.mobile.$error.required">Mobile Number is required.</span>
-          <span class="err-msg" ng-if="submitted && !loginForm.mobile.$error.required && loginForm.mobile.$invalid">Invalid Mobile Number</span>
+          <input
+            type="text"
+            name="mobile"
+            ng-model="user.mobile"
+            ng-intl-tel-input
+            data-initial-country="ie"
+            required
+          />
+          <span
+            class="err-msg"
+            ng-if="submitted && loginForm.mobile.$error.required"
+            >Mobile Number is required.</span
+          >
+          <span
+            class="err-msg"
+            ng-if="submitted && !loginForm.mobile.$error.required && loginForm.mobile.$invalid"
+            >Invalid Mobile Number</span
+          >
         </div>
       </div>
       <div class="btnMainDiv">
