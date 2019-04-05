@@ -182,7 +182,6 @@ angular.module('neoviewApp').controller('streamController', [
                   );
                 }
               }
-              $video[0].muted = muted;
               $video.attr('src', playSrc);
               if (playSrc != default_video) {
                 $video[0].play().then(
@@ -314,7 +313,6 @@ angular.module('neoviewApp').controller('streamController', [
         playSrc = default_video;
       }
       $video.attr('src', playSrc);
-      $video[0].muted = muted;
       if (playSrc != default_video) {
         $video[0].play().then(function() {
           playing = true;
@@ -429,7 +427,6 @@ angular.module('neoviewApp').controller('streamController', [
           if (playSrc != default_video) {
             playSrc = default_video;
             $video.attr('src', playSrc);
-            $video[0].muted = muted;
             $video[0].play().then(function(err) {
               $window.location.reload();
             });
@@ -463,7 +460,6 @@ angular.module('neoviewApp').controller('streamController', [
         if (playSrc != default_video) {
           playSrc = default_video;
           $video.attr('src', playSrc);
-          $video[0].muted = muted;
           $video[0].play().then(
             function() {},
             function(err) {
