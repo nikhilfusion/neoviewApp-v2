@@ -382,7 +382,7 @@ angular.module('neoviewApp').controller('streamController', [
     function stopBlinking() {
       //clearTimeout(blinkHandler);
       $rootScope.title = 'NeoViewApp';
-      $rootScope.$apply();
+      $rootScope.$digest();
     }
 
     function clearVideoQueue() {
@@ -485,7 +485,7 @@ angular.module('neoviewApp').controller('streamController', [
 
     function startBlinking(title) {
       $rootScope.title = title;
-      $rootScope.$apply();
+      $rootScope.$digest();
     }
 
     vis(function() {
