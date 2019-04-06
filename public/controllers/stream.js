@@ -141,7 +141,6 @@ angular.module('neoviewApp').controller('streamController', [
       Restangular.one('user', sessionUser.id)
         .get({}, {})
         .then(function(userInfo) {
-          closeNotificationModal();
           if (onloadFlg) {
             onloadFlg = false;
             if (userInfo.camera) {
@@ -150,7 +149,7 @@ angular.module('neoviewApp').controller('streamController', [
               camLocalStatus = commonService.getSession('camStatus');
               var videos = videoInfo.videos;
               if (videos.length > 0) {
-                _.each(videos, function(video, index) {
+                _.each(videos, function(video) {
                   videoQueue[pushIndex] = {};
                   videoQueue[pushIndex].src = video;
                   videoQueue[pushIndex].status = 'Not Played';
@@ -184,22 +183,23 @@ angular.module('neoviewApp').controller('streamController', [
               }
               $video.attr('src', playSrc);
               if (playSrc != default_video) {
-                $video[0].play().then(
-                  function() {
-                    def_vid_flg = false;
-                    playing = true;
-                  },
-                  function(err) {
-                    playing = false;
-                    setDefaultVideo();
-                  }
-                );
+                $video[0].play();
+                def_vid_flg = false;
+                playing = true;
+                // function() {
+                //   def_vid_flg = false;
+                //   playing = true;
+                // },
+                // function(err) {
+                //   playing = false;
+                //   setDefaultVideo();
+                // }
+                // );
               } else {
                 playing = false;
                 $video[0].play();
                 setDefaultVideo();
               }
-              closeNotificationModal();
             } else {
               commonService.notification(
                 'No camera assigned to your account',
@@ -208,6 +208,7 @@ angular.module('neoviewApp').controller('streamController', [
               $scope.noCam = true;
             }
           }
+          closeNotificationModal();
         });
     });
 
@@ -460,12 +461,9 @@ angular.module('neoviewApp').controller('streamController', [
         if (playSrc != default_video) {
           playSrc = default_video;
           $video.attr('src', playSrc);
-          $video[0].play().then(
-            function() {},
-            function(err) {
-              $window.$location.reload();
-            }
-          );
+          $video[0].play().then(function(err) {
+            $window.$location.reload();
+          });
         }
         stopBlinking();
       }
