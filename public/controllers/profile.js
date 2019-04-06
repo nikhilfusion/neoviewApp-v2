@@ -3,20 +3,7 @@ angular.module('neoviewApp').controller('profileController', [
   'Restangular',
   'commonService',
   '$state',
-  '$uibModal',
-  '$rootScope',
-  '$stateParams',
-  '$window',
-  function(
-    $scope,
-    Restangular,
-    commonService,
-    $state,
-    $uibModal,
-    $rootScope,
-    $stateParams,
-    $window
-  ) {
+  function($scope, Restangular, commonService, $state) {
     var sessionInfo = commonService.getSession('users');
     $scope.cancelPswd = function() {
       $state.reload();
@@ -32,7 +19,7 @@ angular.module('neoviewApp').controller('profileController', [
       Restangular.all('resetPassword')
         .customPUT(pswdDt)
         .then(
-          function(userInfo) {
+          function() {
             $scope.patient = {};
             $scope.sucMsg = 'Password reset successful.';
           },

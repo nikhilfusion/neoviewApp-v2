@@ -4,7 +4,6 @@ angular.module('neoviewApp').controller('streamController', [
   '$window',
   'Restangular',
   'commonService',
-  '$rootScope',
   '$state',
   '$rootScope',
   function(
@@ -13,7 +12,6 @@ angular.module('neoviewApp').controller('streamController', [
     $window,
     Restangular,
     commonService,
-    $rootScope,
     $state,
     $rootScope
   ) {
@@ -34,10 +32,6 @@ angular.module('neoviewApp').controller('streamController', [
       $canvas = $('#myCanvas'),
       ctx = $canvas[0].getContext('2d'),
       timeOutTime = 20 * 1000,
-      // blinkHandler,
-      // blinkTitle,
-      // blinkLogicState = false,
-      // originalTitle = $rootScope.title,
       vis = (function() {
         var stateKey,
           eventKey,
@@ -141,6 +135,7 @@ angular.module('neoviewApp').controller('streamController', [
       Restangular.one('user', sessionUser.id)
         .get({}, {})
         .then(function(userInfo) {
+          closeNotificationModal();
           if (onloadFlg) {
             onloadFlg = false;
             if (userInfo.camera) {
@@ -208,7 +203,6 @@ angular.module('neoviewApp').controller('streamController', [
               $scope.noCam = true;
             }
           }
-          closeNotificationModal();
         });
     });
 
